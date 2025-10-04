@@ -114,7 +114,7 @@ const handleLogin = async () => {
   loading.value = true;
   try {
     const response = await api.get(`/v1/login?code=${code.value}`);
-    console.log("Response:", response.data);
+    //console.log("Response:", response.data);
 
     if (response.status === 200 && response.data.length) {
       const user = response.data[0];

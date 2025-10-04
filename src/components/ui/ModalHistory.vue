@@ -2,65 +2,333 @@
   <div
     v-if="show"
     class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
-    @click.self="close"
   >
+    <!-- @click.self="close" -->
     <div
-      class="bg-white w-[90%] max-w-5xl max-h-[85vh] p-6 rounded-lg relative flex flex-col shadow-2xl"
+      class="bg-white w-[90%] max-w-6xl max-h-[85vh] p-6 rounded-2xl relative flex flex-col shadow-2xl"
     >
-      <!-- Title -->
-      <h1 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">
+      <h1 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-3">
         История
       </h1>
+      <button
+        @click="close"
+        class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full p-2 transition"
+      >
+        <svg
+          class="w-5 h-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
 
-      <!-- Table Container (scrollable) -->
-      <div class="flex-1 overflow-auto rounded">
-        <div class="bg-gray-200 p-4 rounded-lg h-[300px]">
-          <div class="max-w-5xl mx-auto space-y-2">
-            <div class="grid grid-cols-9 bg-white rounded-md shadow">
-              <div class="p-3 font-semibold">Дата</div>
-              <div class="p-3 font-semibold text-center">Ширина</div>
-              <div class="p-3 font-semibold text-center">Масса</div>
-              <div class="p-3 font-semibold text-center">Брутто метр</div>
-              <div class="p-3 font-semibold text-center">Нетто метр</div>
-              <div class="p-3 font-semibold text-right">
-                Номер ткательной машины
-              </div>
-              <div class="p-3 font-semibold text-right">Режим обработки</div>
-              <div class="p-3 font-semibold text-right">Комментарий</div>
-              <div class="p-3 font-semibold text-right">Автор</div>
+      <div v-if="isLoading" class="flex-1 flex items-center justify-center">
+        <div class="loader"></div>
+      </div>
+
+      <div
+        v-if="!isLoading"
+        class="flex-1 overflow-auto rounded scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+      >
+        <div class="overflow-x-auto bg-gray-100 p-4 rounded-xl">
+          <div class="max-w-6xl mx-auto space-y-2">
+            <div
+              class="grid grid-cols-9 bg-gray-50 rounded-lg shadow text-sm font-semibold text-gray-700"
+            >
+              <div class="p-3 text-center">Дата</div>
+              <div class="p-3 text-center">Ширина</div>
+              <div class="p-3 text-center">Масса</div>
+              <div class="p-3 text-center">Брутто метр</div>
+              <div class="p-3 text-center">Нетто метр</div>
+              <div class="p-3 text-center">Номер ткательной машины</div>
+              <div class="p-3 text-center">Режим обработки</div>
+              <div class="p-3 text-center">Комментарий</div>
+              <div class="p-3 text-center">Автор</div>
             </div>
-            <div class="grid grid-cols-9 bg-white rounded-md shadow">
-              <div class="p-3">22.09.2025/16:27</div>
-              <div class="p-3 text-center">150</div>
-              <div class="p-3 text-center">20</div>
-              <div class="p-3 text-center">28</div>
-              <div class="p-3 text-center">27</div>
-              <div class="p-3 text-right">Стандарт</div>
-              <div class="p-3 text-right">-</div>
-              <div class="p-3 text-right">Нет комментарий</div>
-              <div class="p-3 text-right">Хаётхон к2</div>
+
+            <div
+              v-for="row in rows"
+              :key="row.id"
+              class="grid grid-cols-9 bg-white rounded-lg shadow text-sm hover:bg-blue-50 transition"
+            >
+              <div class="p-3 text-center">{{ row.date }}</div>
+              <div class="p-3 text-center">{{ row.width }}</div>
+              <div class="p-3 text-center">{{ row.mass }}</div>
+              <div class="p-3 text-center">{{ row.brutto }}</div>
+              <div class="p-3 text-center">{{ row.netto }}</div>
+              <div class="p-3 text-center">{{ row.machine }}</div>
+              <div class="p-3 text-center">{{ row.mode }}</div>
+              <div class="p-3 truncate">{{ row.comment }}</div>
+              <div class="p-3 text-right font-medium text-blue-600 truncate">
+                {{ row.author }}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Footer -->
-      <div class="flex justify-end mt-4">
+      <div class="flex justify-end mt-5">
         <button
-          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow transition"
+          v-if="!isLoading"
+          @click="openForm"
+          class="bg-indigo-600 hover:opacity-90 text-white font-semibold py-2 px-5 rounded-xl shadow-lg"
         >
           Добавить
         </button>
+      </div>
+    </div>
+
+    <div
+      v-if="showForm"
+      class="fixed inset-0 bg-black/40 flex justify-center items-center z-60"
+      @click.self="closeForm"
+    >
+      <div class="bg-white p-6 rounded-xl w-[600px] shadow-xl">
+        <h2 class="text-lg font-bold mb-4">Новая запись</h2>
+        <form @submit.prevent="addRow" class="grid grid-cols-2 gap-4">
+          <div class="relative max-w-sm">
+            <div
+              class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
+            >
+              <svg
+                class="w-4 h-4 text-gray-500"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
+                />
+              </svg>
+            </div>
+            <input
+              ref="datepickerInput"
+              v-model="newRow.date"
+              type="text"
+              placeholder="Выберите дату"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+            />
+          </div>
+
+          <input
+            v-model="newRow.width"
+            type="number"
+            placeholder="Ширина"
+            class="input"
+          />
+          <input
+            v-model="newRow.mass"
+            type="number"
+            placeholder="Масса"
+            class="input"
+          />
+          <input
+            v-model="newRow.brutto"
+            type="number"
+            placeholder="Брутто"
+            class="input"
+          />
+          <input
+            v-model="newRow.netto"
+            type="number"
+            placeholder="Нетто"
+            class="input"
+          />
+          <input
+            v-model="newRow.machine"
+            type="text"
+            placeholder="Машина"
+            class="input"
+          />
+          <input
+            v-model="newRow.mode"
+            type="text"
+            placeholder="Режим"
+            class="input"
+          />
+          <input
+            v-model="newRow.comment"
+            type="text"
+            placeholder="Комментарий"
+            class="input"
+          />
+          <input
+            :value="newRow.author"
+            type="text"
+            placeholder="Автор"
+            class="input col-span-2"
+            disabled
+          />
+
+          <div class="col-span-2 flex justify-end space-x-3 mt-3">
+            <button
+              type="button"
+              @click="closeForm"
+              class="bg-gray-200 hover:bg-gray-300 hover:opacity-90 text-white font-semibold py-2 px-5 rounded-xl shadow-lg"
+            >
+              Отмена
+            </button>
+            <button
+              type="submit"
+              class="bg-indigo-600 hover:opacity-90 text-white font-semibold py-2 px-5 rounded-xl shadow-lg"
+            >
+              Сохранить
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch, onMounted, defineEmits } from "vue";
+import { Datepicker } from "flowbite-datepicker";
+import { useUserStore } from "@/stores/user";
+import api from "@/utils/axios";
+
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+});
 
 const show = ref(true);
+const showForm = ref(false);
+const userStore = useUserStore();
+const datepickerInput = ref(null);
+const isLoading = ref(false);
+const rows = ref([]);
+
+const today = new Date();
+const formatDate = (d) =>
+  `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(
+    2,
+    "0"
+  )}.${d.getFullYear()}`;
+
+const newRow = ref({
+  date: formatDate(today),
+  width: "",
+  mass: "",
+  brutto: "",
+  netto: "",
+  machine: "",
+  mode: "",
+  comment: "",
+  author: userStore.user.name,
+});
+
 const close = () => {
-  show.value = false;
+   emit('close');
 };
+
+const openForm = () => {
+  showForm.value = true;
+};
+
+const closeForm = () => {
+  showForm.value = false;
+};
+
+const addRow = () => {
+  saveData(newRow.value);
+  rows.value.push({ ...newRow.value });
+  Object.keys(newRow.value).forEach((key) => (newRow.value[key] = ""));
+  newRow.value.date = formatDate(new Date());
+  closeForm();
+};
+
+onMounted(async () => {
+  isLoading.value = true;
+  try {
+    const response = await api.get("/v1/story_details", {
+      params: {
+        article: props.data.article,
+        productionplan: props.data.productionplan,
+        date_productionplan: props.data.date_productionplan,
+        tape_number: props.data.tape_number,
+      },
+    });
+
+    rows.value = response.data;
+
+    const index = props.data.arrayStory.findIndex(
+      row =>
+        row.article === props.data.article &&
+        row.tape_number === props.data.tape_number
+    );
+
+    if (index !== -1) {
+      const detail = props.data.arrayStory[index];
+      rows.value.push({ ...detail });
+    }
+
+  } catch (error) {
+    console.error(error);
+  } finally {
+    isLoading.value = false;
+  }
+});
+
+
+const emit = defineEmits(['save']);
+
+const date = ref(null);
+const width = ref(0);
+const mass = ref(0);
+const brutto = ref(0);
+const netto = ref(0);
+const machine = ref(null);
+const mode = ref(null);
+const comment = ref(null);
+const author = ref(null);
+
+function saveData(newData) {
+  emit('save', {
+    article: props.data.article,
+    tape_number: props.data.tape_number,
+    date: newData.date,
+    width: newData.width,
+    mass: newData.mass,
+    brutto: newData.brutto,
+    netto: newData.netto,
+    machine: newData.machine,
+    mode: newData.mode,
+    comment: newData.comment,
+    author: newData.author
+  });
+}
+
+watch(showForm, (val) => {
+  if (val) {
+    setTimeout(() => {
+      if (datepickerInput.value) {
+        const picker = new Datepicker(datepickerInput.value, {
+          autohide: true,
+          format: "dd.mm.yyyy",
+        });
+
+        datepickerInput.value.addEventListener("changeDate", (e) => {
+          newRow.value.date = e.target.value;
+        });
+      }
+    }, 0);
+  }
+});
 </script>
+
+<style scoped>
+.input {
+  @apply border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400;
+}
+</style>

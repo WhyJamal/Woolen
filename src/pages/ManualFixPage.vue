@@ -1,5 +1,50 @@
 <template>
   <Layout>
+    <div
+      v-if="showWarning"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[1000] transition-all duration-300"
+    >
+      <div
+        class="bg-white p-8 rounded-2xl shadow-2xl w-[420px] text-center transform transition-all scale-100 animate-fadeIn"
+      >
+        <div
+          class="mx-auto mb-5 flex items-center justify-center w-16 h-16 rounded-full bg-red-100"
+        >
+          <svg
+            class="w-10 h-10 text-red-500"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v4m0 4h.01M4.93 4.93a10 10 0 1 1 14.14 14.14A10 10 0 0 1 4.93 4.93z"
+            />
+          </svg>
+        </div>
+
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">
+          Вы не записали историю изменений
+        </h3>
+
+        <p class="text-gray-500 mb-6 text-sm">
+          Проверьте, не перезаписали ли вы её или добавьте недостающие данные.
+        </p>
+
+        <div class="flex justify-center space-x-3">
+          <button
+            @click="showWarning = false"
+            class="bg-indigo-600 text-white px-5 py-2 rounded-lg shadow-md hover:opacity-90 transition-all"
+          >
+            Понятно
+          </button>
+        </div>
+      </div>
+    </div>
+
+      
     <template #exit-button>
       <button
         @click="exit"
@@ -185,7 +230,9 @@
             <article
               class="relative bg-white rounded-2xl p-6 border shadow-lg min-h-[260px] transition hover:shadow-xl overflow-hidden"
             >
-              <div class="flex items-center justify-between gap-6 flex-nowrap h-[450px]">
+              <div
+                class="flex items-center justify-between gap-6 flex-nowrap h-[450px]"
+              >
                 <div
                   class="rounded-xl border-2 border-dashed flex items-center justify-center bg-gradient-to-b from-white to-[#fbfdff] overflow-hidden"
                   style="
@@ -198,7 +245,7 @@
                     :src="photo"
                     alt="Модель"
                     class="object-cover w-full h-full rounded-xl effect"
-                  />                
+                  />
                   <!-- <img
                     v-if="model[0].nomenclature.photo"
                     :src="`http://localhost/api/hs/v1/photo?article=${model[0].nomenclature.article}`"
@@ -241,12 +288,14 @@
                         v-if="!quantityChange"
                         class="text-lg font-extrabold tracking-tight"
                       >
-                        {{ model[0].nomenclature.article }} {{ userStore.user.stage }} | {{ model[0].quantity }} M
+                        {{ model[0].nomenclature.article }}
+                        {{ userStore.user.stage }} | {{ model[0].quantity }} M
                       </h3>
 
                       <div v-else class="flex items-center gap-2">
                         <span class="text-lg font-extrabold tracking-tight"
-                          >{{ model[0].nomenclature.article }} {{ userStore.user.stage }}</span
+                          >{{ model[0].nomenclature.article }}
+                          {{ userStore.user.stage }}</span
                         >
                         <input
                           type="number"
@@ -307,7 +356,9 @@
                   </div>
 
                   <div>
-                    <p class="text-sm text-gray-500 font-semibold">Размер бердо</p>
+                    <p class="text-sm text-gray-500 font-semibold">
+                      Размер бердо
+                    </p>
                     <input
                       class="mt-2 p-2 rounded-md bg-gray-50 border focus:outline-none focus:ring-2 focus:ring-blue-300 transition w-[clamp(80px,12vw,120px)]"
                       :value="model[0]?.size"
@@ -361,7 +412,9 @@
                       class="rounded-full shadow-lg transition-transform w-[clamp(96px,14vw,192px)] h-[clamp(96px,14vw,192px)] bg-center bg-cover"
                       :style="{
                         backgroundImage: `url(${
-                          pressed ? '/buttons/green-button.png' : '/buttons/orange-button.png'
+                          pressed
+                            ? '/buttons/green-button.png'
+                            : '/buttons/orange-button.png'
                         })`,
                       }"
                     ></button>
@@ -371,23 +424,33 @@
                   >
                     {{ pressed ? 'Сдать' : 'Начать' }}
                   </span> :class="pressed ? 'text-green-700' : 'text-orange-600'" -->
-                  <button @click="toogleRefund" class="custom-btn mt-7 items-center justify-center flex mx-auto">
+                  <button
+                    @click="toogleRefund"
+                    class="custom-btn mt-7 items-center justify-center flex mx-auto"
+                  >
                     <div class="button-outer transition-transform">
-                      <div class="button-inner transition-transform flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" 
-                            class="w-5 h-5" 
-                            fill="none" 
-                            viewBox="0 0 24 24" 
-                            stroke="currentColor" 
-                            stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                      <div
+                        class="button-inner transition-transform flex items-center gap-2"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="w-5 h-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15 19l-7-7 7-7"
+                          />
                         </svg>
                         <span>Возврат</span>
                       </div>
                     </div>
                   </button>
                 </div>
-              
               </div>
             </article>
           </section>
@@ -419,14 +482,25 @@
         </div>
       </div>
     </main>
-    <ModalHistory v-if="openHistory"/>
+    <ModalHistory
+      v-if="openHistory"
+      :data="{
+        article: model[0].nomenclature.article,
+        productionplan: model[0].productionplan,
+        date_productionplan: model[0].date_productionplan,
+        tape_number: model[0].tape_number,
+        arrayStory: storyDetails,
+      }"
+      @save="handleSave"
+      @close="openHistory = false"
+    />
   </Layout>
 </template>
 
 <script setup>
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -447,6 +521,7 @@ const selectedTask = ref(null);
 const photo = ref(null);
 const clickSound = new Audio("/sounds/click.wav");
 const endclickSound = new Audio("/sounds/end-click.wav");
+const showWarning = ref(false);
 const form = ref({
   stage: "",
   productionOrder: "",
@@ -458,6 +533,36 @@ const form = ref({
   comment: "",
   owner: "",
 });
+
+//-Story-details-----------------------//
+const storyDetails = reactive([]);
+const DataStore = reactive({
+  width: 0,
+  mass: 0,
+  brutto: 0,
+  netto: 0,
+  machine: null,
+  mode: null,
+  comment: null,
+  author: null
+});
+
+function handleSave(data) {
+  Object.assign(DataStore, data);
+  saveOrUpdateRow(DataStore);
+  //openHistory.value = false;
+}
+function saveOrUpdateRow(newData) {
+  const index = storyDetails.findIndex(
+    row => row.article === newData.article && row.tape_number === newData.tape_number
+  );
+  if (index !== -1) {
+    storyDetails[index] = { ...storyDetails[index], ...newData };
+  } else {
+    storyDetails.push({ ...newData });
+  }
+}
+//-----------------------------------------------------------------------------------//
 
 onMounted(async () => {
   try {
@@ -507,11 +612,11 @@ async function toggleModel(
     });
     model.value = response.data;
     showModel.value = true;
-    
-  //-Загрузить-Фото-----------------------------------// 
+
+  //-Загрузить-Фото-----------------------------------//
     const photoResponse = await api.get(`/v1/photo`, {
       params: { article },
-      responseType: "arraybuffer", 
+      responseType: "arraybuffer",
     });
 
     const base64 = btoa(
@@ -521,8 +626,7 @@ async function toggleModel(
       )
     );
     photo.value = `data:image/jpeg;base64,${base64}`;
-  //--------------------------------------------------// 
-
+  //--------------------------------------------------//
   } catch (error) {
     showModel.value = false;
   } finally {
@@ -584,6 +688,19 @@ const toggle = async () => {
   isSubmitting.value = true;
 
   try {
+    const index = storyDetails.findIndex(
+      row =>
+        row.article === model.value[0].nomenclature.article &&
+        row.tape_number === model.value[0].tape_number
+    );
+
+    const detail = storyDetails[index] || {};
+
+    if (userStore.user.stage === "Контроль 3" && (!detail.width || detail.width === 0)) {
+      showWarning.value = true;
+      return;
+    }
+
     const payload = {
       stage: model.value[0].stage.code,
       productionplan: model.value[0].productionplan,
@@ -596,9 +713,20 @@ const toggle = async () => {
       tape_number: model.value[0].tape_number,
       comment: "1",
       owner: userStore.user.name,
+
+      // Story details 
+      date: detail.date || "",
+      width: detail.width || 0,
+      mass: detail.mass || 0,
+      brutto: detail.brutto || 0,
+      netto: detail.netto || 0,
+      machine: detail.machine || "",
+      mode: detail.mode || "",
+      comment_story: detail.comment || "",
+      author: detail.author || "",
     };
 
-    const response = await api.post("/v1/warping", payload);
+    const response = await api.post("/v1/create_document", payload);
 
     const idx = tasks.value.findIndex(
       (t) => t.productionplan === model.value[0].productionplan
@@ -609,10 +737,8 @@ const toggle = async () => {
       //tasks.value[idx].status = "Завершен";
     }
 
-    //alert("Document created successfully!");
     pressed.value = false;
   } catch (error) {
-    //alert("Error creating document");
   } finally {
     isSubmitting.value = false;
   }
@@ -662,7 +788,7 @@ const toogleRefund = async () => {
   border-radius: 999vw;
   background-color: rgba(0, 0, 0, 0.75);
   box-shadow: -0.15em -0.15em 0.15em -0.075em rgba(5, 5, 5, 0.25),
-              0.0375em 0.0375em 0.0675em 0 rgba(5, 5, 5, 0.1);
+    0.0375em 0.0375em 0.0675em 0 rgba(5, 5, 5, 0.1);
 }
 .custom-btn::after {
   content: "";
@@ -673,7 +799,12 @@ const toogleRefund = async () => {
   top: -0.15em;
   left: -0.15em;
   border-radius: inherit;
-  background: linear-gradient(-135deg, rgba(5, 5, 5, 0.5), transparent 20%, transparent 100%);
+  background: linear-gradient(
+    -135deg,
+    rgba(5, 5, 5, 0.5),
+    transparent 20%,
+    transparent 100%
+  );
   filter: blur(0.0125em);
   opacity: 0.25;
   mix-blend-mode: multiply;
@@ -685,8 +816,8 @@ const toogleRefund = async () => {
   transition: box-shadow 300ms ease;
   will-change: box-shadow;
   box-shadow: 0 0.05em 0.05em -0.01em rgba(5, 5, 5, 1),
-              0 0.01em 0.01em -0.01em rgba(5, 5, 5, 0.5),
-              0.15em 0.3em 0.1em -0.01em rgba(5, 5, 5, 0.25);
+    0 0.01em 0.01em -0.01em rgba(5, 5, 5, 0.5),
+    0.15em 0.3em 0.1em -0.01em rgba(5, 5, 5, 0.25);
 }
 .custom-btn:hover .button-outer {
   box-shadow: none;
@@ -696,19 +827,24 @@ const toogleRefund = async () => {
   z-index: 1;
   border-radius: inherit;
   padding: 1em 1.5em;
-  background-image: linear-gradient(135deg, rgba(230, 230, 230, 1), rgba(180, 180, 180, 1));
-  transition: box-shadow 300ms ease, clip-path 250ms ease, background-image 250ms ease, transform 250ms ease;
+  background-image: linear-gradient(
+    135deg,
+    rgba(230, 230, 230, 1),
+    rgba(180, 180, 180, 1)
+  );
+  transition: box-shadow 300ms ease, clip-path 250ms ease,
+    background-image 250ms ease, transform 250ms ease;
   will-change: box-shadow, clip-path, background-image, transform;
   overflow: clip;
   clip-path: inset(0 0 0 0 round 999vw);
   box-shadow: -0.05em -0.05em 0.05em 0 inset rgba(5, 5, 5, 0.25),
-              0.025em 0.05em 0.1em 0 inset rgba(255, 255, 255, 1),
-              -0.075em -0.25em 0.25em 0.1em inset rgba(5, 5, 5, 0.25);
+    0.025em 0.05em 0.1em 0 inset rgba(255, 255, 255, 1),
+    -0.075em -0.25em 0.25em 0.1em inset rgba(5, 5, 5, 0.25);
 }
 .custom-btn:hover .button-inner {
   clip-path: inset(0.0625em 0.0625em 0.0625em 0.0625em round 999vw);
   box-shadow: 0.1em 0.15em 0.05em 0 inset rgba(5, 5, 5, 0.75),
-              -0.025em -0.03em 0.05em 0.025em inset rgba(5, 5, 5, 0.5);
+    -0.025em -0.03em 0.05em 0.025em inset rgba(5, 5, 5, 0.5);
 }
 .custom-btn .button-inner span {
   position: relative;
@@ -717,7 +853,11 @@ const toogleRefund = async () => {
   letter-spacing: -0.05em;
   font-weight: 500;
   color: transparent;
-  background-image: linear-gradient(135deg, rgba(25, 25, 25, 1), rgba(75, 75, 75, 1));
+  background-image: linear-gradient(
+    135deg,
+    rgba(25, 25, 25, 1),
+    rgba(75, 75, 75, 1)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   transition: transform 250ms ease;

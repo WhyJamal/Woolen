@@ -104,7 +104,7 @@
                 :class="[
                   'px-3 py-1 rounded-md text-white text-sm font-bold shadow-md transition-all duration-200',
                   task.status === 'Активний'
-                    ? 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:shadow-lg hover:scale-105'
+                    ? 'bg-indigo-600 hover:shadow-lg hover:scale-105'
                     : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg hover:scale-105',
                 ]"
               >
@@ -113,7 +113,7 @@
             </div>
 
             <div class="cell center border-r border-gray-300">
-              <button class="icon-btn" title="Печать" aria-label="Печать">
+              <button @click="openPrintWindow(tasks)" class="icon-btn" title="Печать" aria-label="Печать">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="h-4 w-4"
@@ -161,6 +161,7 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
+import PrintLabel from "@/pages/PrintLabel.vue";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
@@ -190,6 +191,34 @@ const form = ref({
   comment: "",
   owner: "",
 });
+
+//-Print-label---------------------------//
+const labelData = {
+  order_number: "1151",
+  article_name: "WB003/09",
+  article_number: "WB003/09",
+  colour: "DQ280225",
+  batch: "25168",
+  number_of_piece: "14",
+  width: "150",
+  gross_meters: "68.7",
+  net_meters: "68.6",
+  gross_weight: "22.9",
+  finish: "",
+  sort: "1",
+  composition: "",
+  machine_id: "",
+  worker_id: "Сатторова Умида",
+  barcode_number: "1826376924",
+  barcode_image:
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAAeAQMAAACWr5s7AAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABtJREFUGJVjuDzz9GS3bsXLGmlWBxhGOQPDAQCnzLazBJNCpwAAAABJRU5ErkJggg==",
+}
+
+const openPrintWindow = () => {
+  const data = encodeURIComponent(JSON.stringify(labelData))
+  window.open(`/print-label?data=${data}`, '_blank')
+}
+//---------------------------------------//
 
 onMounted(async () => {
   isLoading.value = true;

@@ -296,7 +296,12 @@
                     </div>
                     <!-- @click="toggleHistory" -->
                     <button
-                      class="px-4 py-1.5 rounded-full bg-white border font-semibold text-sm hover:bg-blue-300 transition cursor-not-allowed"
+                      @click="toggleHistory"
+                      :disabled="userStore.user.stage !== 'Контроль 1'"
+                      class="px-4 py-1.5 rounded-full bg-white border font-semibold text-sm transition"
+                      :class="userStore.user.stage === 'Контроль 1' 
+                        ? 'hover:bg-blue-300 cursor-pointer' 
+                        : 'opacity-50 cursor-not-allowed'"
                     >
                       История
                     </button>
@@ -406,14 +411,25 @@
         </div>
       </div>
     </main>
-    <ModalHistory v-if="openHistory" />
+    <ModalHistory
+      v-if="openHistory"
+      :data="{
+        article: model[0].nomenclature.article,
+        productionplan: model[0].productionplan,
+        date_productionplan: model[0].date_productionplan,
+        tape_number: model[0].tape_number,
+        arrayStory: storyDetails,
+      }"
+      @save="handleSave"
+      @close="openHistory = false"
+    />    
   </Layout>
 </template>
 
 <script setup>
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -446,6 +462,36 @@ const form = ref({
   comment: "",
   owner: "",
 });
+
+//-Story-details-----------------------//
+const storyDetails = reactive([]);
+const DataStore = reactive({
+  width: 0,
+  mass: 0,
+  brutto: 0,
+  netto: 0,
+  machine: null,
+  mode: null,
+  comment: null,
+  author: null
+});
+
+function handleSave(data) {
+  Object.assign(DataStore, data);
+  saveOrUpdateRow(DataStore);
+  //openHistory.value = false;
+}
+function saveOrUpdateRow(newData) {
+  const index = storyDetails.findIndex(
+    row => row.article === newData.article && row.tape_number === newData.tape_number
+  );
+  if (index !== -1) {
+    storyDetails[index] = { ...storyDetails[index], ...newData };
+  } else {
+    storyDetails.push({ ...newData });
+  }
+}
+//-----------------------------------------------------------------------------------//
 
 onMounted(async () => {
   try {
@@ -571,6 +617,14 @@ const toggle = async () => {
   isSubmitting.value = true;
 
   try {
+    const index = storyDetails.findIndex(
+      row =>
+        row.article === model.value[0].nomenclature.article &&
+        row.tape_number === model.value[0].tape_number
+    );
+
+    const detail = storyDetails[index] || {};
+
     const payload = {
       stage: model.value[0].stage.code,
       productionplan: model.value[0].productionplan,
@@ -583,9 +637,20 @@ const toggle = async () => {
       tape_number: model.value[0].tape_number,
       comment: "1",
       owner: userStore.user.name,
+
+      // Story details 
+      date: detail.date || "",
+      width: detail.width || 0,
+      mass: detail.mass || 0,
+      brutto: detail.brutto || 0,
+      netto: detail.netto || 0,
+      machine: detail.machine || "",
+      mode: detail.mode || "",
+      comment_story: detail.comment || "",
+      author: detail.author || "",
     };
 
-    const response = await api.post("/v1/warping", payload);
+    const response = await api.post("/v1/create_document", payload);
 
     const idx = tasks.value.findIndex(
       (t) => t.productionplan === model.value[0].productionplan

@@ -3,7 +3,8 @@ import LoginPage from '@/pages/LoginPage.vue'
 import WarpingPage from '@/pages/WarpingPage.vue'
 import WeavingPage from '@/pages/WeavingPage.vue'
 import ManualFixPage from '@/pages/ManualFixPage.vue'
-import PackagePage from "@/pages/PackagePage.vue"
+import PackagePage from '@/pages/PackagePage.vue'
+import PrintLabel from '@/pages/PrintLabel.vue'
 import Slitting from '@/pages/Slitting.vue'
 
 const routes = [
@@ -12,6 +13,7 @@ const routes = [
   { path: '/weaving', name: 'Weaving', component: WeavingPage },
   { path: '/manualfix', name: 'ManualFix', component: ManualFixPage },
   { path: '/package', name: 'Package', component: PackagePage },
+  { path: '/print-label', name: 'PrintLabel', component: PrintLabel },
   { path: '/slitting', name: 'Slitting', component: Slitting }
 ]
 
