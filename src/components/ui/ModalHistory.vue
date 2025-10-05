@@ -309,7 +309,7 @@ function saveData(newData) {
   });
 }
 
-watch(showForm, (val) => {
+watch((val) => {
   if (val) {
     setTimeout(() => {
       if (datepickerInput.value) {

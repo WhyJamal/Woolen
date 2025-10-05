@@ -30,124 +30,143 @@
         <div class="loader"></div>
       </div>
 
-      <div
-        v-if="!isLoading"
-        v-for="(task, index) in tasks"
-        :key="index"
-        class="bg-gray-200 p-3 rounded-lg mt-2"
-      >
-        <div class="table-wrapper w-full overflow-x-auto">
-          <div class="table-grid table-header bg-white">
-            <div class="cell">Заказ№</div>
-            <div class="cell">Артикул</div>
-            <div class="cell">Действия</div>
-            <div class="cell">Лента</div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell"></div>
-            <div class="cell">Размер</div>
-            <div class="cell">Палитра</div>
-            <div class="cell">Приоритет</div>
-            <div class="cell"></div>
-            <div class="cell">Баркод</div>
-            <div class="cell">История</div>
-          </div>
-
-          <div class="table-grid table-header mt-3">
-            <div class="cell border-r border-gray-300">{{ task.order }}</div>
-
-            <div class="cell border-r border-gray-300" title="nomenclature">
-              {{ task.nomenclature.article }} - {{ task.nomenclature.name }}
+      <div v-if="!isLoading">
+        <div
+          v-for="(orderTasks, order) in groupedTasks"
+          :key="order"
+          class="bg-gray-200 p-3 rounded-lg mt-4"
+        >
+          <div class="table-wrapper w-full overflow-x-auto pb-1 custom-scroll">
+            <div class="table-grid table-header bg-white">
+              <div class="cell">Заказ №</div>
+              <div class="cell">Артикул</div>
+              <div class="cell">Действия</div>
+              <div class="cell">Лента</div>
+              <div class="cell"></div>
+              <div class="cell"></div>
+              <div class="cell"></div>
+              <div class="cell">Размер</div>
+              <div class="cell">Палитра</div>
+              <div class="cell">Приоритет</div>
+              <div class="cell"></div>
+              <div class="cell">Баркод</div>
+              <div class="cell">История</div>
             </div>
+            <div
+              v-for="(task, index) in orderTasks"
+              :key="index"
+              class="table-wrapper w-full"
+            >
+              <div class="table-grid table-header mt-3">
+                <div class="cell border-r border-gray-300">
+                  {{ task.order }}
+                </div>
 
-            <div class="cell border-r border-gray-300">
-              Упаковать <span class="font-medium">{{ task.quantity }} M</span>
-              <div class="mt-1 text-xs text-gray-600"></div>
-            </div>
+                <div class="cell border-r border-gray-300" title= "nomenclature">
+                  {{ task.nomenclature.article }} - {{ task.nomenclature.name }}
+                </div>
 
-            <div class="cell border-r border-gray-300">Стандарт</div>
+                <div class="cell border-r border-gray-300">
+                  Упаковать
+                  <span class="font-medium">{{ task.quantity }} M</span>
+                  <div class="mt-1 text-xs text-gray-600"></div>
+                </div>
 
-            <div class="cell border-r border-gray-300">25</div>
-            <div class="cell border-r border-gray-300">
-              <span
-                :class="[
-                  'text-xs font-medium me-2 px-1.5 py-0.5 rounded-sm',
-                  task.status === 'Активний'
-                    ? 'bg-blue-100 text-blue-800'
-                    : 'bg-yellow-100 text-yellow-800',
-                ]"
-                >{{ task.status }}</span
-              >
-            </div>
-            <div class="cell center border-r border-gray-300">
-              <button
-                @click="toogleRefund(task)"
-                class="px-3 py-1 rounded-md bg-gradient-to-r from-red-500 to-pink-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-              >
-                Возврат
-              </button>
-            </div>
+                <div class="cell">Стандарт</div>
 
-            <div class="cell border-r border-gray-300">{{ task.size }}</div>
+                <div class="cell border-r border-gray-300">
+                  {{ task.tape_number }}
+                </div>
+                <div class="cell border-r border-gray-300">
+                  <span
+                    :class="[
+                      'text-xs font-medium me-2 px-1.5 py-0.5 rounded-sm',
+                      task.status === 'Активний'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-yellow-100 text-yellow-800',
+                    ]"
+                    >{{ task.status }}</span
+                  >
+                </div>
+                <div class="cell center border-r border-gray-300">
+                  <button
+                    @click="toogleRefund(task)"
+                    class="px-3 py-1 rounded-md bg-gradient-to-r from-red-500 to-pink-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+                  >
+                    Возврат
+                  </button>
+                </div>
 
-            <div class="cell border-r border-gray-300">
-              {{ task.nomenclature.color_name }}
-            </div>
+                <div class="cell border-r border-gray-300">{{ task.size }}</div>
 
-            <div class="cell border-r border-gray-300">
-              <span class="bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded-sm border border-blue-400 inline-flex items-center justify-center">Обычный</span>
-            </div>
+                <div class="cell border-r border-gray-300">
+                  {{ task.nomenclature.color_name }}
+                </div>
 
-            <div class="cell center border-r border-gray-300">
-              <button
-                @click="toggleStart(task)"
-                :class="[
-                  'px-3 py-1 rounded-md text-white text-sm font-bold shadow-md transition-all duration-200',
-                  task.status === 'Активний'
-                    ? 'bg-indigo-600 hover:shadow-lg hover:scale-105'
-                    : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg hover:scale-105',
-                ]"
-              >
-                {{ task.status === "Активний" ? "Сдать" : "Начать" }}
-              </button>
-            </div>
+                <div class="cell border-r border-gray-300">
+                  <span
+                    class="bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded-sm border border-blue-400 inline-flex items-center justify-center"
+                    >Обычный</span
+                  >
+                </div>
 
-            <div class="cell center border-r border-gray-300">
-              <button @click="openPrintWindow(tasks)" class="icon-btn" title="Печать" aria-label="Печать">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2M6 18v4h12v-4"
-                  />
-                </svg>
-              </button>
-            </div>
+                <div class="cell center border-r border-gray-300">
+                  <button
+                    @click="toggleStart(task)"
+                    :class="[
+                      'px-3 py-1 rounded-md text-white text-sm font-bold shadow-md transition-all duration-200',
+                      task.status === 'Активний'
+                        ? 'bg-indigo-600 hover:shadow-lg hover:scale-105'
+                        : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg hover:scale-105',
+                    ]"
+                  >
+                    {{ task.status === "Активний" ? "Сдать" : "Начать" }}
+                  </button>
+                </div>
 
-            <div class="cell center">
-              <button class="icon-btn" title="История" aria-label="История">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </button>
+                <div class="cell center border-r border-gray-300">
+                  <button
+                    @click="openPrintWindow(task)"
+                    class="icon-btn"
+                    title="Печать"
+                    aria-label="Печать"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2M6 18v4h12v-4"
+                      />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="cell center">
+                  <button class="icon-btn" title="История" aria-label="История">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -162,7 +181,7 @@
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
 import PrintLabel from "@/pages/PrintLabel.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -193,31 +212,24 @@ const form = ref({
 });
 
 //-Print-label---------------------------//
-const labelData = {
-  order_number: "1151",
-  article_name: "WB003/09",
-  article_number: "WB003/09",
-  colour: "DQ280225",
-  batch: "25168",
-  number_of_piece: "14",
-  width: "150",
-  gross_meters: "68.7",
-  net_meters: "68.6",
-  gross_weight: "22.9",
-  finish: "",
-  sort: "1",
-  composition: "",
-  machine_id: "",
-  worker_id: "Сатторова Умида",
-  barcode_number: "1826376924",
-  barcode_image:
-    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAAAeAQMAAACWr5s7AAAABlBMVEX///8AAABVwtN+AAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABtJREFUGJVjuDzz9GS3bsXLGmlWBxhGOQPDAQCnzLazBJNCpwAAAABJRU5ErkJggg==",
-}
+const openPrintWindow = async (task) => {
+  try {
+    const params = {
+      article: task.nomenclature.article,
+      productionplan: task.productionplan,
+      date_productionplan: task.date_productionplan,
+      tape_number: task.tape_number,
+    };
 
-const openPrintWindow = () => {
-  const data = encodeURIComponent(JSON.stringify(labelData))
-  window.open(`/print-label?data=${data}`, '_blank')
-}
+    const { data: labelData } = await api.get("/v1/print/data", { params });
+
+    const encoded = encodeURIComponent(JSON.stringify(labelData));
+    window.open(`/print-label?data=${encoded}`, "_blank");
+  } catch (error) {
+    console.error("Ошибка при получении данных для печати:", error);
+    alert("Не удалось получить данные для печати");
+  }
+};
 //---------------------------------------//
 
 onMounted(async () => {
@@ -235,6 +247,17 @@ onMounted(async () => {
   } finally {
     isLoading.value = false;
   }
+});
+
+const groupedTasks = computed(() => {
+  const groups = {};
+  for (const t of tasks.value) {
+    if (!groups[t.order]) {
+      groups[t.order] = [];
+    }
+    groups[t.order].push(t);
+  }
+  return groups;
 });
 
 function exit() {
@@ -329,13 +352,29 @@ const toogleRefund = async (task) => {
 </script>
 
 <style>
+.custom-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.custom-scroll::-webkit-scrollbar-track {
+  background: #f3f4f6; 
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #9CA3AF; 
+  border-radius: 9999px;
+}
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #2563eb; 
+}
 .table-wrapper {
   width: 100%;
-  /* overflow-x: auto; */
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 14px;
+  /* overflow-x: auto; 
+  padding-bottom: 1px; */
 }
-
+.table-grid:hover {
+  background-color: #f0f7ff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
 .table-grid {
   display: grid;
   align-items: center;

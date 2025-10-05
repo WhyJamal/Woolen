@@ -11,7 +11,7 @@
     </div>
     <div class="flex gap-3">
       <button class="px-4 py-2 rounded-full font-semibold border border-orange-400">История расходов</button>
-      <button class="px-4 py-2 rounded-full font-semibold border border-blue-600">История действие</button>
+      <button @click="openHistoryPage" class="px-4 py-2 rounded-full font-semibold border border-blue-600">История действие</button>
     </div>
     <div class="flex items-center gap-3">
       <slot name="exit-button" />
@@ -21,7 +21,14 @@
 
 <script setup>
 import { useUserStore } from '@/stores/user'
+import { useRouter } from "vue-router";
+
 const userStore = useUserStore()
+const router = useRouter();
+
+function openHistoryPage() {
+  router.push("/history");
+}
 
 function firstLetter(str) {
   if (!str) return ''

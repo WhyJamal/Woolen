@@ -1,6 +1,6 @@
 <template>
   <div class="font-[CeraPro] text-[14px] p-2">
-    <table class="w-full border border-black border-collapse text-[11px]">
+    <table class="w-full border-separate border-spacing-1 table-fixed text-[11px]">
       <tbody>
         <tr>
           <td colspan="2" class="text-center py-2">
@@ -16,8 +16,8 @@
         </tr>
 
         <tr v-for="(item, index) in infoList" :key="index">
-          <td class="border border-black px-2 py-[2px]">{{ item.label }}</td>
-          <td class="border border-black px-2 py-[2px]">{{ item.value }}</td>
+          <td class="w-1/2 font-semibold border border-black px-2 py-1">{{ item.label }}</td>
+          <td class="w-1/2 border border-black px-2 py-1">{{ item.value }}</td>
         </tr>
       </tbody>
     </table>
@@ -30,7 +30,7 @@
       />
     </div>
 
-    <div class="text-center mt-[2px] text-[12px] font-bold">
+    <div class="text-center mt-2 text-[12px] font-bold">
       {{ barcodeNumber }}
     </div>
   </div>
@@ -38,6 +38,7 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
+import JsBarcode from "jsbarcode";
 
 const infoList = ref([]);
 const barcodeImage = ref("");
@@ -49,28 +50,43 @@ onMounted(() => {
 
   if (data) {
     try {
-      const order = JSON.parse(decodeURIComponent(data));
+      const parsed = JSON.parse(decodeURIComponent(data));
+      const order = Array.isArray(parsed) ? parsed[0] : parsed;
 
       infoList.value = [
-        { label: "Order number:", value: order.order_number || "" },
-        { label: "Article name:", value: order.article_name || "" },
-        { label: "Article number:", value: order.article_number || "" },
+        { label: "Order number:", value: order.order || "" },
+        { label: "Article name:", value: order.nomenclature || "" },
+        { label: "Article number:", value: order.article || "" },
         { label: "Colour:", value: order.colour || "" },
         { label: "Batch №:", value: order.batch || "" },
-        { label: "Number of piece:", value: order.number_of_piece || "" },
+        { label: "Number of piece:", value: order.tape_number || "" },
         { label: "Width:", value: order.width || "" },
-        { label: "Gross meters:", value: order.gross_meters || "" },
-        { label: "Net meters:", value: order.net_meters || "" },
-        { label: "Gross weight:", value: order.gross_weight || "" },
+        { label: "Gross meters:", value: order.brutto || "" },
+        { label: "Net meters:", value: order.netto || "" },
+        { label: "Gross weight:", value: order.mass || "" },
         { label: "Finish:", value: order.finish || "" },
         { label: "Sort:", value: order.sort || "" },
         { label: "Composition:", value: order.composition || "" },
         { label: "Machine ID:", value: order.machine_id || "" },
-        { label: "Worker ID:", value: order.worker_id || "" },
+        { label: "Worker ID:", value: order.author || "" },
       ];
 
-      barcodeImage.value = order.barcode_image || "";
-      barcodeNumber.value = order.barcode_number || "";
+      barcodeNumber.value = order.components || "";
+
+      if (barcodeNumber.value) {
+        const canvas = document.createElement("canvas");
+        JsBarcode(canvas, barcodeNumber.value, {
+          format: "CODE128",
+          lineColor: "#000",
+          width: 2,
+          height: 50,
+          displayValue: false,
+          background: "transparent"
+        });
+
+        barcodeImage.value = canvas.toDataURL("image/png");
+      }
+
     } catch (err) {
       console.error("Invalid data:", err);
     }
@@ -82,23 +98,19 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@font-face {
-  font-family: 'CeraPro';
-  src: url('/fonts/CeraPro-Regular.woff2') format('woff2'),
-       url('/fonts/CeraPro-Regular.woff') format('woff'),
-       url('/fonts/CeraPro-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+body {
+  font-family: 'CeraPro', 'Roboto', 'Arial', sans-serif; 
+  font-weight: 700; 
 }
 
 table, td {
   border: 2px solid black;
+  vertical-align: middle;
 }
-tr {
+/* tr {
     display: table-row;
     vertical-align: inherit;
     unicode-bidi: isolate;
     border-color: inherit;
-}
+} */
 </style>
