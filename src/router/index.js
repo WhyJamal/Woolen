@@ -4,6 +4,7 @@ import WarpingPage from '@/pages/WarpingPage.vue'
 import WeavingPage from '@/pages/WeavingPage.vue'
 import ManualFixPage from '@/pages/ManualFixPage.vue'
 import PackagePage from '@/pages/PackagePage.vue'
+import ExpenseHistory from '@/pages/ExpenseHistory.vue'
 import HistoryAction from '@/pages/HistoryAction.vue'
 import PrintLabel from '@/pages/PrintLabel.vue'
 import Slitting from '@/pages/Slitting.vue'
@@ -14,6 +15,7 @@ const routes = [
   { path: '/weaving', name: 'Weaving', component: WeavingPage },
   { path: '/manualfix', name: 'ManualFix', component: ManualFixPage },
   { path: '/package', name: 'Package', component: PackagePage },
+  { path: '/consumes', name: 'ExpenseHistory', component: ExpenseHistory },
   { path: '/history', name: 'HistoryAction', component: HistoryAction },
   { path: '/print-label', name: 'PrintLabel', component: PrintLabel },
   { path: '/slitting', name: 'Slitting', component: Slitting }

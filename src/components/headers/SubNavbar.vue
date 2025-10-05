@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="flex gap-3">
-      <button class="px-4 py-2 rounded-full font-semibold border border-orange-400">История расходов</button>
+      <button @click="openConsumesPage" class="px-4 py-2 rounded-full font-semibold border border-orange-400">История расходов</button>
       <button @click="openHistoryPage" class="px-4 py-2 rounded-full font-semibold border border-blue-600">История действие</button>
     </div>
     <div class="flex items-center gap-3">
@@ -28,6 +28,10 @@ const router = useRouter();
 
 function openHistoryPage() {
   router.push("/history");
+}
+
+function openConsumesPage() {
+  router.push("/consumes");
 }
 
 function firstLetter(str) {
