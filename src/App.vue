@@ -4,7 +4,6 @@
       <component :is="Component" :key="$route.fullPath" />
     </router-view>
   </transition>
-  <!-- <router-view /> -->
 </template>
 
 <script setup>
