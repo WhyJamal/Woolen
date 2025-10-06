@@ -277,6 +277,7 @@ import { useRouter } from "vue-router";
 import { useModelStore } from '@/stores/model'
 
 const modelStore = useModelStore()
+const userStore = useUserStore();
 const activeTab = ref("active");
 const showModal = ref(false);
 const items = ref([]);
