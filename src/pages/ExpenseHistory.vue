@@ -278,6 +278,7 @@ import { useModelStore } from '@/stores/model'
 
 const modelStore = useModelStore()
 const userStore = useUserStore();
+const router = useRouter();
 const activeTab = ref("active");
 const showModal = ref(false);
 const items = ref([]);
