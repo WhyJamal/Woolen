@@ -341,6 +341,11 @@ function submitForm() {
   formData.value = { nomenclature: "", product: "", quantity: "" };
   showModal.value = false;
 }
+
+function exit() {
+  userStore.clearUser();
+  router.push("/");
+}
 </script>
 
 
