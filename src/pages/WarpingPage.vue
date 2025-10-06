@@ -557,7 +557,9 @@ async function toggleModel(
         ""
       )
     );
-    photo.value = `data:image/jpeg;base64,${base64}`;
+    if(!base64 === '') {
+      photo.value = `data:image/jpeg;base64,${base64}`;
+    }
     //--------------------------------------------------//
   } catch (error) {
     showModel.value = false;
