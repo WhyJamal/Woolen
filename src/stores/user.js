@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { useModelStore } from './model'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -12,6 +14,9 @@ export const useUserStore = defineStore('user', {
     clearUser() {
       this.user = null
       localStorage.removeItem('user')
+
+      const modelStore = useModelStore()
+      modelStore.clearModel()
     },
   },
   getters: {

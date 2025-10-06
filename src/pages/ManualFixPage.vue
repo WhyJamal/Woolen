@@ -504,7 +504,9 @@ import { onMounted, ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
+import { useModelStore } from '@/stores/model'
 
+const modelStore = useModelStore()
 const tasks = ref([]);
 const model = ref([]);
 const quantityChange = ref(false)
@@ -611,6 +613,7 @@ async function toggleModel(
       },
     });
     model.value = response.data;
+    modelStore.setModel(model.value)
     showModel.value = true;
 
   //-Загрузить-Фото-----------------------------------//
