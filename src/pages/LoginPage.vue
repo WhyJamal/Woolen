@@ -77,8 +77,8 @@
           />
         </div>
 
+        <!-- @click="handleLogin" -->
         <button
-          @click="handleLogin"
           class="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 active:scale-95 transition"
         >
           Вход
