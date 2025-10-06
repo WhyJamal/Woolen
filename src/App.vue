@@ -1,9 +1,9 @@
 <template>
-  <transition name="fade" mode="out-in">
-    <router-view v-slot="{ Component }">
+  <router-view v-slot="{ Component }">
+    <transition name="fade" mode="out-in">
       <component :is="Component" :key="$route.fullPath" />
-    </router-view>
-  </transition>
+    </transition>
+  </router-view>
 </template>
 
 <script setup>
@@ -15,5 +15,5 @@
   transition: opacity 220ms ease;
 }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
-.fade-enter-to,   .fade-leave-from { opacity: 1; }
+.fade-enter-to, .fade-leave-from { opacity: 1; }
 </style>
