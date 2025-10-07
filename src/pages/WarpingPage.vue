@@ -297,9 +297,9 @@
                     <!-- @click="toggleHistory" -->
                     <button
                       @click="toggleHistory"
-                      :disabled="userStore.user.stage !== 'Контроль 1'"
+                      :disabled="!(userStore.user.stage === 'Контроль 1' || userStore.user.stage === 'Контроль01')"
                       class="px-4 py-1.5 rounded-full bg-white border font-semibold text-sm transition"
-                      :class="userStore.user.stage === 'Контроль 1' 
+                      :class="(userStore.user.stage === 'Контроль 1' || userStore.user.stage === 'Контроль01') 
                         ? 'hover:bg-blue-300 cursor-pointer' 
                         : 'opacity-50 cursor-not-allowed'"
                     >

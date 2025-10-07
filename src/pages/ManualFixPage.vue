@@ -701,7 +701,10 @@ const toggle = async () => {
 
     const detail = storyDetails[index] || {};
 
-    if (userStore.user.stage === "Контроль 3" && (!detail.width || detail.width === 0)) {
+    if (
+      (userStore.user.stage === "Контроль 3" || userStore.user.stage === "Контроль03") &&
+      (!detail.width || detail.width === 0)
+    ) {
       showWarning.value = true;
       return;
     }
