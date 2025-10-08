@@ -4,6 +4,14 @@ import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   plugins: [vue()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: '' 
+      }
+    }
+  },
+  logLevel: 'warn',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

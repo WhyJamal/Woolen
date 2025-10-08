@@ -1,15 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginPage from '@/pages/LoginPage.vue'
-import WarpingPage from '@/pages/WarpingPage.vue'
-import WeavingPage from '@/pages/WeavingPage.vue'
-import ManualFixPage from '@/pages/ManualFixPage.vue'
-import PackagePage from '@/pages/PackagePage.vue'
-import ExpenseHistory from '@/pages/ExpenseHistory.vue'
-import HistoryAction from '@/pages/HistoryAction.vue'
-import PrintLabel from '@/pages/PrintLabel.vue'
-import Slitting from '@/pages/Slitting.vue'
+import LoginPage from '@/views/pages/LoginPage.vue'
+import WarpingPage from '@/views/pages/WarpingPage.vue'
+import WeavingPage from '@/views/pages/WeavingPage.vue'
+import ManualFixPage from '@/views/pages/ManualFixPage.vue'
+import PackagePage from '@/views/pages/PackagePage.vue'
+import ExpenseHistory from '@/views/pages/ExpenseHistory.vue'
+import HistoryAction from '@/views/pages/HistoryAction.vue'
+import PrintLabel from '@/views/pages/PrintLabel.vue'
+import Slitting from '@/views/pages/Slitting.vue'
 
 const routes = [
+  { path: '/:pathMatch(.*)*', component: () => import('@/views/pages/maintenance/error/Error404Page.vue')},
   { path: '/', name: 'login', component: LoginPage },
   { path: '/warping', name: 'Warping', component: WarpingPage },
   { path: '/weaving', name: 'Weaving', component: WeavingPage },

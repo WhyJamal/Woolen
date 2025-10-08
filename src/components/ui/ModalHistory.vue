@@ -190,7 +190,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, defineEmits } from "vue";
+import { ref, watch, onMounted } from "vue";
 import { Datepicker } from "flowbite-datepicker";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";

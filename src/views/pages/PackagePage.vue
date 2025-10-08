@@ -180,7 +180,7 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
-import PrintLabel from "@/pages/PrintLabel.vue";
+import PrintLabel from "@/views/pages/PrintLabel.vue";
 import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
