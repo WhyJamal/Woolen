@@ -64,7 +64,7 @@
             @click="goHome"
             class="px-6 py-3 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-600 transition-colors"
           >
-            Home
+            Go to login
           </button>
           <a
             href="mailto:admin@example.com"
