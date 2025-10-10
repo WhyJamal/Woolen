@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-screen w-full flex items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 p-6"
+    class="min-h-screen w-full flex items-center bg-white justify-center p-6"
   >
     <div
       class="relative w-full max-w-6xl flex flex-col md:flex-row items-center justify-center"
@@ -10,7 +10,7 @@
           <img
             :src="errorImg"
             alt="401 Unauthorized"
-            class="w-full h-auto object-contain rounded-xl drop-shadow-2xl"
+            class="w-full h-auto rounded-xl"
           />
           <div
             class="absolute -top-6 -right-6 bg-blue-500 text-white px-5 py-2.5 rounded-full text-sm font-semibold shadow-xl rotate-6"
@@ -47,9 +47,9 @@
           Вам не предоставлен доступ
         </h2>
         <p class="text-blue-600 leading-relaxed max-w-md">
-          Токен или разрешение на доступ к этой странице недействительны или
-          истекли. Если вы администратор, обратитесь к системному администратору
-          или нажмите одну из кнопок ниже.
+          Доступ к данной странице ограничен. Возможно, ваша учетная запись не
+          имеет нужных прав или не связана с соответствующим разделом в 1С.
+          Обратитесь к администратору для проверки прав доступа.
         </p>
 
         <!-- Action Buttons -->
