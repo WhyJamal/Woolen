@@ -287,7 +287,7 @@ const toggleStart = async (task) => {
 
   try {
     const payload = {
-      stage: task.stage.code,
+      stage: userStore.user.stage_code,//task.stage.code,
       productionplan: task.productionplan,
       date_productionplan: task.date_productionplan,
       nomenclature: task.nomenclature.article,
@@ -321,7 +321,7 @@ const toggleStart = async (task) => {
 const toogleRefund = async (task) => {
   try {
     const payloadRefund = {
-      stage: task.stage.code,
+      stage: userStore.user.stage_code,//task.stage.code,
       productionplan: task.productionplan,
       date_productionplan: task.date_productionplan,
       nomenclature: task.nomenclature.article,

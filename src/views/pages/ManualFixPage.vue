@@ -710,7 +710,7 @@ const toggle = async () => {
     }
 
     const payload = {
-      stage: model.value[0].stage.code,
+      stage: userStore.user.stage_code,//model.value[0].stage.code,
       productionplan: model.value[0].productionplan,
       date_productionplan: model.value[0].date_productionplan,
       nomenclature: model.value[0].nomenclature.article,
@@ -756,7 +756,7 @@ const toggle = async () => {
 const toogleRefund = async () => {
   try {
     const payloadRefund = {
-      stage: model.value[0].stage.code,
+      stage: userStore.user.stage_code,//model.value[0].stage.code,
       productionplan: model.value[0].productionplan,
       date_productionplan: model.value[0].date_productionplan,
       nomenclature: model.value[0].nomenclature.article,
