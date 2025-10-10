@@ -10,7 +10,6 @@ import HistoryAction from '@/views/pages/HistoryAction.vue'
 import PrintLabel from '@/views/pages/PrintLabel.vue'
 
 const routes = [
-  { path: '/:pathMatch(.*)*', component: () => import('@/views/pages/maintenance/error/Error404Page.vue') },
   { path: '/', name: 'login', component: LoginPage },
   { path: '/warping', name: 'Warping', component: WarpingPage, meta: { requiresAuth: true } },
   { path: '/weaving', name: 'Weaving', component: WeavingPage, meta: { requiresAuth: true } },
@@ -19,7 +18,8 @@ const routes = [
   { path: '/consumes', name: 'ExpenseHistory', component: ExpenseHistory, meta: { requiresAuth: true } },
   { path: '/history', name: 'HistoryAction', component: HistoryAction, meta: { requiresAuth: true } },
   { path: '/print-label', name: 'PrintLabel', component: PrintLabel, meta: { requiresAuth: true } },
-  { path: '/not-authorized', name: 'not-authorized', component: () => import('@/views/pages/maintenance/error/Error401Page.vue') }
+  { path: '/not-authorized', name: 'not-authorized', component: () => import('@/views/pages/maintenance/error/Error401Page.vue') },
+  { path: '/:pathMatch(.*)*', component: () => import('@/views/pages/maintenance/error/Error404Page.vue') },
 ]
 
 const router = createRouter({
