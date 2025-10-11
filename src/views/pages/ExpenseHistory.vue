@@ -291,6 +291,7 @@ onMounted(async () => {
       params: {
         productionplan: modelStore.model[0].productionplan,
         date_productionplan: modelStore.model[0].date_productionplan,
+        article: modelStore.model[0].nomenclature.article,
       },
     });
     historyData.value = response.data;
