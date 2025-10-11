@@ -85,117 +85,160 @@
       </div>
     </div>
 
-  <div
-    v-if="showForm"
-    class="fixed inset-0 bg-black/40 flex justify-center items-center z-60"
-    @click.self="closeForm"
-  >
-    <div class="bg-white p-6 rounded-xl w-[600px] shadow-xl">
-      <h2 class="text-lg font-bold mb-4">Новая запись</h2>
+    <div
+      v-if="showForm"
+      class="fixed inset-0 bg-black/40 flex justify-center items-center z-60"
+      @click.self="closeForm"
+    >
+      <div class="bg-white p-6 rounded-xl w-[600px] shadow-xl">
+        <h2 class="text-lg font-bold mb-4">Новая запись</h2>
 
-      <form @submit.prevent="addRow" class="grid grid-cols-2 gap-4">
-        <div class="relative max-w-sm">
-          <div
-            class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
-          >
-            <svg
-              class="w-4 h-4 text-gray-500"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 20 20"
+        <form @submit.prevent="addRow" class="grid grid-cols-2 gap-4">
+          <div class="relative max-w-sm">
+            <div
+              class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
             >
-              <path
-                d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
-              />
-            </svg>
-          </div>
-          <input
-            ref="datepickerInput"
-            v-model="newRow.date"
-            type="text"
-            placeholder="Выберите дату"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
-          />
-        </div>
-
-        <input v-model="newRow.width" type="number" placeholder="Ширина" class="input" />
-        <input v-model="newRow.mass" type="number" placeholder="Масса" class="input" />
-        <input v-model="newRow.brutto" type="number" placeholder="Брутто" class="input" />
-        <input v-model="newRow.netto" type="number" placeholder="Нетто" class="input" />
-        <input v-model="newRow.mode" type="text" placeholder="Режим" class="input" />
-
-        <div class="col-span-2 relative z-20">
-          <Listbox v-model="newRow.machine">
-            <div class="relative">
-              <ListboxButton
-                class="w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+              <svg
+                class="w-4 h-4 text-gray-500"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 20"
               >
-                <span>
-                  {{ newRow.machine ? newRow.machine.name : "Выберите машину..." }}
-                </span>
-                <svg
-                  class="w-5 h-5 ml-2 text-gray-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </ListboxButton>
-
-              <ListboxOptions
-                class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
-              >
-                <ListboxOption
-                  v-for="m in machines"
-                  :key="m.code"
-                  :value="m"
-                  class="cursor-pointer p-2 hover:bg-blue-50"
-                >
-                  <div class="flex justify-between items-center">
-                    <span>{{ m.name }}</span>
-                    <span class="text-gray-400 text-sm">{{ m.code }}</span>
-                  </div>
-                </ListboxOption>
-              </ListboxOptions>
+                <path
+                  d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
+                />
+              </svg>
             </div>
-          </Listbox>
-        </div>
+            <input
+              ref="datepickerInput"
+              v-model="newRow.date"
+              type="text"
+              placeholder="Выберите дату"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+            />
+          </div>
 
-        <input v-model="newRow.comment" type="text" placeholder="Комментарий" class="input col-span-2" />
-        <input
-          :value="newRow.author"
-          type="text"
-          placeholder="Автор"
-          class="input col-span-2"
-          disabled
-        />
+          <input
+            v-model="newRow.width"
+            type="number"
+            placeholder="Ширина"
+            class="input"
+          />
+          <input
+            v-model="newRow.mass"
+            type="number"
+            placeholder="Масса"
+            class="input"
+          />
+          <input
+            v-model="newRow.brutto"
+            type="number"
+            placeholder="Брутто"
+            class="input"
+          />
+          <input
+            v-model="newRow.netto"
+            type="number"
+            placeholder="Нетто"
+            class="input"
+          />
+          <input
+            v-model="newRow.mode"
+            type="text"
+            placeholder="Режим"
+            class="input"
+          />
 
-        <div class="col-span-2 flex justify-end space-x-3 mt-3">
-          <button
-            type="button"
-            @click="closeForm"
-            class="bg-gray-200 text-gray-800 hover:bg-gray-300 font-semibold py-2 px-5 rounded-xl shadow"
-          >
-            Отмена
-          </button>
-          <button
-            type="submit"
-            class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-xl shadow"
-          >
-            Сохранить
-          </button>
-        </div>
-      </form>
+          <div class="col-span-2 relative z-20">
+            <Listbox v-model="newRow.machine">
+              <div class="relative">
+                <ListboxButton
+                  @click="fetchMachines"
+                  class="w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                >
+                  <span>
+                    {{
+                      newRow.machine
+                        ? newRow.machine.name
+                        : "Выберите машину..."
+                    }}
+                  </span>
+                  <svg
+                    class="w-5 h-5 ml-2 text-gray-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </ListboxButton>
+
+                <ListboxOptions
+                  class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
+                >
+                  <ListboxOption
+                    v-if="isLoadingMachines"
+                    class="flex-1 flex items-center justify-center"
+                  >
+                    <div class="loader w-10 h-10"></div>
+                  </ListboxOption>
+
+                  <ListboxOption
+                    v-else
+                    v-for="m in machines"
+                    :key="m.code"
+                    :value="m"
+                    class="cursor-pointer p-2 hover:bg-blue-50"
+                  >
+                    <div class="flex justify-between items-center">
+                      <span>{{ m.name }}</span>
+                      <span class="text-gray-400 text-sm">{{ m.code }}</span>
+                    </div>
+                  </ListboxOption>
+                </ListboxOptions>
+              </div>
+            </Listbox>
+          </div>
+
+          <input
+            v-model="newRow.comment"
+            type="text"
+            placeholder="Комментарий"
+            class="input col-span-2"
+          />
+          <input
+            :value="newRow.author"
+            type="text"
+            placeholder="Автор"
+            class="input col-span-2"
+            disabled
+          />
+
+          <div class="col-span-2 flex justify-end space-x-3 mt-3">
+            <button
+              type="button"
+              @click="closeForm"
+              class="bg-gray-200 text-gray-800 hover:bg-gray-300 font-semibold py-2 px-5 rounded-xl shadow"
+            >
+              Отмена
+            </button>
+            <button
+              type="submit"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-xl shadow"
+            >
+              Сохранить
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
   </div>
 </template>
 
@@ -247,7 +290,7 @@ const newRow = ref({
 const machines = ref([]);
 
 const close = () => {
-   emit('close');
+  emit("close");
 };
 
 const openForm = () => {
@@ -282,7 +325,7 @@ onMounted(async () => {
     rows.value = response.data;
 
     const index = props.data.arrayStory.findIndex(
-      row =>
+      (row) =>
         row.article === props.data.article &&
         row.tape_number === props.data.tape_number
     );
@@ -295,18 +338,26 @@ onMounted(async () => {
   } finally {
     isLoading.value = false;
   }
+});
 
+const isLoadingMachines = ref(false);
+
+async function fetchMachines() {
+  if (isLoadingMachines.value) return;
+  isLoadingMachines.value = true;
   try {
     const response = await api.get("/v1/number_machines");
     machines.value = response.data;
   } catch (error) {
+  } finally {
+    isLoadingMachines.value = false;
   }
-});
+}
 
-const emit = defineEmits(['save']);
+const emit = defineEmits(["save"]);
 
 const date = ref(null);
-const width = ref(0);
+const width = ref("");
 const mass = ref(0);
 const brutto = ref(0);
 const netto = ref(0);
@@ -316,7 +367,7 @@ const comment = ref(null);
 const author = ref(null);
 
 function saveData(newData) {
-  emit('save', {
+  emit("save", {
     article: props.data.article,
     tape_number: props.data.tape_number,
     date: newData.date,
@@ -327,7 +378,7 @@ function saveData(newData) {
     machine: newData.machine,
     mode: newData.mode,
     comment: newData.comment,
-    author: newData.author
+    author: newData.author,
   });
 }
 
