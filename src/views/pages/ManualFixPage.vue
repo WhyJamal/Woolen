@@ -58,7 +58,7 @@
     <main class="page-wrap px-4 py-6">
       <div class="flex flex-col gap-6">
         <div class="flex items-center justify-between">
-          <div class="font-bold text-lg">Выберите задачу</div>
+          <div class="font-bold text-lg">{{ $t('select_task') }}</div>
           <!-- Search -->
           <div class="flex items-center gap-2 w-1/2">
             <label for="simple-search" class="sr-only">Поиск</label>
@@ -728,7 +728,7 @@ const toggle = async () => {
       mass: detail.mass || 0,
       brutto: detail.brutto || 0,
       netto: detail.netto || 0,
-      machine: detail.machine.code || "",
+      machine: detail.machine?.code || "",
       mode: detail.mode || "",
       comment_story: detail.comment || "",
       author: detail.author || "",

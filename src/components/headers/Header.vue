@@ -7,7 +7,11 @@
      class="w-12 h-12 rounded-full object-cover" /> -->
 
     <div class="flex items-center gap-3">
-      <button v-if="$route.path !== '/'" @click="goBack" class="p-2 rounded-md bg-gray-100">
+      <button
+        v-if="$route.path !== '/'"
+        @click="goBack"
+        class="p-2 rounded-md bg-gray-100"
+      >
         <svg
           class="w-5 h-5"
           xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +43,7 @@
     <div class="flex items-center gap-4">
       <div class="relative">
         <button
-          @click="isOpen = !isOpen"
+          @click.stop="isOpen = !isOpen"
           class="flex items-center gap-1 text-sm text-blue-700"
         >
           {{ currentLanguageLabel }}
@@ -61,7 +65,7 @@
         <!-- Dropdown menyu -->
         <div
           v-if="isOpen"
-          class="absolute right-0 mt-2 bg-white border rounded-lg shadow-lg w-32 z-50"
+          class="absolute right-0 mt-2 bg-white border rounded-lg shadow-lg w-32 z-50 language_dropdown"
         >
           <ul>
             <li
@@ -89,6 +93,10 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useUserStore } from "@/stores/user";
+import { useI18n } from "vue-i18n";
+
+const { t, locale } = useI18n();
+
 const userStore = useUserStore();
 
 function firstLetter(str) {
@@ -112,12 +120,18 @@ const currentLanguageLabel = computed(() => {
 
 function selectLanguage(code) {
   selectedLanguage.value = code;
-  localStorage.setItem("lang", code); 
+  localStorage.setItem("lang", code);
   isOpen.value = false;
-  // i18n 
+  locale.value = selectedLanguage.value;
 }
 
 function goBack() {
   window.history.back();
 }
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".language_dropdown")) {
+    isOpen.value = false;
+  }
+});
 </script>

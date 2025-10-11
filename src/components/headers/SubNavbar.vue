@@ -22,13 +22,13 @@
           'opacity-50 cursor-not-allowed': userStore.user?.stage === 'Упаковка' || modelStore.model.length === 0,
         }"
       >
-        История расходов
+        {{ $t('history_expenses') }}
       </button>
       <button
         @click="openHistoryPage"
         class="px-4 py-2 rounded-full font-semibold border border-blue-600"
       >
-        История действие
+        {{ $t('history_action') }}
       </button>
     </div>
     <div class="flex items-center gap-3">

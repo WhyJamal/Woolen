@@ -16,7 +16,7 @@
             <div class="loader"></div>
           </div>
 
-          <h2 class="text-xl font-bold text-center">Вход</h2>
+          <h2 class="text-xl font-bold text-center">{{ $t('login') }}</h2>
           <div
             class="relative bg-gray-100 border border-slate-200 rounded-2xl shadow-lg p-8 flex flex-col items-center gap-6"
           >
@@ -48,7 +48,7 @@
             </div>
 
             <h2 class="text-lg font-semibold text-slate-800">
-              Приложите карту
+              {{ $t('attach_card') }}
             </h2>
 
             <div aria-live="polite" id="nfc-status" class="sr-only">
@@ -75,7 +75,7 @@
               v-model="code"
               type="text"
               class="w-full pl-10 pr-4 py-3 rounded-xl border bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-              placeholder="Введите код сотрудника"
+              :placeholder="$t('enter_employee_code')"
               @blur="keepFocus"
               @keydown.tab.prevent
             />
@@ -85,7 +85,7 @@
           <button
             class="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 active:scale-95 transition"
           >
-            Вход
+            {{ $t('login') }}
           </button>
 
           <!-- <p v-if="error" class="text-red-500 text-sm text-center">{{ error }}</p> -->
