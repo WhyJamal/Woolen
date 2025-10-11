@@ -205,8 +205,8 @@
         >
           <div class="cell" data-label="Заказ № / ID">{{ modelStore.model[0].nomenclature.name }}</div>
           <div class="cell" data-label="Дата">{{ row.product }}</div>
-          <div class="cell" data-label="Модел">{{ row.quantity }}</div>
           <div class="cell" data-label="Размер">{{ row.measurement }}</div>
+          <div class="cell" data-label="Модел">{{ row.quantity }}</div>
           <div class="cell" data-label="Действие">{{ row.date }}</div>
         </div>
         </div>
