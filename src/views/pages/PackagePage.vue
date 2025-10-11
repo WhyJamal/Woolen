@@ -298,6 +298,8 @@ const toggleStart = async (task) => {
       tape_number: task.tape_number,
       comment: "Упаковка",
       owner: userStore.user.name,
+      netto: task.netto,
+      brutto: task.brutto,
     };
 
     const response = await api.post("/v1/create_document", payload);
