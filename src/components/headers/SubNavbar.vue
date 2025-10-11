@@ -15,11 +15,11 @@
     </div>
     <div class="flex gap-3">
       <button
-        :disabled="userStore.user?.stage === 'Упаковка'"
+        :disabled="userStore.user?.stage === 'Упаковка' || modelStore.model.length === 0"
         @click="openConsumesPage"
         class="px-4 py-2 rounded-full font-semibold border border-orange-400"
         :class="{
-          'opacity-50 cursor-not-allowed': userStore.user?.stage === 'Упаковка',
+          'opacity-50 cursor-not-allowed': userStore.user?.stage === 'Упаковка' || modelStore.model.length === 0,
         }"
       >
         История расходов
@@ -40,7 +40,9 @@
 <script setup>
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
+import { useModelStore } from '@/stores/model'
 
+const modelStore = useModelStore()
 const userStore = useUserStore();
 const router = useRouter();
 
