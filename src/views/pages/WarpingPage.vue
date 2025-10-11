@@ -203,18 +203,18 @@
                     height: clamp(120px, 18vw, 288px);
                   "
                 >
-                 <!-- <img
-                    v-if="photo"
+                  <img
+                    v-if="model[0].nomenclature.photo"
                     :src="photo"
                     alt="Модель"
                     class="object-cover w-full h-full rounded-xl effect"
-                  /> -->
-                   <img
+                  />  
+                  <!--<img
                     v-if="model[0].nomenclature.photo"
                     :src="`http://localhost/api/hs/v1/photo?article=${model[0].nomenclature.article}`"
                     alt="Модель"
                     class="object-cover w-full h-full rounded-xl effect"
-                  /> 
+                  /> -->
                   <svg
                     v-else
                     width="100%"
@@ -315,7 +315,7 @@
                       <div
                         class="w-11 h-11 rounded-md border shadow-sm"
                         :style="{
-                          background: model[0].nomenclature.color || '#ffffff',
+                          background: model[0].color || '#ffffff',
                         }"
                       ></div>
                     </div>
@@ -557,7 +557,7 @@ async function toggleModel(
         ""
       )
     );
-    if(!base64 === '') {
+    if (base64 && base64 !== '') {
       photo.value = `data:image/jpeg;base64,${base64}`;
     }
     //--------------------------------------------------//
