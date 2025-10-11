@@ -649,7 +649,7 @@ const toggle = async () => {
       mass: detail.mass || 0,
       brutto: detail.brutto || 0,
       netto: detail.netto || 0,
-      machine: detail.machine || "",
+      machine: detail.machine.code || "",
       mode: detail.mode || "",
       comment_story: detail.comment || "",
       author: detail.author || "",
