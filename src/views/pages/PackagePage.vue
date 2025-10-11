@@ -30,6 +30,18 @@
         <div class="loader"></div>
       </div>
 
+      <div
+        v-if="tasks.length === 0"
+        class="flex flex-col bg-gray-200 items-center justify-center p-4 mt-4 bg-gray-100 rounded-lg text-gray-500"
+      >
+        <img
+          src="@/assets/images/no-data-found.jpg"
+          title="No data found"
+          class="w-32 h-32 mb-2 object-contain"
+        />
+        <p class="text-center text-sm font-bold">No data</p>
+      </div>
+
       <div v-if="!isLoading">
         <div
           v-for="(orderTasks, order) in groupedTasks"
@@ -62,7 +74,7 @@
                   {{ task.order }}
                 </div>
 
-                <div class="cell border-r border-gray-300" title= "nomenclature">
+                <div class="cell border-r border-gray-300" title="nomenclature">
                   {{ task.nomenclature.article }} - {{ task.nomenclature.name }}
                 </div>
 
@@ -287,7 +299,7 @@ const toggleStart = async (task) => {
 
   try {
     const payload = {
-      stage: userStore.user.stage_code,//task.stage.code,
+      stage: userStore.user.stage_code, //task.stage.code,
       productionplan: task.productionplan,
       date_productionplan: task.date_productionplan,
       nomenclature: task.nomenclature.article,
@@ -323,7 +335,7 @@ const toggleStart = async (task) => {
 const toogleRefund = async (task) => {
   try {
     const payloadRefund = {
-      stage: userStore.user.stage_code,//task.stage.code,
+      stage: userStore.user.stage_code, //task.stage.code,
       productionplan: task.productionplan,
       date_productionplan: task.date_productionplan,
       nomenclature: task.nomenclature.article,
@@ -358,14 +370,14 @@ const toogleRefund = async (task) => {
   height: 6px;
 }
 .custom-scroll::-webkit-scrollbar-track {
-  background: #f3f4f6; 
+  background: #f3f4f6;
 }
 .custom-scroll::-webkit-scrollbar-thumb {
-  background: #9CA3AF; 
+  background: #9ca3af;
   border-radius: 9999px;
 }
 .custom-scroll::-webkit-scrollbar-thumb:hover {
-  background: #2563eb; 
+  background: #2563eb;
 }
 .table-wrapper {
   width: 100%;
