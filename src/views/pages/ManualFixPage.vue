@@ -240,18 +240,18 @@
                     height: clamp(120px, 18vw, 288px);
                   "
                 >
-                  <img
+                  <!--<img
                     v-if="photo"
                     :src="photo"
                     alt="Модель"
                     class="object-cover w-full h-full rounded-xl effect"
-                  />
-                  <!-- <img
+                  />-->
+                   <img
                     v-if="model[0].nomenclature.photo"
                     :src="`http://localhost/api/hs/v1/photo?article=${model[0].nomenclature.article}`"
                     alt="Модель"
                     class="object-cover w-full h-full rounded-xl effect"
-                  /> -->
+                  />
                   <svg
                     v-else
                     width="100%"
