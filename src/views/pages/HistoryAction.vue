@@ -38,7 +38,7 @@
                 d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
               />
             </svg>
-          </button>          
+          </button>
           <div class="flex items-center gap-2">
             <div
               id="date-range-picker"
@@ -177,110 +177,88 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, nextTick } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { Datepicker } from "flowbite-datepicker";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
+import api from "@/utils/axios";
 import Layout from "@/components/Layout.vue";
 
 const router = useRouter();
 const userStore = useUserStore();
 
-const defaultData = [
-  {
-    order: "1348/638137",
-    date: "04.10.2025 / 14:15",
-    model: "N-361",
-    size: "195",
-    action: "Упоковать",
-    tape: "1",
-    qty: "48.7",
-    coeff: "-",
-  },
-  {
-    order: "1318/637520",
-    date: "04.10.2025 / 11:32",
-    model: "WZ004/07",
-    size: "169",
-    action: "Упоковать",
-    tape: "213",
-    qty: "61.5",
-    coeff: "-",
-  },
-  {
-    order: "1318/637519",
-    date: "04.10.2025 / 11:32",
-    model: "WZ004/07",
-    size: "169",
-    action: "Упоковать",
-    tape: "219",
-    qty: "61.4",
-    coeff: "-",
-  },
-  {
-    order: "1319/637518",
-    date: "04.10.2025 / 11:32",
-    model: "WZ004/07",
-    size: "169",
-    action: "Упоковать",
-    tape: "191",
-    qty: "61.2",
-    coeff: "-",
-  },
-  {
-    order: "1334/637517",
-    date: "04.10.2025 / 11:32",
-    model: "WZ004/07",
-    size: "169",
-    action: "Упоковать",
-    tape: "231",
-    qty: "59.6",
-    coeff: "-",
-  },
-  {
-    order: "1355/637348",
-    date: "04.10.2025 / 10:44",
-    model: "WZ004/14-30%W",
-    size: "167",
-    action: "Упоковать",
-    tape: "1",
-    qty: "15.9",
-    coeff: "-",
-  },
-  {
-    order: "1316/637292",
-    date: "04.10.2025 / 09:44",
-    model: "WZ004/07",
-    size: "169",
-    action: "Упоковать",
-    tape: "152",
-    qty: "59.6",
-    coeff: "-",
-  },
-  {
-    order: "1315/637291",
-    date: "04.10.2025 / 09:44",
-    model: "WZ004/07",
-    size: "169",
-    action: "Упоковать",
-    tape: "179",
-    qty: "60.6",
-    coeff: "-",
-  },
-];
+const actions = ref([]);
 
+// --- datepicker refs & state --- //
+const startInput = ref(null);
+const endInput = ref(null);
+const startDate = ref("");
+const endDate = ref("");
+
+let startPicker = null;
+let endPicker = null;
+let startChange = null;
+let endChange = null;
+
+onMounted(async () => {
+  try {
+    // --- Get History Actions --- //
+    const response = await api.get("/v1/actions", {
+      params: { user: userStore.user.name },
+    });
+    actions.value = response.data;
+
+    // --- Start Datepicker --- //
+    if (startInput.value) {
+      startPicker = new Datepicker(startInput.value, {
+        autohide: true,
+        format: "dd.mm.yyyy",
+      });
+
+      startChange = (e) => {
+        startDate.value = e.target?.value || startInput.value?.value || "";
+      };
+
+      startInput.value.addEventListener("changeDate", startChange);
+      startInput.value.addEventListener("change", startChange);
+    }
+
+    // --- End Datepicker --- //
+    if (endInput.value) {
+      endPicker = new Datepicker(endInput.value, {
+        autohide: true,
+        format: "dd.mm.yyyy",
+      });
+
+      endChange = (e) => {
+        endDate.value = e.target?.value || endInput.value?.value || "";
+      };
+
+      endInput.value.addEventListener("changeDate", endChange);
+      endInput.value.addEventListener("change", endChange);
+    }
+  } catch (err) {
+    console.error("❌ Xatolik /v1/actions ni olishda:", err);
+  }
+});
+
+// --- Pagination --- //
 const currentPage = ref(1);
 const pageSize = ref(5);
+
 const pagesCount = computed(() =>
-  Math.max(1, Math.ceil(defaultData.length / pageSize.value))
+  Math.max(1, Math.ceil(actions.value.length / pageSize.value))
 );
+
 const pagesArray = computed(() =>
   Array.from({ length: pagesCount.value }, (_, i) => i + 1)
 );
+
 const paginatedData = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
-  return defaultData.slice(start, start + pageSize.value);
+  return actions.value.slice(start, start + pageSize.value);
 });
+
 function goToPage(p) {
   if (p >= 1 && p <= pagesCount.value) currentPage.value = p;
 }
@@ -291,66 +269,25 @@ function nextPage() {
   if (currentPage.value < pagesCount.value) currentPage.value++;
 }
 
-// --- datepicker refs & state --- //
-const startInput = ref(null);
-const endInput = ref(null);
-const startDate = ref("");
-const endDate = ref("");
-
-let startPicker = null;
-let endPicker = null;
-
-onMounted(async () => {
-  await nextTick();
-
-  try {
-    if (startInput.value) {
-      startPicker = new Datepicker(startInput.value, {
-        autohide: true,
-        format: "dd.mm.yyyy",
-      });
-      const startChange = (e) => {
-        startDate.value = e.target?.value || startInput.value.value;
-      };
-      startInput.value.addEventListener("changeDate", startChange);
-      startInput.value.addEventListener("change", startChange);
-    }
-
-    if (endInput.value) {
-      endPicker = new Datepicker(endInput.value, {
-        autohide: true,
-        format: "dd.mm.yyyy",
-      });
-      const endChange = (e) => {
-        endDate.value = e.target?.value || endInput.value.value;
-      };
-      endInput.value.addEventListener("changeDate", endChange);
-      endInput.value.addEventListener("change", endChange);
-    }
-  } catch (err) {
-  }
-});
-
+// --- Cleanup --- //
 onBeforeUnmount(() => {
   try {
-    if (startInput.value) {
-      startInput.value.removeEventListener("changeDate", () => {});
-      startInput.value.removeEventListener("change", () => {});
+    if (startInput.value && startChange) {
+      startInput.value.removeEventListener("changeDate", startChange);
+      startInput.value.removeEventListener("change", startChange);
     }
-    if (endInput.value) {
-      endInput.value.removeEventListener("changeDate", () => {});
-      endInput.value.removeEventListener("change", () => {});
+    if (endInput.value && endChange) {
+      endInput.value.removeEventListener("changeDate", endChange);
+      endInput.value.removeEventListener("change", endChange);
     }
-  } catch (e) {
-    /* noop */
-  }
+  } catch (e) {}
 });
 
+// --- Logout --- //
 function exit() {
   userStore.clearUser();
   router.push("/");
 }
-
 </script>
 
 <style scoped>
@@ -371,7 +308,7 @@ function exit() {
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(229, 231, 235, 1);
   font-weight: 600;
-  color: #111827; 
+  color: #111827;
 }
 
 /* Row card */
@@ -401,7 +338,7 @@ function exit() {
 }
 
 .cell.header {
-  color: #374151; 
+  color: #374151;
   font-size: 0.95rem;
 }
 
@@ -413,16 +350,16 @@ function exit() {
   background: transparent;
 }
 .custom-scroll::-webkit-scrollbar-thumb {
-  background: #9ca3af; 
+  background: #9ca3af;
   border-radius: 9999px;
 }
 .custom-scroll::-webkit-scrollbar-thumb:hover {
-  background: #6b7280; 
+  background: #6b7280;
 }
 
 @media (max-width: 768px) {
   .table-grid-header {
-    display: none; 
+    display: none;
   }
 
   .table-row {
@@ -461,7 +398,7 @@ button:disabled {
   height: 6px;
 }
 .custom-scroll::-webkit-scrollbar-thumb {
-  background: #9ca3af; 
+  background: #9ca3af;
   border-radius: 9999px;
 }
 .custom-scroll::-webkit-scrollbar-thumb:hover {

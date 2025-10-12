@@ -46,7 +46,7 @@
           @click.stop="isOpen = !isOpen"
           class="flex items-center gap-1 text-sm text-blue-700"
         >
-          {{ currentLanguageLabel }}
+          {{ currentLanguageLabel || 'Русский' }}
           <svg
             class="w-4 h-4"
             fill="none"
@@ -108,8 +108,8 @@ const isOpen = ref(false);
 const selectedLanguage = ref(localStorage.getItem("lang") || "ru"); // default Русский
 
 const languages = [
-  { code: "uz", label: "Oʻzbekcha" },
   { code: "ru", label: "Русский" },
+  { code: "uz", label: "Oʻzbekcha" },
   { code: "en", label: "English" },
 ];
 
