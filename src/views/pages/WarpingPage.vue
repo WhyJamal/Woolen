@@ -163,8 +163,13 @@
                 </div>
               </article>
 
-              <div v-if="!tasks.length" class="text-gray-500 text-center py-4">
-                Задач нет
+              <div v-if="!tasks.length" class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4">
+                <img
+                  src="@/assets/images/empty-product.svg"
+                  title="No data found"
+                  class="w-32 h-32 object-contain"
+                />
+                <p class="text-center text-sm font-bold">No data</p>
               </div>
             </div>
           </aside>
@@ -208,7 +213,7 @@
                     :src="photo"
                     alt="Модель"
                     class="object-cover w-full h-full rounded-xl effect"
-                  />  
+                  />
                   <!--<img
                     v-if="model[0].nomenclature.photo"
                     :src="`http://localhost/api/hs/v1/photo?article=${model[0].nomenclature.article}`"
@@ -297,11 +302,19 @@
                     <!-- @click="toggleHistory" -->
                     <button
                       @click="toggleHistory"
-                      :disabled="!(userStore.user.stage === 'Контроль 1' || userStore.user.stage === 'Контроль01')"
+                      :disabled="
+                        !(
+                          userStore.user.stage === 'Контроль 1' ||
+                          userStore.user.stage === 'Контроль01'
+                        )
+                      "
                       class="px-4 py-1.5 rounded-full bg-white border font-semibold text-sm transition"
-                      :class="(userStore.user.stage === 'Контроль 1' || userStore.user.stage === 'Контроль01') 
-                        ? 'hover:bg-blue-300 cursor-pointer' 
-                        : 'opacity-50 cursor-not-allowed'"
+                      :class="
+                        userStore.user.stage === 'Контроль 1' ||
+                        userStore.user.stage === 'Контроль01'
+                          ? 'hover:bg-blue-300 cursor-pointer'
+                          : 'opacity-50 cursor-not-allowed'
+                      "
                     >
                       История
                     </button>
@@ -422,7 +435,7 @@
       }"
       @save="handleSave"
       @close="openHistory = false"
-    />    
+    />
   </Layout>
 </template>
 
@@ -433,9 +446,9 @@ import { onMounted, ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
-import { useModelStore } from '@/stores/model'
+import { useModelStore } from "@/stores/model";
 
-const modelStore = useModelStore()
+const modelStore = useModelStore();
 const tasks = ref([]);
 const model = ref([]);
 const quantityChange = ref(false);
@@ -475,7 +488,7 @@ const DataStore = reactive({
   machine: null,
   mode: null,
   comment: null,
-  author: null
+  author: null,
 });
 
 function handleSave(data) {
@@ -485,7 +498,8 @@ function handleSave(data) {
 }
 function saveOrUpdateRow(newData) {
   const index = storyDetails.findIndex(
-    row => row.article === newData.article && row.tape_number === newData.tape_number
+    (row) =>
+      row.article === newData.article && row.tape_number === newData.tape_number
   );
   if (index !== -1) {
     storyDetails[index] = { ...storyDetails[index], ...newData };
@@ -542,7 +556,7 @@ async function toggleModel(
       },
     });
     model.value = response.data;
-    modelStore.setModel(model.value)
+    modelStore.setModel(model.value);
     showModel.value = true;
 
     //-Загрузить-Фото-----------------------------------//
@@ -557,7 +571,7 @@ async function toggleModel(
         ""
       )
     );
-    if (base64 && base64 !== '') {
+    if (base64 && base64 !== "") {
       photo.value = `data:image/jpeg;base64,${base64}`;
     }
     //--------------------------------------------------//
@@ -623,7 +637,7 @@ const toggle = async () => {
 
   try {
     const index = storyDetails.findIndex(
-      row =>
+      (row) =>
         row.article === model.value[0].nomenclature.article &&
         row.tape_number === model.value[0].tape_number
     );
@@ -631,7 +645,7 @@ const toggle = async () => {
     const detail = storyDetails[index] || {};
 
     const payload = {
-      stage: userStore.user.stage_code,//model.value[0].stage.code,
+      stage: userStore.user.stage_code, //model.value[0].stage.code,
       productionplan: model.value[0].productionplan,
       date_productionplan: model.value[0].date_productionplan,
       nomenclature: model.value[0].nomenclature.article,
@@ -644,7 +658,7 @@ const toggle = async () => {
       comment: "1",
       owner: userStore.user.name,
 
-      // Story details 
+      // Story details
       date: detail.date || "",
       width: detail.width || 0,
       mass: detail.mass || 0,

@@ -32,12 +32,12 @@
 
       <div
         v-if="tasks.length === 0 && !isLoading"
-        class="flex flex-col bg-gray-200 items-center justify-center p-4 mt-4 bg-gray-100 rounded-lg text-gray-500"
+        class="flex flex-col bg-white items-center justify-center p-4 mt-4 rounded-lg text-gray-500"
       >
         <img
-          src="@/assets/images/no-data-found.jpg"
+          src="@/assets/images/empty-product.svg"
           title="No data found"
-          class="w-32 h-32 mb-2 object-contain"
+          class="w-32 h-32 object-contain"
         />
         <p class="text-center text-sm font-bold">No data</p>
       </div>

@@ -201,8 +201,13 @@
                 </div>
               </article>
 
-              <div v-if="!tasks.length" class="text-gray-500 text-center py-4">
-                Задач нет
+              <div v-if="!tasks.length" class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4">
+                <img
+                  src="@/assets/images/empty-product.svg"
+                  title="No data found"
+                  class="w-32 h-32 object-contain"
+                />
+                <p class="text-center text-sm font-bold">No data</p>
               </div>
             </div>
           </aside>

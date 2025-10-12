@@ -136,6 +136,18 @@
             <div class="cell" data-label="Кол-во">{{ row.qty }}</div>
             <div class="cell" data-label="Коэффициент">{{ row.coeff }}</div>
           </div>
+          <div v-f="!actions.length" class="mb-3">
+            <div
+              class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4"
+            >
+              <img
+                src="@/assets/images/empty-product.svg"
+                title="No data found"
+                class="w-32 h-32 object-contain"
+              />
+              <p class="text-center text-sm font-bold">No data</p>
+            </div>
+          </div>
         </div>
 
         <div class="mt-3 flex items-center justify-end gap-2">

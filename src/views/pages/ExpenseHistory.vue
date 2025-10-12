@@ -9,9 +9,9 @@
       </button>
     </template>
 
-  <div class="p-6">
-    <div class="flex space-x-2 mb-4">
-      <!-- <button
+    <div class="p-6">
+      <div class="flex space-x-2 mb-4">
+        <!-- <button
         class="px-4 py-2 rounded-lg font-medium transition-all duration-200"
         :class="activeTab === 'active'
             ? 'bg-blue-600 text-white shadow-md'
@@ -31,8 +31,8 @@
       </button>
     </div> -->
 
-    <!-- Active tab -->
-    <!-- <div
+        <!-- Active tab -->
+        <!-- <div
       v-if="activeTab === 'active'"
       class="flex items-center justify-between mb-4"
     >
@@ -55,121 +55,120 @@
         </svg>
         Добавить
       </button> -->
-      
-    </div><!-- v-if="activeTab === 'history'" -->
-    <div
-      class="flex items-center justify-between mb-4"
-    >
-      <h1 class="text-xl font-semibold">Расход сырья</h1>
-      <div class="flex items-center gap-3">
-        <input
-          type="text"
-          placeholder="Поиск"
-          class="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-        />
-        <button
-          type="submit"
-          class="p-2.5 text-sm font-medium text-white bg-gray-400 rounded-lg border border-gray-200 hover:bg-gray-500 focus:ring-4 focus:outline-none focus:ring-blue-300"
-        >
-          <svg
-            class="w-4 h-4"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 20"
+      </div>
+      <!-- v-if="activeTab === 'history'" -->
+      <div class="flex items-center justify-between mb-4">
+        <h1 class="text-xl font-semibold">Расход сырья</h1>
+        <!-- <div class="flex items-center gap-3">
+          <input
+            type="text"
+            placeholder="Поиск"
+            class="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
+          />
+          <button
+            type="submit"
+            class="p-2.5 text-sm font-medium text-white bg-gray-400 rounded-lg border border-gray-200 hover:bg-gray-500 focus:ring-4 focus:outline-none focus:ring-blue-300"
           >
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-            />
-          </svg>
-        </button>
-        <div class="flex items-center gap-2">
-          <div
-            id="date-range-picker"
-            date-rangepicker
-            class="flex items-center"
-          >
-            <div class="relative">
-              <div
-                class="absolute inset-y-0 start-0 flex items-center justify-center w-9 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 text-gray-500"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+            <svg
+              class="w-4 h-4"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 20 20"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+              />
+            </svg>
+          </button>
+          <div class="flex items-center gap-2">
+            <div
+              id="date-range-picker"
+              date-rangepicker
+              class="flex items-center"
+            >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 start-0 flex items-center justify-center w-9 pointer-events-none"
                 >
-                  <path
-                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
-                  />
-                </svg>
+                  <svg
+                    class="w-4 h-4 text-gray-500"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
+                    />
+                  </svg>
+                </div>
+
+                <input
+                  ref="startInput"
+                  id="datepicker-range-start"
+                  name="start"
+                  type="text"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-40 sm:w-36 ps-10 py-1.5"
+                  placeholder="Start"
+                />
               </div>
 
-              <input
-                ref="startInput"
-                id="datepicker-range-start"
-                name="start"
-                type="text"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-40 sm:w-36 ps-10 py-1.5"
-                placeholder="Start"
-              />
-            </div>
+              <span class="mx-2 text-gray-500">to</span>
 
-            <span class="mx-2 text-gray-500">to</span>
-
-            <div class="relative">
-              <div
-                class="absolute inset-y-0 start-0 flex items-center justify-center w-9 pointer-events-none"
-              >
-                <svg
-                  class="w-4 h-4 text-gray-500"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 start-0 flex items-center justify-center w-9 pointer-events-none"
                 >
-                  <path
-                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
-                  />
-                </svg>
-              </div>
+                  <svg
+                    class="w-4 h-4 text-gray-500"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
+                    />
+                  </svg>
+                </div>
 
-              <input
-                ref="endInput"
-                id="datepicker-range-end"
-                name="end"
-                type="text"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-40 sm:w-36 ps-10 py-1.5"
-                placeholder="End"
-              />
+                <input
+                  ref="endInput"
+                  id="datepicker-range-end"
+                  name="end"
+                  type="text"
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-40 sm:w-36 ps-10 py-1.5"
+                  placeholder="End"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
-    </div>
-    <!-- Table -->
-    <div
-      class="border border-gray-200 rounded-lg bg-gray-200 p-4 h-[550px] flex flex-col"
-    >
-      <div class="overflow-y-auto custom-scroll flex-1">
-        <!-- Header -->
-        <div
-          v-if="activeTab === 'active'"
-          class="table-grid-header sticky top-0 z-20 mb-3"
-        >
-          <div class="cell header">Материал</div>
-          <div class="cell header">Продукт</div>
-          <div class="cell header">Ед. изм.</div>
-          <div class="cell header">Кол-во</div>
-          <div class="cell header">Дата</div>
-        </div>
+      <!-- Table -->
+      <div
+        class="border border-gray-200 rounded-lg bg-gray-200 p-4 h-[550px] flex flex-col"
+      >
+        <div class="overflow-y-auto custom-scroll flex-1">
+          <!-- Header -->
+          <div
+            v-if="activeTab === 'active'"
+            class="table-grid-header sticky top-0 z-20 mb-3"
+          >
+            <div class="cell header">Материал</div>
+            <div class="cell header">Продукт</div>
+            <div class="cell header">Ед. изм.</div>
+            <div class="cell header">Кол-во</div>
+            <div class="cell header">Дата</div>
+          </div>
 
-        <!-- Rows --> <!--v-if="activeTab === 'active'"
+          <!-- Rows -->
+          <!--v-if="activeTab === 'active'"
         <div
           v-if="activeTab === 'active'"
           v-for="(row, idx) in paginatedData"
@@ -182,89 +181,99 @@
           <div class="cell">{{ row.quantity }}</div>
           <div class="cell">{{ row.date }}</div>
         </div>-->
-        <!-- Header history -->
-        <div
-          v-if="activeTab === 'history'"
-          class="table-grid-header sticky top-0 z-20 mb-3"
-        >
-          <div class="cell header text-center">
-            Заказ ID<br />
-            (производство)
+          <!-- Header history -->
+          <div
+            v-if="activeTab === 'history'"
+            class="table-grid-header sticky top-0 z-20 mb-3"
+          >
+            <div class="cell header text-center">
+              Заказ ID<br />
+              (производство)
+            </div>
+            <div class="cell header">Материал</div>
+            <div class="cell header">Кол-во</div>
+            <div class="cell header">Ед. изм.</div>
+            <div class="cell header">Дата</div>
           </div>
-          <div class="cell header">Материал</div>
-          <div class="cell header">Кол-во</div>
-          <div class="cell header">Ед. изм.</div>
-          <div class="cell header">Дата</div>
-        </div>
 
-        <!-- Rows --><!--v-if="activeTab === 'history'"-->
-        <div
-          v-for="(row, idx) in historyData"
-          :key="idx"
-          class="table-row mb-3"
-        >
-          <div class="cell" data-label="Заказ № / ID">{{ modelStore.model[0].nomenclature.name }}</div>
-          <div class="cell" data-label="Дата">{{ row.product }}</div>
-          <div class="cell" data-label="Размер">{{ row.measurement }}</div>
-          <div class="cell" data-label="Модел">{{ row.quantity }}</div>
-          <div class="cell" data-label="Действие">{{ row.date }}</div>
+          <!-- Rows --><!--v-if="activeTab === 'history'"-->
+          <div
+            v-for="(row, idx) in historyData"
+            :key="idx"
+            class="table-row mb-3"
+          >
+            <div class="cell" data-label="Заказ № / ID">
+              {{ modelStore.model[0].nomenclature.name }}
+            </div>
+            <div class="cell" data-label="Дата">{{ row.product }}</div>
+            <div class="cell" data-label="Размер">{{ row.measurement }}</div>
+            <div class="cell" data-label="Модел">{{ row.quantity }}</div>
+            <div class="cell" data-label="Действие">{{ row.date }}</div>
+          </div>
+          <div v-if="!historyData.length" class="mb-3">
+            <div class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-3">
+                <img
+                  src="@/assets/images/empty-product.svg"
+                  title="No data found"
+                  class="w-32 h-32 object-contain"
+                />
+                <p class="text-center text-sm font-bold">No data</p>            
+            </div>
+          </div>
         </div>
-        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Modal -->
-  <div
-    v-if="showModal"
-    class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50"
-  >
+    <!-- Modal -->
     <div
-      class="bg-white rounded-lg shadow-lg w-full max-w-sm p-6 relative"
+      v-if="showModal"
+      class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50"
     >
-      <button
-        @click="closeModal"
-        class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
-      >
-        ✕
-      </button>
-
-      <h2 class="text-lg font-semibold mb-4">
-        Добавление материал на производство
-      </h2>
-
-      <form @submit.prevent="submitForm" class="space-y-3">
-        <input
-          v-model="modelStore.model[0].nomenclature.name"
-          placeholder="Введите название"
-          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
-        />
-
-        <select
-          v-model="formData.product"
-          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
-        >
-          <option disabled value="">Выберите материал</option>
-          <option v-for="item in items" :key="item.id" :value="item.name">
-            {{ item.name }}
-          </option>
-        </select>
-
-        <input
-          v-model="formData.quantity"
-          type="number"
-          placeholder="Введите кол-во"
-          class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
-        />
-
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-sm p-6 relative">
         <button
-          type="submit"
-          class="w-full bg-blue-500 hover:bg-blue-600 text-white rounded py-2 text-sm font-medium"
+          @click="closeModal"
+          class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
         >
-          Добавить
+          ✕
         </button>
-      </form>
+
+        <h2 class="text-lg font-semibold mb-4">
+          Добавление материал на производство
+        </h2>
+
+        <form @submit.prevent="submitForm" class="space-y-3">
+          <input
+            v-model="modelStore.model[0].nomenclature.name"
+            placeholder="Введите название"
+            class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+          />
+
+          <select
+            v-model="formData.product"
+            class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+          >
+            <option disabled value="">Выберите материал</option>
+            <option v-for="item in items" :key="item.id" :value="item.name">
+              {{ item.name }}
+            </option>
+          </select>
+
+          <input
+            v-model="formData.quantity"
+            type="number"
+            placeholder="Введите кол-во"
+            class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-blue-500"
+          />
+
+          <button
+            type="submit"
+            class="w-full bg-blue-500 hover:bg-blue-600 text-white rounded py-2 text-sm font-medium"
+          >
+            Добавить
+          </button>
+        </form>
+      </div>
     </div>
-  </div>
   </Layout>
 </template>
 
@@ -274,9 +283,9 @@ import Layout from "@/components/Layout.vue";
 import api from "@/utils/axios";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
-import { useModelStore } from '@/stores/model'
+import { useModelStore } from "@/stores/model";
 
-const modelStore = useModelStore()
+const modelStore = useModelStore();
 const userStore = useUserStore();
 const router = useRouter();
 const activeTab = ref("active");
@@ -295,8 +304,7 @@ onMounted(async () => {
       },
     });
     historyData.value = response.data;
-  } catch (error) {
-  }
+  } catch (error) {}
 });
 
 const formData = ref({
@@ -350,7 +358,6 @@ function exit() {
   router.push("/");
 }
 </script>
-
 
 <style scoped>
 .modal-content {
