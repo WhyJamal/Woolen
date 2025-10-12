@@ -136,7 +136,7 @@
             <div class="cell" data-label="Кол-во">{{ row.qty }}</div>
             <div class="cell" data-label="Коэффициент">{{ row.coeff }}</div>
           </div>
-          <div v-f="!actions.length" class="mb-3">
+          <div v-if="!actions.length" class="mb-3">
             <div
               class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4"
             >
