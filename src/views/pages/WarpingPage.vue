@@ -309,13 +309,13 @@
 
                   <div>
                     <p class="text-sm text-gray-500 font-semibold">
-                      Палитра — {{ model[0].nomenclature.color_name }}
+                      Палитра — {{ model[0].color.name }}
                     </p>
                     <div class="flex items-center gap-3 mt-2">
                       <div
                         class="w-11 h-11 rounded-md border shadow-sm"
                         :style="{
-                          background: model[0].color || '#ffffff',
+                          background: model[0].color.Hex || '#ffffff',
                         }"
                       ></div>
                     </div>
@@ -636,6 +636,7 @@ const toggle = async () => {
       date_productionplan: model.value[0].date_productionplan,
       nomenclature: model.value[0].nomenclature.article,
       size: model.value[0].size,
+      color: model.value[0].color.code,
       quantity: model.value[0].quantity,
       party: model.value[0].party,
       equipment: model.value[0].equipment,

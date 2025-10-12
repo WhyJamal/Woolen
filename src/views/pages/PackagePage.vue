@@ -31,7 +31,7 @@
       </div>
 
       <div
-        v-if="tasks.length === 0"
+        v-if="tasks.length === 0 && !isLoading"
         class="flex flex-col bg-gray-200 items-center justify-center p-4 mt-4 bg-gray-100 rounded-lg text-gray-500"
       >
         <img
@@ -111,8 +111,12 @@
 
                 <div class="cell border-r border-gray-300">{{ task.size }}</div>
 
-                <div class="cell border-r border-gray-300">
-                  {{ task.nomenclature.color_name }}
+                <div class="cell border-r border-gray-300 flex items-center gap-2">
+                  <span
+                    class="w-10 h-10 rounded-full border border-gray-400"
+                    :style="{ backgroundColor: task.color.Hex }"
+                  ></span>
+                  <span class="font-medium text-xs">{{ task.color.name }}</span>
                 </div>
 
                 <div class="cell border-r border-gray-300">
@@ -304,6 +308,7 @@ const toggleStart = async (task) => {
       date_productionplan: task.date_productionplan,
       nomenclature: task.nomenclature.article,
       size: task.size,
+      color: task.color.code,
       quantity: task.quantity,
       party: task.party,
       equipment: task.equipment,
@@ -340,6 +345,7 @@ const toogleRefund = async (task) => {
       date_productionplan: task.date_productionplan,
       nomenclature: task.nomenclature.article,
       size: task.size,
+      color: task.color.code,
       quantity: task.quantity,
       party: task.party,
       tape_number: task.tape_number,
