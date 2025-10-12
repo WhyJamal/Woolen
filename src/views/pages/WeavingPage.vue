@@ -156,7 +156,10 @@
                 </div>
               </article>
 
-              <div v-if="!tasks.length" class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4">
+              <div
+                v-if="!tasks.length"
+                class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4"
+              >
                 <img
                   src="@/assets/images/empty-product.svg"
                   title="No data found"
@@ -181,8 +184,7 @@
                 </div>
                 <div class="grid grid-cols-3 bg-white rounded-md shadow">
                   <div class="p-3" :class="{ 'border-b pb-2': pressed }">
-                    {{ model[0].order }} -
-                    {{ model[0].nomenclature.article }} -
+                    {{ model[0].order }} - {{ model[0].nomenclature.article }} -
                     {{ model[0].nomenclature.name }}
                   </div>
                   <div
@@ -216,12 +218,55 @@
                   </div>
 
                   <div class="p-2">
-                    <input
-                      v-model="sort"
-                      type="text"
-                      placeholder="Сорт"
-                      class="w-full p-2 border rounded focus:outline-none pt-item__label"
-                    />
+                    <Listbox v-model="variety">
+                      <div class="relative">
+                        <ListboxButton
+                          @click="fetchMachines"
+                          class="w-full p-2 pt-item__label rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                        >
+                          <span>
+                            {{ variety ? variety.name : "Выберите сорт..." }}
+                          </span>
+                          <svg
+                            class="w-5 h-5 ml-2 text-gray-500"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </ListboxButton>
+
+                        <ListboxOptions
+                          class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
+                        >
+                          <ListboxOption
+                            v-if="isLoadingMachines"
+                            class="flex-1 flex items-center justify-center"
+                          >
+                            <div class="loader w-10 h-10"></div>
+                          </ListboxOption>
+
+                          <ListboxOption
+                            v-else
+                            v-for="sort in varietyes"
+                            :key="sort.code"
+                            :value="sort"
+                            class="cursor-pointer p-2 hover:bg-blue-50"
+                          >
+                            <div class="flex justify-between items-center">
+                              <span>{{ sort.name }}</span>
+                            </div>
+                          </ListboxOption>
+                        </ListboxOptions>
+                      </div>
+                    </Listbox>
                   </div>
 
                   <div class="p-2">
@@ -283,7 +328,7 @@
                     :src="`http://localhost/api/hs/v1/photo?article=${model[0].nomenclature.article}`"
                     alt="Модель"
                     class="object-cover w-full h-full rounded-xl effect"
-                  /> -->                   
+                  /> -->
                   <svg
                     v-else
                     width="100%"
@@ -445,7 +490,7 @@
                     {{ pressed ? 'Сдать' : 'Начать' }}
                   </span> :class="pressed ? 'text-green-700' : 'text-orange-600'" -->
                 </div>
-                </div>
+              </div>
             </article>
           </section>
           <section
@@ -487,9 +532,15 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
-import { useModelStore } from '@/stores/model'
+import { useModelStore } from "@/stores/model";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOptions,
+  ListboxOption,
+} from "@headlessui/vue";
 
-const modelStore = useModelStore()
+const modelStore = useModelStore();
 const tasks = ref([]);
 const model = ref([]);
 const router = useRouter();
@@ -502,8 +553,8 @@ const isLoading = ref(false);
 const isSubmitting = ref(false);
 const selectedTask = ref(null);
 const photo = ref(null);
-const quantityChange = ref(false)
-const changedQuantity = ref(null)
+const quantityChange = ref(false);
+const changedQuantity = ref(null);
 const clickSound = new Audio("/sounds/click.wav");
 const endclickSound = new Audio("/sounds/end-click.wav");
 const form = ref({
@@ -516,8 +567,9 @@ const form = ref({
   equipment: "",
   comment: "",
   owner: "",
-  tape_number:"",
+  tape_number: "",
 });
+const varietyes = [{ name: "1", code: "001" }];
 
 onMounted(async () => {
   try {
@@ -566,7 +618,7 @@ async function toggleModel(
       },
     });
     model.value = response.data;
-    modelStore.setModel(model.value)
+    modelStore.setModel(model.value);
     showModel.value = true;
 
     //-Загрузить-Фото-----------------------------------//
@@ -581,7 +633,7 @@ async function toggleModel(
         ""
       )
     );
-    if (base64 && base64 !== '') {
+    if (base64 && base64 !== "") {
       photo.value = `data:image/jpeg;base64,${base64}`;
     }
     //--------------------------------------------------//
@@ -647,7 +699,7 @@ const toggle = async () => {
 
   try {
     const payload = {
-      stage: userStore.user.stage_code,//model.value[0].stage.code,
+      stage: userStore.user.stage_code, //model.value[0].stage.code,
       productionplan: model.value[0].productionplan,
       date_productionplan: model.value[0].date_productionplan,
       nomenclature: model.value[0].nomenclature.article,
@@ -683,12 +735,12 @@ const toggle = async () => {
 
 //-Отправка-Форма-------------------------//
 const tape_number = ref("");
-const sort = ref("сорт");
+const variety = ref("");
 const count = ref(null);
 const comment = ref("");
 
 const sendForm = async () => {
-  if (sort.value === null || sort.value === "") {
+  if (variety.value === null || variety.value === "") {
     alert("Введите сорт!");
     return;
   }
@@ -696,15 +748,19 @@ const sendForm = async () => {
     alert("Введите кол-во");
     return;
   }
+  if (Number(model.value[0].quantity) - count.value < 0) {
+    alert("Не может быть больше, чем количество модели");
+    return;
+  }
 
   try {
     const payload1 = {
       tape_number: tape_number.value,
-      sort: sort.value,
+      variety: variety.value.code,
       count: count.value,
       comment: comment.value,
       //----------------------------------//
-      stage: userStore.user.stage_code,//model.value[0].stage.code,
+      stage: userStore.user.stage_code, //model.value[0].stage.code,
       productionplan: model.value[0].productionplan,
       date_productionplan: model.value[0].date_productionplan,
       nomenclature: model.value[0].nomenclature.article,
@@ -720,11 +776,11 @@ const sendForm = async () => {
 
     model.value[0].quantity = Number(model.value[0].quantity) - count.value;
     tape_number.value = "";
-    sort.value = null;
+    variety.value = null;
     count.value = null;
     comment.value = "";
     // pressed = false
-    if (model.value[0].quantity === 0 ) {
+    if (model.value[0].quantity === 0) {
       const idx = tasks.value.findIndex(
         (t) => t.productionplan === model.value[0].productionplan
       );
@@ -746,10 +802,11 @@ const sendForm = async () => {
 .pt-item__row {
   display: flex;
   margin: 0 -10px;
+  font-weight: 700;
 }
 .pt-item__label {
-  font-weight: 700;
-  color: #000;
+  font-weight: 400;
+  color: #374151;
   margin-bottom: 5px;
   display: block;
 }
