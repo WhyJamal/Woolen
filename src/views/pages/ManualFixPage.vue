@@ -198,6 +198,20 @@
                       {{ task.nomenclature?.name }}
                     </span>
                   </div>
+                  <div class="mt-1 flex items-center gap-2 min-w-0">
+                    <span
+                      class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
+                    >
+                      № {{ task.productionplan }}
+                    </span>
+
+                    <span
+                      class="flex-1 truncate whitespace-nowrap text-sm font-semibold text-gray-900"
+                    >
+                      {{ task.color }} —
+                      {{ task.quantity }}
+                    </span>
+                  </div>                  
                 </div>
               </article>
 
