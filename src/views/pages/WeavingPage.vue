@@ -166,7 +166,7 @@
                       {{ task.color }} —
                       {{ task.quantity }}
                     </span>
-                  </div>                  
+                  </div>
                 </div>
               </article>
 
@@ -789,6 +789,11 @@ const sendForm = async () => {
     const response = await api.post("/v1/weaving", payload1);
 
     model.value[0].quantity = Number(model.value[0].quantity) - count.value;
+    const ind = tasks.value.findIndex(
+      (t) => t.productionplan === model.value[0].productionplan || t.order === model.value[0].order || t.color === model.value[0].color.name
+    );
+    tasks.value[ind].quantity = model.value[0].quantity;
+
     tape_number.value = "";
     variety.value = null;
     count.value = null;
