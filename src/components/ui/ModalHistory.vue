@@ -239,6 +239,13 @@
         </form>
       </div>
     </div>
+    <Warning
+      v-if="showWarning"
+      :data="{
+        warning: warningMassage,
+      }"
+      @close="showWarning = false"
+    />
   </div>
 </template>
 
@@ -253,6 +260,7 @@ import {
   ListboxOptions,
   ListboxOption,
 } from "@headlessui/vue";
+//import Warning from "@/components/ui/Warning.vue";
 
 const props = defineProps({
   data: {
@@ -267,6 +275,7 @@ const userStore = useUserStore();
 const datepickerInput = ref(null);
 const isLoading = ref(false);
 const rows = ref([]);
+const warningMassage = ref("");
 
 const today = new Date();
 const formatDate = (d) =>
@@ -302,6 +311,31 @@ const closeForm = () => {
 };
 
 const addRow = () => {
+  // if (newRow.value.date === null || newRow.value.date === "") {
+  //   alert("Введите кол-во");
+  //   return;
+  // }
+  // if (newRow.value.width === null || newRow.value.width === "") {
+  //   alert("Введите кол-во");
+  //   return;
+  // }
+  // if (newRow.value.mass === null || newRow.value.mass === "") {
+  //   alert("Введите кол-во");
+  //   return;
+  // }
+  // if (newRow.value.brutto === null || newRow.value.brutto === "") {
+  //   alert("Введите кол-во");
+  //   return;
+  // }
+  // if (newRow.value.netto === null || newRow.value.netto === "") {
+  //   alert("Введите кол-во");
+  //   return;
+  // }
+  // if (newRow.value.machine.name === null || newRow.value.machine.name === "") {
+  //   alert("Заполните ткательной машины");
+  //   return;
+  // }
+
   saveData(newRow.value);
   rows.value.push({ ...newRow.value });
   Object.keys(newRow.value).forEach((key) => (newRow.value[key] = ""));
