@@ -18,7 +18,6 @@ WoolenTex aims to simplify and centralize production management through a visual
 - Integration: **1C** (via REST/HTTP data exchange)
 - Build & package management: **npm**
 
-> Backend (if used) and server-side integration details can be provided separately in a `backend/README.md` file.
 
 ## Installation (Development)
 Follow these steps to set up the project locally. Ensure **Node.js** and **npm** are installed.
@@ -26,7 +25,7 @@ Follow these steps to set up the project locally. Ensure **Node.js** and **npm**
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/WhyJamal/Woolen.git
 cd <repository-folder>
 ```
 
@@ -64,7 +63,6 @@ npm run build
 - Stage management — modules and pages responsible for creating, updating, and monitoring production stages.
 - 1C integration — ensures all frontend operations are synced with 1C via REST API calls.
 
-> Note: Detailed folder structure and backend logic (if applicable) should be described in the project source (e.g., `frontend/`, `backend/`, `integration/`).
 
 ## 1C Integration
 Integration between the Vue frontend and 1C is the core of this project. Communication is established through RESTful HTTP requests, ensuring full synchronization between systems.
@@ -74,7 +72,6 @@ Key integration concepts:
 - Automatic synchronization for key actions (e.g., stage completion, status updates).
 - Error handling and logging mechanisms are recommended for reliability.
 
-> Technical details such as endpoints, authentication tokens, and field mappings should be included in the 1C integration documentation.
 
 ## Contributing
 If you want to contribute:
@@ -85,6 +82,7 @@ If you want to contribute:
 This project is licensed under the [MIT License](./LICENSE).
 
 ## Author & Contact
+- **Author Name:** WhyJamal  
 - **Project Name:** WoolenTex  
 - **Description:** Web-based 1C integration and production management system.  
 - **Contact:** Add your preferred contact (email, Telegram, or Slack) here.
