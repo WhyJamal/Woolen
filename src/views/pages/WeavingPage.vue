@@ -534,6 +534,11 @@
           </section>
         </div>
       </div>
+      <WarningModal
+        v-if="showWarning"
+        :message="warningMessage"
+        @close="showWarning = false"
+      />
     </main>
     <ModalHistory v-if="openHistory" />
   </Layout>
@@ -553,6 +558,7 @@ import {
   ListboxOptions,
   ListboxOption,
 } from "@headlessui/vue";
+import WarningModal from "@/components/ui/WarningModal.vue";
 
 const modelStore = useModelStore();
 const tasks = ref([]);
@@ -753,20 +759,38 @@ const variety = ref("");
 const count = ref(null);
 const comment = ref("");
 
-const sendForm = async () => {
-  if (variety.value === null || variety.value === "") {
-    alert("Введите сорт!");
-    return;
-  }
-  if (count.value === null || count.value === "") {
-    alert("Введите кол-во");
-    return;
-  }
-  if (Number(model.value[0].quantity) - count.value < 0) {
-    alert("Не может быть больше, чем количество модели");
-    return;
-  }
+const showWarning = ref(false);
+const warningMessage = ref("");
 
+const validateFields = () => {
+  switch (true) {
+    case !tape_number.value:
+      warningMessage.value = 'Введите номер лента!'
+      showWarning.value = true
+      return false
+
+    case !variety.value:
+      warningMessage.value = 'Введите сорт!'
+      showWarning.value = true
+      return false
+
+    case !count.value:
+      warningMessage.value = 'Введите кол-во!'
+      showWarning.value = true
+      return false
+
+    case Number(model.value[0].quantity) - count.value < 0:
+      warningMessage.value = 'Не может быть больше, чем количество модели!'
+      showWarning.value = true
+      return false
+
+    default:
+      return true
+  }
+}
+
+const sendForm = async () => {
+  if (!validateFields()) return
   try {
     const payload1 = {
       tape_number: tape_number.value,
@@ -790,7 +814,10 @@ const sendForm = async () => {
 
     model.value[0].quantity = Number(model.value[0].quantity) - count.value;
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan || t.order === model.value[0].order || t.color === model.value[0].color.name
+      (t) =>
+        t.productionplan === model.value[0].productionplan ||
+        t.order === model.value[0].order ||
+        t.color === model.value[0].color.name
     );
     tasks.value[idx].quantity = model.value[0].quantity;
 
@@ -800,7 +827,6 @@ const sendForm = async () => {
     comment.value = "";
     // pressed = false
     if (model.value[0].quantity === 0) {
-
       if (idx !== -1) {
         tasks.value.splice(idx, 1);
         showModel.value = false;

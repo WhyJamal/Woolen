@@ -239,11 +239,9 @@
         </form>
       </div>
     </div>
-    <Warning
+    <WarningModal
       v-if="showWarning"
-      :data="{
-        warning: warningMassage,
-      }"
+      :message="warningMessage"
       @close="showWarning = false"
     />
   </div>
@@ -260,7 +258,7 @@ import {
   ListboxOptions,
   ListboxOption,
 } from "@headlessui/vue";
-//import Warning from "@/components/ui/Warning.vue";
+import WarningModal from "@/components/ui/WarningModal.vue";
 
 const props = defineProps({
   data: {
@@ -310,31 +308,48 @@ const closeForm = () => {
   showForm.value = false;
 };
 
+const showWarning = ref(false);
+const warningMessage = ref("");
+
+const validateFields = () => {
+  switch (true) {
+    case !newRow.value.date:
+      warningMessage.value = "Введите дату!";
+      showWarning.value = true;
+      return false;
+
+    case !newRow.value.width:
+      warningMessage.value = "Введите ширину!";
+      showWarning.value = true;
+      return false;
+
+    case !newRow.value.mass:
+      warningMessage.value = "Введите массу!";
+      showWarning.value = true;
+      return false;
+
+    case !newRow.value.brutto:
+      warningMessage.value = "Введите брутто!";
+      showWarning.value = true;
+      return false;
+
+    case !newRow.value.netto:
+      warningMessage.value = "Введите нетто!";
+      showWarning.value = true;
+      return false;
+
+    case !newRow.value.machine?.name:
+      warningMessage.value = "Заполните ткательную машину!";
+      showWarning.value = true;
+      return false;
+
+    default:
+      return true;
+  }
+};
+
 const addRow = () => {
-  // if (newRow.value.date === null || newRow.value.date === "") {
-  //   alert("Введите кол-во");
-  //   return;
-  // }
-  // if (newRow.value.width === null || newRow.value.width === "") {
-  //   alert("Введите кол-во");
-  //   return;
-  // }
-  // if (newRow.value.mass === null || newRow.value.mass === "") {
-  //   alert("Введите кол-во");
-  //   return;
-  // }
-  // if (newRow.value.brutto === null || newRow.value.brutto === "") {
-  //   alert("Введите кол-во");
-  //   return;
-  // }
-  // if (newRow.value.netto === null || newRow.value.netto === "") {
-  //   alert("Введите кол-во");
-  //   return;
-  // }
-  // if (newRow.value.machine.name === null || newRow.value.machine.name === "") {
-  //   alert("Заполните ткательной машины");
-  //   return;
-  // }
+  if (!validateFields()) return;
 
   saveData(newRow.value);
   rows.value.push({ ...newRow.value });
