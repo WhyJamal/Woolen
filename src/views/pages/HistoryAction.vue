@@ -68,7 +68,7 @@
                   name="start"
                   type="text"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-40 sm:w-36 ps-10 py-1.5"
-                  placeholder="Start"
+                  placeholder="Период с"
                 />
               </div>
 
@@ -97,7 +97,7 @@
                   name="end"
                   type="text"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-40 sm:w-36 ps-10 py-1.5"
-                  placeholder="End"
+                  placeholder="по"
                 />
               </div>
             </div>
@@ -250,7 +250,6 @@ onMounted(async () => {
       endInput.value.addEventListener("change", endChange);
     }
   } catch (err) {
-    console.error("❌ Xatolik /v1/actions ni olishda:", err);
   }
 });
 

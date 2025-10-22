@@ -248,7 +248,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, nextTick, onMounted } from "vue";
 import { Datepicker } from "flowbite-datepicker";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -300,8 +300,22 @@ const close = () => {
   emit("close");
 };
 
-const openForm = () => {
+const openForm = async () => {
   showForm.value = true;
+
+  await nextTick(); 
+
+  if (datepickerInput.value) {
+    const picker = new Datepicker(datepickerInput.value, {
+      autohide: true,
+      format: "dd.mm.yyyy",
+    });
+
+    datepickerInput.value.addEventListener("changeDate", (e) => {
+      const target = e.target;
+      newRow.value.date = target.value;
+    });
+  }
 };
 
 const closeForm = () => {
@@ -387,6 +401,18 @@ onMounted(async () => {
   } finally {
     isLoading.value = false;
   }
+
+  if (datepickerInput.value) {
+    const picker = new Datepicker(datepickerInput.value, {
+      autohide: true,
+      format: "dd.mm.yyyy",
+    });
+
+    datepickerInput.value.addEventListener("changeDate", (e) => {
+      const target = e.target;
+      newRow.value.date = target.value;
+    });
+  }
 });
 
 const isLoadingMachines = ref(false);
@@ -430,23 +456,6 @@ function saveData(newData) {
     author: newData.author,
   });
 }
-
-watch((val) => {
-  if (val) {
-    setTimeout(() => {
-      if (datepickerInput.value) {
-        const picker = new Datepicker(datepickerInput.value, {
-          autohide: true,
-          format: "dd.mm.yyyy",
-        });
-
-        datepickerInput.value.addEventListener("changeDate", (e) => {
-          newRow.value.date = e.target.value;
-        });
-      }
-    }, 0);
-  }
-});
 </script>
 
 <style scoped>
