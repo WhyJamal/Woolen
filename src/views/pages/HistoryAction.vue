@@ -14,8 +14,45 @@
         <h1 class="text-xl font-semibold">История действие</h1>
 
         <div class="flex items-center gap-3">
+          <Listbox v-model="searchType" as="div" class="relative">
+            <ListboxButton
+              class="w-36 px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center justify-between"
+            >
+              <span class="truncate">
+                {{ searchType ? searchType.name : "Поиск по..." }}
+              </span>
+              <svg
+                class="w-4 h-4 text-gray-500"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </ListboxButton>
+
+            <ListboxOptions
+              class="absolute mt-1 w-36 bg-white border rounded-md shadow-md max-h-60 overflow-y-auto z-50"
+            >
+              <ListboxOption
+                v-for="typ in searchTypes"
+                :key="typ.id"
+                :value="typ"
+                class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm"
+              >
+                {{ typ.name }}
+              </ListboxOption>
+            </ListboxOptions>
+          </Listbox>
           <input
             type="text"
+            v-model="searchText"
             placeholder="Поиск"
             class="px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
           />
@@ -109,7 +146,6 @@
         class="border border-gray-200 rounded-lg bg-gray-200 p-4 h-[550px] flex flex-col"
       >
         <div class="overflow-y-auto custom-scroll flex-1">
-          <!-- Header -->
           <div class="table-grid-header sticky top-0 z-20 mb-3">
             <div class="cell header">Заказ № / ID</div>
             <div class="cell header">Дата</div>
@@ -121,7 +157,6 @@
             <div class="cell header">Коэффициент</div>
           </div>
 
-          <!-- Rows -->
           <div
             v-for="(row, idx) in paginatedData"
             :key="idx"
@@ -195,13 +230,26 @@ import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
 import api from "@/utils/axios";
 import Layout from "@/components/Layout.vue";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOptions,
+  ListboxOption,
+} from "@headlessui/vue";
 
 const router = useRouter();
 const userStore = useUserStore();
 
 const actions = ref([]);
+const searchTypes = ref([
+  { id: "model", name: "Модел" },
+  { id: "order", name: "ЗаказID" },
+  { id: "tape", name: "Лента" },
+]);
+const searchType = ref(null);
 
-// --- datepicker refs & state --- //
+const searchText = ref("");
+
 const startInput = ref(null);
 const endInput = ref(null);
 const startDate = ref("");
@@ -214,13 +262,11 @@ let endChange = null;
 
 onMounted(async () => {
   try {
-    // --- Get History Actions --- //
     const response = await api.get("/v1/actions", {
       params: { user: userStore.user.name },
     });
     actions.value = response.data;
 
-    // --- Start Datepicker --- //
     if (startInput.value) {
       startPicker = new Datepicker(startInput.value, {
         autohide: true,
@@ -235,7 +281,6 @@ onMounted(async () => {
       startInput.value.addEventListener("change", startChange);
     }
 
-    // --- End Datepicker --- //
     if (endInput.value) {
       endPicker = new Datepicker(endInput.value, {
         autohide: true,
@@ -249,11 +294,9 @@ onMounted(async () => {
       endInput.value.addEventListener("changeDate", endChange);
       endInput.value.addEventListener("change", endChange);
     }
-  } catch (err) {
-  }
+  } catch (err) {}
 });
 
-// --- Pagination --- //
 const currentPage = ref(1);
 const pageSize = ref(5);
 
@@ -261,26 +304,75 @@ const pagesCount = computed(() =>
   Math.max(1, Math.ceil(actions.value.length / pageSize.value))
 );
 
+const filteredActions = computed(() => {
+  const text = searchText.value.toLowerCase().trim();
+
+  return actions.value.filter((item) => {
+    let matchesType = true;
+    let matchesText = true;
+    let matchesDate = true;
+
+    if (searchType.value && text) {
+      const key = searchType.value.id; 
+      const itemValue = (item[key] || "").toString().toLowerCase();
+      matchesType = fuzzyMatch(itemValue, text);
+    } else if (text) {
+      const allFields = Object.values(item).join(" ").toLowerCase();
+      matchesText = fuzzyMatch(allFields, text);
+    }
+
+    if (startDate.value || endDate.value) {
+      const itemDate = parseDate(item.date);
+      const start = startDate.value ? parseDate(startDate.value) : null;
+      const end = endDate.value ? parseDate(endDate.value) : null;
+
+      if (start && itemDate < start) matchesDate = false;
+      if (end && itemDate > end) matchesDate = false;
+    }
+
+    return matchesType && matchesText && matchesDate;
+  });
+});
+
+function fuzzyMatch(source, query) {
+  if (!query) return true;
+  const pattern = query
+    .split("")
+    .map((ch) => ch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join(".*?");
+  const regex = new RegExp(pattern, "i");
+  return regex.test(source);
+}
+
+function parseDate(str) {
+  if (!str) return null;
+  const [d, m, y] = str.split(".").map((n) => parseInt(n));
+  return new Date(y, m - 1, d);
+}
+
+const pagesCountFiltered = computed(() =>
+  Math.max(1, Math.ceil(filteredActions.value.length / pageSize.value))
+);
+
 const pagesArray = computed(() =>
-  Array.from({ length: pagesCount.value }, (_, i) => i + 1)
+  Array.from({ length: pagesCountFiltered.value }, (_, i) => i + 1)
 );
 
 const paginatedData = computed(() => {
   const start = (currentPage.value - 1) * pageSize.value;
-  return actions.value.slice(start, start + pageSize.value);
+  return filteredActions.value.slice(start, start + pageSize.value);
 });
 
 function goToPage(p) {
-  if (p >= 1 && p <= pagesCount.value) currentPage.value = p;
+  if (p >= 1 && p <= pagesCountFiltered.value) currentPage.value = p;
 }
 function prevPage() {
   if (currentPage.value > 1) currentPage.value--;
 }
 function nextPage() {
-  if (currentPage.value < pagesCount.value) currentPage.value++;
+  if (currentPage.value < pagesCountFiltered.value) currentPage.value++;
 }
 
-// --- Cleanup --- //
 onBeforeUnmount(() => {
   try {
     if (startInput.value && startChange) {
@@ -294,15 +386,14 @@ onBeforeUnmount(() => {
   } catch (e) {}
 });
 
-// --- Logout --- //
 function exit() {
   userStore.clearUser();
   router.push("/");
 }
 </script>
 
+
 <style scoped>
-/* Grid: 8 row */
 .table-grid-header,
 .table-row {
   display: grid;
@@ -311,7 +402,6 @@ function exit() {
   gap: 8px;
 }
 
-/* Header */
 .table-grid-header {
   background: #ffffff;
   padding: 12px;
@@ -322,7 +412,6 @@ function exit() {
   color: #111827;
 }
 
-/* Row card */
 .table-row {
   background: #ffffff;
   padding: 14px;
