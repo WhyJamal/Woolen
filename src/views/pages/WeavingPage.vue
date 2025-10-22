@@ -547,7 +547,7 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -590,19 +590,6 @@ const form = ref({
   tape_number: "",
 });
 const varietyes = [{ name: "1", code: "001" }];
-
-onMounted(async () => {
-  try {
-    const response = await api.get("/v1/list_models", {
-      params: { stage: userStore.user.stage },
-    });
-    tasks.value = response.data.map((task) => ({
-      ...task,
-      status: task.status || "Ожидает",
-    }));
-    //tasks.value = response.data;
-  } catch (error) {}
-});
 
 function toggleChangeQuantity(quantity) {
   quantityChange.value = !quantityChange.value;
@@ -838,6 +825,52 @@ const sendForm = async () => {
     isSubmitting.value = false;
   }
   endclickSound.play();
+};
+
+onMounted(async () => {
+  try {
+    const response = await api.get("/v1/list_models", {
+      params: { stage: userStore.user.stage },
+    });
+    tasks.value = response.data.map((task) => ({
+      ...task,
+      status: task.status || "Ожидает",
+    }));
+    //tasks.value = response.data;
+    
+    if (modelStore.model && modelStore.model.length > 0) {
+      const first = modelStore.model[0];
+      runToggle(first);
+    }
+  } catch (error) {}
+});
+
+watch(
+  () => modelStore.model,
+  async (newVal) => {
+    if (Array.isArray(newVal) && newVal.length > 0) {
+      const first = newVal[0];
+      if (first && first.article && first.productionplan && first.date_productionplan && first.tape_number) {
+        await runToggle(first);
+      } else {
+      }
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+async function runToggle(first) {
+  try {
+    showModel.value = true;
+    await toggleModel(
+      first.nomenclature.article,
+      first.productionplan,
+      first.date_productionplan,
+      first.tape_number,
+      0
+    );
+  } catch (err) {
+  }
 };
 </script>
 

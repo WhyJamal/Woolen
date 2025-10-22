@@ -3,18 +3,16 @@
     <template #exit-button>
       <button
         @click="exit"
-        class="px-3 py-2 rounded-full text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+        class="rounded-full text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
       >
         Выход
       </button>
     </template>
 
-    <!-- PAGE -->
     <main class="page-wrap px-4 py-6">
       <div class="flex flex-col gap-6">
         <div class="flex items-center justify-between">
           <div class="font-bold text-lg">Выберите задачу</div>
-          <!-- Search -->
           <div class="flex items-center gap-2 w-1/2">
             <label for="simple-search" class="sr-only">Поиск</label>
             <div class="relative flex-1">
@@ -66,7 +64,6 @@
         </div>
 
         <div class="flex flex-col lg:flex-row gap-6">
-          <!-- Aside -->
           <aside
             class="w-full sm:w-80 lg:w-96 max-w-full lg:max-w-[26rem] space-y-4"
           >
@@ -176,8 +173,12 @@
                   </div>
                 </div>
               </article>
+              {{ modelStore }}
 
-              <div v-if="!tasks.length" class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4">
+              <div
+                v-if="!tasks.length"
+                class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4"
+              >
                 <img
                   src="@/assets/images/empty-product.svg"
                   title="No data found"
@@ -191,7 +192,6 @@
           <div v-if="isLoading" class="flex-1 flex items-center justify-center">
             <div class="loader"></div>
           </div>
-          <!-- Main -->
           <section v-if="showModel && !isLoading" class="flex-1 space-y-4">
             <div class="bg-gray-200 p-4 rounded-lg">
               <div class="max-w-5xl mx-auto space-y-2">
@@ -456,7 +456,7 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
-import { onMounted, ref, reactive } from "vue";
+import { onMounted, ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -522,19 +522,6 @@ function saveOrUpdateRow(newData) {
   }
 }
 //-----------------------------------------------------------------------------------//
-
-onMounted(async () => {
-  try {
-    const response = await api.get("/v1/list_models", {
-      params: { stage: userStore.user.stage },
-    });
-    tasks.value = response.data.map((task) => ({
-      ...task,
-      status: task.status || "Ожидает",
-    }));
-    //tasks.value = response.data;
-  } catch (error) {}
-});
 
 function toggleChangeQuantity(quantity) {
   quantityChange.value = !quantityChange.value;
@@ -700,6 +687,52 @@ const toggle = async () => {
     isSubmitting.value = false;
   }
   endclickSound.play();
+};
+
+onMounted(async () => {
+  try {
+    const response = await api.get("/v1/list_models", {
+      params: { stage: userStore.user.stage },
+    });
+    tasks.value = response.data.map((task) => ({
+      ...task,
+      status: task.status || "Ожидает",
+    }));
+    //tasks.value = response.data;
+
+    if (modelStore.model && modelStore.model.length > 0) {
+      const first = modelStore.model[0];
+      runToggle(first);
+    }
+  } catch (error) {}
+});
+
+watch(
+  () => modelStore.model,
+  async (newVal) => {
+    if (Array.isArray(newVal) && newVal.length > 0) {
+      const first = newVal[0];
+      if (first && first.article && first.productionplan && first.date_productionplan && first.tape_number) {
+        await runToggle(first);
+      } else {
+        //console.warn("Warning:", first);
+      }
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+async function runToggle(first) {
+  try {
+    showModel.value = true;
+    await toggleModel(
+      first.nomenclature.article,
+      first.productionplan,
+      first.date_productionplan,
+      first.tape_number,
+      0
+    );
+  } catch (err) {}
 };
 </script>
 

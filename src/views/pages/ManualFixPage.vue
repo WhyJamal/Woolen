@@ -48,7 +48,7 @@
     <template #exit-button>
       <button
         @click="exit"
-        class="px-3 py-2 rounded-full text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+        class="rounded-full text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
       >
         Выход
       </button>
@@ -519,7 +519,7 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
-import { onMounted, ref, reactive } from "vue";
+import { onMounted, ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -584,19 +584,6 @@ function saveOrUpdateRow(newData) {
   }
 }
 //-----------------------------------------------------------------------------------//
-
-onMounted(async () => {
-  try {
-    const response = await api.get("/v1/list_models", {
-      params: { stage: userStore.user.stage },
-    });
-    tasks.value = response.data.map((task) => ({
-      ...task,
-      status: task.status || "Ожидает",
-    }));
-    //tasks.value = response.data;
-  } catch (error) {}
-});
 
 function toggleChangeQuantity(quantity) {
   quantityChange.value = !quantityChange.value;
@@ -805,6 +792,52 @@ const toogleRefund = async () => {
     isSubmitting.value = false;
   }
   endclickSound.play();
+};
+
+onMounted(async () => {
+  try {
+    const response = await api.get("/v1/list_models", {
+      params: { stage: userStore.user.stage },
+    });
+    tasks.value = response.data.map((task) => ({
+      ...task,
+      status: task.status || "Ожидает",
+    }));
+    //tasks.value = response.data;
+
+    if (modelStore.model && modelStore.model.length > 0) {
+      const first = modelStore.model[0];
+      runToggle(first);
+    }
+  } catch (error) {}
+});
+
+watch(
+  () => modelStore.model,
+  async (newVal) => {
+    if (Array.isArray(newVal) && newVal.length > 0) {
+      const first = newVal[0];
+      if (first && first.article && first.productionplan && first.date_productionplan && first.tape_number) {
+        await runToggle(first);
+      } else {
+        //console.warn("Warning:", first);
+      }
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+async function runToggle(first) {
+  try {
+    showModel.value = true;
+    await toggleModel(
+      first.nomenclature.article,
+      first.productionplan,
+      first.date_productionplan,
+      first.tape_number,
+      0
+    );
+  } catch (err) {}
 };
 </script>
 
