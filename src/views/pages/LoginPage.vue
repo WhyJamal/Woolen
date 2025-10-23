@@ -261,7 +261,7 @@ function keepFocus() {
   }
 }
 .animate-pulse-slow {
-  animation: pulse-slow 9s ease-in-out infinite;
+  animation: pulse-slow 4s ease-in-out infinite;
 }
 
 .anim-float {
