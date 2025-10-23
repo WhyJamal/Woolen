@@ -1,14 +1,18 @@
 <template>
-  <div class="login-page">
+  <div class="login-page relative overflow-hidden">
     <Header />
+        <div
+          class="absolute inset-0 bg-cover scale-105 bg-center filter animate-pulse-slow"
+          style="background-image: url('src/assets/images/WZ010.jpg')"
+        ></div>    
     <form @submit.prevent="handleLogin">
       <div
         class="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#eef1f4] to-[#f8fafc]"
-      >
+      >        
         <div
           class="relative bg-white rounded-2xl shadow-xl border p-6 w-full max-w-sm flex flex-col gap-4"
         >
-          <!-- LOADER OVERLAY -->
+
           <div
             v-if="loading"
             class="absolute inset-0 bg-gray-400/70 flex items-center justify-center rounded-2xl z-10"
@@ -16,7 +20,7 @@
             <div class="loader"></div>
           </div>
 
-          <h2 class="text-xl font-bold text-center">{{ $t('login') }}</h2>
+          <h2 class="text-xl font-bold text-center">{{ $t("login") }}</h2>
           <div
             class="relative bg-gray-100 border border-slate-200 rounded-2xl shadow-lg p-8 flex flex-col items-center gap-6"
           >
@@ -48,7 +52,7 @@
             </div>
 
             <h2 class="text-lg font-semibold text-slate-800">
-              {{ $t('attach_card') }}
+              {{ $t("attach_card") }}
             </h2>
 
             <div aria-live="polite" id="nfc-status" class="sr-only">
@@ -85,14 +89,14 @@
           <button
             class="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 active:scale-95 transition"
           >
-            {{ $t('login') }}
+            {{ $t("login") }}
           </button>
 
           <!-- <p v-if="error" class="text-red-500 text-sm text-center">{{ error }}</p> -->
         </div>
       </div>
     </form>
-    <!-- Modal -->
+
     <div
       v-if="errorAuthentication"
       id="popup-modal"
@@ -245,6 +249,19 @@ function keepFocus() {
     transform: scale(2.6);
     opacity: 0;
   }
+}
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    transform: scale(1.05);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 9s ease-in-out infinite;
 }
 
 .anim-float {
