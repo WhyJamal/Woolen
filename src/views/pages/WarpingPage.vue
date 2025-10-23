@@ -173,7 +173,6 @@
                   </div>
                 </div>
               </article>
-              {{ modelStore }}
 
               <div
                 v-if="!tasks.length"
