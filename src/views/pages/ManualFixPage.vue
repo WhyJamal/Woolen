@@ -403,7 +403,7 @@
                     <div
                       class="inline-block mt-2 px-5 py-2 rounded-md border bg-gray-50 shadow-sm truncate"
                     >
-                      1757563183
+                      {{ model[0].accessories }}
                     </div>
                   </div>
                 </div>
@@ -726,6 +726,8 @@ const toggle = async () => {
       color: model.value[0].color.code,
       equipment: model.value[0].equipment,
       tape_number: model.value[0].tape_number,
+      accessories: model.value[0].accessories || "",
+      sort: model.value[0].sort || "",
       comment: "1",
       owner: userStore.user.name,
 
@@ -773,6 +775,8 @@ const toogleRefund = async () => {
       party: model.value[0].party,
       equipment: model.value[0].equipment,
       tape_number: model.value[0].tape_number,
+      accessories: model.value[0].accessories || "",
+      sort: model.value[0].sort || "",
       comment: "Возврать",
       owner: userStore.user.name,
     };

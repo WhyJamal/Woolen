@@ -655,6 +655,8 @@ const toggle = async () => {
       party: model.value[0].party,
       equipment: model.value[0].equipment,
       tape_number: model.value[0].tape_number,
+      accessories: model.value[0].accessories || "",
+      sort: model.value[0].sort || "",
       comment: "1",
       owner: userStore.user.name,
 

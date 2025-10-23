@@ -12,7 +12,7 @@
     <div class="max-w-full mx-auto p-4">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-lg font-semibold">Упаковка</h2>
-        <div class="flex gap-2">
+        <!-- <div class="flex gap-2">
           <button
             class="px-4 py-2 rounded-lg bg-gradient-to-r from-sky-500 to-blue-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
           >
@@ -23,7 +23,7 @@
           >
             Распечатать баркод
           </button>
-        </div>
+        </div>-->
       </div>
 
       <div v-if="isLoading" class="flex-1 flex items-center justify-center">
@@ -313,6 +313,8 @@ const toggleStart = async (task) => {
       party: task.party,
       equipment: task.equipment,
       tape_number: task.tape_number,
+      accessories: task.accessories || "",
+      sort: task.sort || "",
       comment: "Упаковка",
       owner: userStore.user.name,
       netto: task.netto,
@@ -350,6 +352,8 @@ const toogleRefund = async (task) => {
       party: task.party,
       tape_number: task.tape_number,
       equipment: task.equipment,
+      accessories: task.accessories || "",
+      sort: task.sort || "",
       comment: "Возврат",
       owner: userStore.user.name,
     };

@@ -64,7 +64,7 @@ onMounted(() => {
         { label: "Gross meters:", value: order.brutto || "" },
         { label: "Net meters:", value: order.netto || "" },
         { label: "Gross weight:", value: order.mass || "" },
-        { label: "Finish:", value: order.finish || "" },
+        { label: "Finish:", value: order.finish || "Standart" },
         { label: "Sort:", value: order.sort || "" },
         { label: "Composition:", value: order.composition || "" },
         { label: "Machine ID:", value: order.machine_id || "" },
