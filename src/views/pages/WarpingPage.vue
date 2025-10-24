@@ -351,19 +351,7 @@
                     <!-- @click="toggleHistory" -->
                     <button
                       @click="toggleHistory"
-                      :disabled="
-                        !(
-                          userStore.user.stage === 'Контроль 1' ||
-                          userStore.user.stage === 'Контроль01'
-                        )
-                      "
-                      class="px-4 py-1.5 rounded-full bg-white border font-semibold text-sm transition"
-                      :class="
-                        userStore.user.stage === 'Контроль 1' ||
-                        userStore.user.stage === 'Контроль01'
-                          ? 'hover:bg-blue-300 cursor-pointer'
-                          : 'opacity-50 cursor-not-allowed'
-                      "
+                      
                     >
                       История
                     </button>
@@ -434,7 +422,8 @@
                             : '/buttons/orange-button.png'
                         })`,
                       }"
-                    ></button><!-- :disabled="!isAvailable" :class="isAvailable ? 'bg-green-500 hover:bg-green-600 cursor-pointer' : 'bg-gray-400 cursor-not-allowed'" -->
+                    ></button
+                    ><!-- :disabled="!isAvailable" :class="isAvailable ? 'bg-green-500 hover:bg-green-600 cursor-pointer' : 'bg-gray-400 cursor-not-allowed'" -->
                   </div>
                   <!--<span
                     class="mt-5 text-lg font-bold select-none text-green-700"
@@ -478,6 +467,7 @@
       :data="{
         article: model[0].nomenclature.article,
         productionplan: model[0].productionplan,
+        color: model[0].color.code,
         date_productionplan: model[0].date_productionplan,
         tape_number: model[0].tape_number,
         arrayStory: storyDetails,
@@ -561,7 +551,10 @@ function handleSave(data) {
 function saveOrUpdateRow(newData) {
   const index = storyDetails.findIndex(
     (row) =>
-      row.article === newData.article && row.tape_number === newData.tape_number
+      row.article === newData.article &&
+      row.tape_number === newData.tape_number &&
+      row.productionplan === newData.productionplan &&
+      row.color === newData.color
   );
   if (index !== -1) {
     storyDetails[index] = { ...storyDetails[index], ...newData };
@@ -662,10 +655,11 @@ const toggle = async () => {
     pressed.value = true;
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan &&
-             t.tape_number === model.value[0].tape_number &&
-             t.nomenclature.article === model.value[0].nomenclature.article && 
-             t.color === model.value[0].color.name 
+      (t) =>
+        t.productionplan === model.value[0].productionplan &&
+        t.tape_number === model.value[0].tape_number &&
+        t.nomenclature.article === model.value[0].nomenclature.article &&
+        t.color === model.value[0].color.name
     );
     if (idx !== -1) {
       tasks.value[idx].status = "Активный";
@@ -691,7 +685,9 @@ const toggle = async () => {
     const index = storyDetails.findIndex(
       (row) =>
         row.article === model.value[0].nomenclature.article &&
-        row.tape_number === model.value[0].tape_number
+        row.tape_number === model.value[0].tape_number &&
+        row.productionplan === model.value[0].productionplan &&
+        row.color === model.value[0].color.code        
     );
 
     const detail = storyDetails[index] || {};
@@ -727,10 +723,11 @@ const toggle = async () => {
     const response = await api.post("/v1/create_document", payload);
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan &&
-             t.tape_number === model.value[0].tape_number &&
-             t.nomenclature.article === model.value[0].nomenclature.article && 
-             t.color === model.value[0].color.name 
+      (t) =>
+        t.productionplan === model.value[0].productionplan &&
+        t.tape_number === model.value[0].tape_number &&
+        t.nomenclature.article === model.value[0].nomenclature.article &&
+        t.color === model.value[0].color.name
     );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);

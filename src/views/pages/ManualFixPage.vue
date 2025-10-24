@@ -44,7 +44,6 @@
       </div>
     </div>
 
-      
     <template #exit-button>
       <button
         @click="exit"
@@ -58,7 +57,7 @@
     <main class="page-wrap px-4 py-6">
       <div class="flex flex-col gap-6">
         <div class="flex items-center justify-between">
-          <div class="font-bold text-lg">{{ $t('select_task') }}</div>
+          <div class="font-bold text-lg">{{ $t("select_task") }}</div>
           <!-- Search -->
           <div class="flex items-center gap-2 w-1/2">
             <Listbox v-model="searchType" as="div" class="relative">
@@ -96,7 +95,7 @@
                   {{ typ.name }}
                 </ListboxOption>
               </ListboxOptions>
-            </Listbox>          
+            </Listbox>
             <label for="simple-search" class="sr-only">Поиск</label>
             <div class="relative flex-1">
               <div
@@ -247,11 +246,14 @@
                       {{ task.color }} —
                       {{ task.quantity }}
                     </span>
-                  </div>                  
+                  </div>
                 </div>
               </article>
 
-              <div v-if="!tasks.length" class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4">
+              <div
+                v-if="!tasks.length"
+                class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4"
+              >
                 <img
                   src="@/assets/images/empty-product.svg"
                   title="No data found"
@@ -542,6 +544,7 @@
       :data="{
         article: model[0].nomenclature.article,
         productionplan: model[0].productionplan,
+        color: model[0].color.code,
         date_productionplan: model[0].date_productionplan,
         tape_number: model[0].tape_number,
         arrayStory: storyDetails,
@@ -559,7 +562,7 @@ import { onMounted, ref, reactive, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
-import { useModelStore } from '@/stores/model'
+import { useModelStore } from "@/stores/model";
 import {
   Listbox,
   ListboxButton,
@@ -567,11 +570,11 @@ import {
   ListboxOption,
 } from "@headlessui/vue";
 
-const modelStore = useModelStore()
+const modelStore = useModelStore();
 const tasks = ref([]);
 const model = ref([]);
-const quantityChange = ref(false)
-const changedQuantity = ref(null)
+const quantityChange = ref(false);
+const changedQuantity = ref(null);
 const router = useRouter();
 const userStore = useUserStore();
 const bigBtn = ref(null);
@@ -613,7 +616,7 @@ const DataStore = reactive({
   machine: null,
   mode: null,
   comment: null,
-  author: null
+  author: null,
 });
 
 function handleSave(data) {
@@ -623,7 +626,11 @@ function handleSave(data) {
 }
 function saveOrUpdateRow(newData) {
   const index = storyDetails.findIndex(
-    row => row.article === newData.article && row.tape_number === newData.tape_number
+    (row) =>
+      row.article === newData.article &&
+      row.tape_number === newData.tape_number &&
+      row.productionplan === newData.productionplan &&
+      row.color === newData.color
   );
   if (index !== -1) {
     storyDetails[index] = { ...storyDetails[index], ...newData };
@@ -667,10 +674,10 @@ async function toggleModel(
       },
     });
     model.value = response.data;
-    modelStore.setModel(model.value)
+    modelStore.setModel(model.value);
     showModel.value = true;
 
-  //-Загрузить-Фото-----------------------------------//
+    //-Загрузить-Фото-----------------------------------//
     const photoResponse = await api.get(`/v1/photo`, {
       params: { article },
       responseType: "arraybuffer",
@@ -682,10 +689,10 @@ async function toggleModel(
         ""
       )
     );
-    if (base64 && base64 !== '') {
+    if (base64 && base64 !== "") {
       photo.value = `data:image/jpeg;base64,${base64}`;
     }
-  //--------------------------------------------------//
+    //--------------------------------------------------//
   } catch (error) {
     showModel.value = false;
   } finally {
@@ -724,10 +731,11 @@ const toggle = async () => {
     pressed.value = true;
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan &&
-             t.tape_number === model.value[0].tape_number &&
-             t.nomenclature.article === model.value[0].nomenclature.article && 
-             t.color === model.value[0].color.name
+      (t) =>
+        t.productionplan === model.value[0].productionplan &&
+        t.tape_number === model.value[0].tape_number &&
+        t.nomenclature.article === model.value[0].nomenclature.article &&
+        t.color === model.value[0].color.name
     );
     if (idx !== -1) {
       tasks.value[idx].status = "Активный";
@@ -751,15 +759,18 @@ const toggle = async () => {
 
   try {
     const index = storyDetails.findIndex(
-      row =>
+      (row) =>
         row.article === model.value[0].nomenclature.article &&
-        row.tape_number === model.value[0].tape_number
+        row.tape_number === model.value[0].tape_number &&
+        row.productionplan === model.value[0].productionplan &&
+        row.color === model.value[0].color.code        
     );
 
     const detail = storyDetails[index] || {};
 
     if (
-      (userStore.user.stage === "Контроль 3" || userStore.user.stage === "Контроль03") &&
+      (userStore.user.stage === "Контроль 3" ||
+        userStore.user.stage === "Контроль03") &&
       (!detail.width || detail.width === 0)
     ) {
       showWarning.value = true;
@@ -767,7 +778,7 @@ const toggle = async () => {
     }
 
     const payload = {
-      stage: userStore.user.stage_code,//model.value[0].stage.code,
+      stage: userStore.user.stage_code, //model.value[0].stage.code,
       productionplan: model.value[0].productionplan,
       date_productionplan: model.value[0].date_productionplan,
       nomenclature: model.value[0].nomenclature.article,
@@ -782,7 +793,7 @@ const toggle = async () => {
       comment: "1",
       owner: userStore.user.name,
 
-      // Story details 
+      // Story details
       date: detail.date || "",
       width: detail.width || 0,
       mass: detail.mass || 0,
@@ -797,10 +808,11 @@ const toggle = async () => {
     const response = await api.post("/v1/create_document", payload);
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan &&
-             t.tape_number === model.value[0].tape_number &&
-             t.nomenclature.article === model.value[0].nomenclature.article && 
-             t.color === model.value[0].color.name
+      (t) =>
+        t.productionplan === model.value[0].productionplan &&
+        t.tape_number === model.value[0].tape_number &&
+        t.nomenclature.article === model.value[0].nomenclature.article &&
+        t.color === model.value[0].color.name
     );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);
@@ -820,7 +832,7 @@ const toggle = async () => {
 const toogleRefund = async () => {
   try {
     const payloadRefund = {
-      stage: userStore.user.stage_code,//model.value[0].stage.code,
+      stage: userStore.user.stage_code, //model.value[0].stage.code,
       productionplan: model.value[0].productionplan,
       date_productionplan: model.value[0].date_productionplan,
       nomenclature: model.value[0].nomenclature.article,
@@ -839,10 +851,11 @@ const toogleRefund = async () => {
     const response = await api.post("/v1/refund", payloadRefund);
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan &&
-             t.tape_number === model.value[0].tape_number &&
-             t.nomenclature.article === model.value[0].nomenclature.article && 
-             t.color === model.value[0].color.name
+      (t) =>
+        t.productionplan === model.value[0].productionplan &&
+        t.tape_number === model.value[0].tape_number &&
+        t.nomenclature.article === model.value[0].nomenclature.article &&
+        t.color === model.value[0].color.name
     );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);
@@ -880,7 +893,13 @@ watch(
   async (newVal) => {
     if (Array.isArray(newVal) && newVal.length > 0) {
       const first = newVal[0];
-      if (first && first.article && first.productionplan && first.date_productionplan && first.tape_number) {
+      if (
+        first &&
+        first.article &&
+        first.productionplan &&
+        first.date_productionplan &&
+        first.tape_number
+      ) {
         await runToggle(first);
       } else {
         //console.warn("Warning:", first);
@@ -901,7 +920,7 @@ async function runToggle(first) {
       0
     );
   } catch (err) {}
-};
+}
 </script>
 
 <style>

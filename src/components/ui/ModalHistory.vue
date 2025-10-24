@@ -382,6 +382,7 @@ onMounted(async () => {
         productionplan: props.data.productionplan,
         date_productionplan: props.data.date_productionplan,
         tape_number: props.data.tape_number,
+        color: props.data.color,
       },
     });
 
@@ -390,7 +391,9 @@ onMounted(async () => {
     const index = props.data.arrayStory.findIndex(
       (row) =>
         row.article === props.data.article &&
-        row.tape_number === props.data.tape_number
+        row.tape_number === props.data.tape_number &&
+        row.productionplan === props.data.productionplan &&
+        row.color === props.data.color 
     );
 
     if (index !== -1) {
@@ -445,6 +448,8 @@ function saveData(newData) {
   emit("save", {
     article: props.data.article,
     tape_number: props.data.tape_number,
+    productionplan: props.data.productionplan,
+    color: props.data.color,
     date: newData.date,
     width: newData.width,
     mass: newData.mass,
