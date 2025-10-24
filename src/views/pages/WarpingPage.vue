@@ -14,6 +14,42 @@
         <div class="flex items-center justify-between">
           <div class="font-bold text-lg">Выберите задачу</div>
           <div class="flex items-center gap-2 w-1/2">
+            <Listbox v-model="searchType" as="div" class="relative">
+              <ListboxButton
+                class="w-36 px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center justify-between"
+              >
+                <span class="truncate">
+                  {{ searchType ? searchType.name : "Поиск по..." }}
+                </span>
+                <svg
+                  class="w-4 h-4 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </ListboxButton>
+
+              <ListboxOptions
+                class="absolute mt-1 w-36 bg-white border rounded-md shadow-md max-h-60 overflow-y-auto z-50"
+              >
+                <ListboxOption
+                  v-for="typ in searchTypes"
+                  :key="typ.id"
+                  :value="typ"
+                  class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm"
+                >
+                  {{ typ.name }}
+                </ListboxOption>
+              </ListboxOptions>
+            </Listbox>
             <label for="simple-search" class="sr-only">Поиск</label>
             <div class="relative flex-1">
               <div
@@ -460,6 +496,12 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
 import { useModelStore } from "@/stores/model";
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOptions,
+  ListboxOption,
+} from "@headlessui/vue";
 
 const modelStore = useModelStore();
 const tasks = ref([]);
@@ -490,6 +532,12 @@ const form = ref({
   comment: "",
   owner: "",
 });
+const searchTypes = ref([
+  { id: "model", name: "Модел" },
+  { id: "order", name: "ЗаказID" },
+  { id: "tape", name: "Лента" },
+]);
+const searchType = ref(null);
 
 //-Story-details-----------------------//
 const storyDetails = reactive([]);
@@ -714,7 +762,13 @@ watch(
   async (newVal) => {
     if (Array.isArray(newVal) && newVal.length > 0) {
       const first = newVal[0];
-      if (first && first.article && first.productionplan && first.date_productionplan && first.tape_number) {
+      if (
+        first &&
+        first.article &&
+        first.productionplan &&
+        first.date_productionplan &&
+        first.tape_number
+      ) {
         await runToggle(first);
       } else {
         //console.warn("Warning:", first);
@@ -735,7 +789,7 @@ async function runToggle(first) {
       0
     );
   } catch (err) {}
-};
+}
 </script>
 
 <style>

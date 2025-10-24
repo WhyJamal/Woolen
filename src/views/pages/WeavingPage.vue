@@ -16,6 +16,42 @@
           <div class="font-bold text-lg">Выберите задачу</div>
           <!-- Search -->
           <div class="flex items-center gap-2 w-1/2">
+            <Listbox v-model="searchType" as="div" class="relative">
+              <ListboxButton
+                class="w-36 px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center justify-between"
+              >
+                <span class="truncate">
+                  {{ searchType ? searchType.name : "Поиск по..." }}
+                </span>
+                <svg
+                  class="w-4 h-4 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </ListboxButton>
+
+              <ListboxOptions
+                class="absolute mt-1 w-36 bg-white border rounded-md shadow-md max-h-60 overflow-y-auto z-50"
+              >
+                <ListboxOption
+                  v-for="typ in searchTypes"
+                  :key="typ.id"
+                  :value="typ"
+                  class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm"
+                >
+                  {{ typ.name }}
+                </ListboxOption>
+              </ListboxOptions>
+            </Listbox>
             <label for="simple-search" class="sr-only">Поиск</label>
             <div class="relative flex-1">
               <div
@@ -597,6 +633,12 @@ const form = ref({
   tape_number: "",
 });
 const varietyes = [{ name: "1", code: "001" }];
+const searchTypes = ref([
+  { id: "model", name: "Модел" },
+  { id: "order", name: "ЗаказID" },
+  { id: "tape", name: "Лента" },
+]);
+const searchType = ref(null);
 
 function toggleChangeQuantity(quantity) {
   quantityChange.value = !quantityChange.value;
