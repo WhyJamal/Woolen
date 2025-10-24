@@ -324,7 +324,10 @@ const toggleStart = async (task) => {
     const response = await api.post("/v1/create_document", payload);
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === task.productionplan
+      (t) => t.productionplan === task.productionplan &&
+             t.tape_number === model.value[0].tape_number &&
+             t.nomenclature.article === model.value[0].nomenclature.article && 
+             t.color.name === model.value[0].color.name
     );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);
@@ -361,7 +364,10 @@ const toogleRefund = async (task) => {
     const response = await api.post("/v1/refund", payloadRefund);
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === task.productionplan
+      (t) => t.productionplan === task.productionplan &&
+             t.tape_number === task.tape_number &&
+             t.nomenclature.article === task.nomenclature.article && 
+             t.color.name === task.color.name
     );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);

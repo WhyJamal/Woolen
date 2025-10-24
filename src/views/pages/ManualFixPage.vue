@@ -724,7 +724,10 @@ const toggle = async () => {
     pressed.value = true;
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan
+      (t) => t.productionplan === model.value[0].productionplan &&
+             t.tape_number === model.value[0].tape_number &&
+             t.nomenclature.article === model.value[0].nomenclature.article && 
+             t.color === model.value[0].color.name
     );
     if (idx !== -1) {
       tasks.value[idx].status = "Активный";
@@ -794,7 +797,10 @@ const toggle = async () => {
     const response = await api.post("/v1/create_document", payload);
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan
+      (t) => t.productionplan === model.value[0].productionplan &&
+             t.tape_number === model.value[0].tape_number &&
+             t.nomenclature.article === model.value[0].nomenclature.article && 
+             t.color === model.value[0].color.name
     );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);
@@ -833,7 +839,10 @@ const toogleRefund = async () => {
     const response = await api.post("/v1/refund", payloadRefund);
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan
+      (t) => t.productionplan === model.value[0].productionplan &&
+             t.tape_number === model.value[0].tape_number &&
+             t.nomenclature.article === model.value[0].nomenclature.article && 
+             t.color === model.value[0].color.name
     );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);

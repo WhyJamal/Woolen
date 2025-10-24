@@ -434,7 +434,7 @@
                             : '/buttons/orange-button.png'
                         })`,
                       }"
-                    ></button>
+                    ></button><!-- :disabled="!isAvailable" :class="isAvailable ? 'bg-green-500 hover:bg-green-600 cursor-pointer' : 'bg-gray-400 cursor-not-allowed'" -->
                   </div>
                   <!--<span
                     class="mt-5 text-lg font-bold select-none text-green-700"
@@ -491,7 +491,7 @@
 <script setup>
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
-import { onMounted, ref, reactive, watch } from "vue";
+import { onMounted, ref, reactive, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -538,6 +538,7 @@ const searchTypes = ref([
   { id: "tape", name: "Лента" },
 ]);
 const searchType = ref(null);
+//const isAvailable = computed(() => pressed.value && model[0].value.status === "Активный")
 
 //-Story-details-----------------------//
 const storyDetails = reactive([]);
@@ -661,7 +662,10 @@ const toggle = async () => {
     pressed.value = true;
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan
+      (t) => t.productionplan === model.value[0].productionplan &&
+             t.tape_number === model.value[0].tape_number &&
+             t.nomenclature.article === model.value[0].nomenclature.article && 
+             t.color === model.value[0].color.name 
     );
     if (idx !== -1) {
       tasks.value[idx].status = "Активный";
@@ -723,7 +727,10 @@ const toggle = async () => {
     const response = await api.post("/v1/create_document", payload);
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan
+      (t) => t.productionplan === model.value[0].productionplan &&
+             t.tape_number === model.value[0].tape_number &&
+             t.nomenclature.article === model.value[0].nomenclature.article && 
+             t.color === model.value[0].color.name 
     );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);

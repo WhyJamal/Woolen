@@ -731,7 +731,11 @@ const toggle = async () => {
     pressed.value = true;
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan
+      (t) =>
+        t.productionplan === model.value[0].productionplan &&
+        t.tape_number === model.value[0].tape_number &&
+        t.nomenclature.article === model.value[0].nomenclature.article &&
+        t.color === model.value[0].color.name
     );
     if (idx !== -1) {
       tasks.value[idx].status = "Активный";
@@ -854,7 +858,9 @@ const sendForm = async () => {
       (t) =>
         t.productionplan === model.value[0].productionplan ||
         t.order === model.value[0].order ||
-        t.color === model.value[0].color.name
+        t.color === model.value[0].color.name ||
+        t.tape_number === model.value[0].tape_number ||
+        t.nomenclature.article === model.value[0].nomenclature.article
     );
     tasks.value[idx].quantity = model.value[0].quantity;
 
