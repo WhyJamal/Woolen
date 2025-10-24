@@ -683,6 +683,7 @@ const toggle = async () => {
       //tasks.value[idx].status = "Завершен";
     }
     pressed.value = false;
+    modelStore.clearModel();
   } catch (error) {
   } finally {
     isSubmitting.value = false;

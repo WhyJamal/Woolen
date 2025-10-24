@@ -216,8 +216,14 @@
                 </div>
                 <div
                   v-if="pressed"
-                  class="grid grid-cols-3 gap-2 bg-white rounded-md shadow p-3 w-full max-w-[1009px]"
+                  class="relative grid grid-cols-3 gap-2 bg-white rounded-md shadow p-3 w-full max-w-[1009px]"
                 >
+                  <div
+                    v-if="isLoadSend"
+                    class="absolute inset-0 bg-white/70 flex items-center justify-center z-10 cursor-not-allowed"
+                  >
+                    <div class="loader"></div>
+                  </div>
                   <div class="p-3 font-semibold pt-item__row">Номер Ленты:</div>
                   <div class="p-3 font-semibold pt-item__row">Сорт (1-5):</div>
                   <div class="p-3 font-semibold pt-item__row">Кол-во:</div>
@@ -570,6 +576,7 @@ const pressed = ref(false);
 const openHistory = ref(false);
 const showModel = ref(false);
 const isLoading = ref(false);
+const isLoadSend = ref(false);
 const isSubmitting = ref(false);
 const selectedTask = ref(null);
 const photo = ref(null);
@@ -703,41 +710,40 @@ const toggle = async () => {
 
   if (isSubmitting.value) return;
   isSubmitting.value = true;
-
-  try {
-    const payload = {
-      stage: userStore.user.stage_code, //model.value[0].stage.code,
-      productionplan: model.value[0].productionplan,
-      date_productionplan: model.value[0].date_productionplan,
-      nomenclature: model.value[0].nomenclature.article,
-      size: model.value[0].size,
-      color: model.value[0].color.code,
-      quantity: model.value[0].quantity,
-      party: model.value[0].party,
-      equipment: model.value[0].equipment,
-      comment: "1",
-      owner: userStore.user.name,
-    };
-
-    const response = await api.post("/v1/create_document", payload);
-
-    const idx = tasks.value.findIndex(
-      (t) => t.productionplan === model.value[0].productionplan
-    );
-    if (idx !== -1) {
-      tasks.value.splice(idx, 1);
-      showModel.value = false;
-      //tasks.value[idx].status = "Завершен";
-    }
-
-    //alert("Document created successfully!");
-    pressed.value = false;
-  } catch (error) {
-    //alert("Error creating document");
-  } finally {
-    isSubmitting.value = false;
-  }
   endclickSound.play();
+
+  // try {
+  //   const payload = {
+  //     stage: userStore.user.stage_code, //model.value[0].stage.code,
+  //     productionplan: model.value[0].productionplan,
+  //     date_productionplan: model.value[0].date_productionplan,
+  //     nomenclature: model.value[0].nomenclature.article,
+  //     size: model.value[0].size,
+  //     color: model.value[0].color.code,
+  //     quantity: model.value[0].quantity,
+  //     party: model.value[0].party,
+  //     equipment: model.value[0].equipment,
+  //     comment: "1",
+  //     owner: userStore.user.name,
+  //   };
+
+  //   const response = await api.post("/v1/create_document", payload);
+
+  //   const idx = tasks.value.findIndex(
+  //     (t) => t.productionplan === model.value[0].productionplan
+  //   );
+  //   if (idx !== -1) {
+  //     tasks.value.splice(idx, 1);
+  //     showModel.value = false;
+  //     //tasks.value[idx].status = "Завершен";
+  //   }
+
+  //   //alert("Document created successfully!");
+  //   pressed.value = false;
+  // } catch (error) {
+  // } finally {
+  //   isSubmitting.value = false;
+  // }
 };
 
 //-Отправка-Форма-------------------------//
@@ -752,33 +758,35 @@ const warningMessage = ref("");
 const validateFields = () => {
   switch (true) {
     case !tape_number.value:
-      warningMessage.value = 'Введите номер лента!'
-      showWarning.value = true
-      return false
+      warningMessage.value = "Введите номер лента!";
+      showWarning.value = true;
+      return false;
 
     case !variety.value:
-      warningMessage.value = 'Введите сорт!'
-      showWarning.value = true
-      return false
+      warningMessage.value = "Введите сорт!";
+      showWarning.value = true;
+      return false;
 
     case !count.value:
-      warningMessage.value = 'Введите кол-во!'
-      showWarning.value = true
-      return false
+      warningMessage.value = "Введите кол-во!";
+      showWarning.value = true;
+      return false;
 
     case Number(model.value[0].quantity) - count.value < 0:
-      warningMessage.value = 'Не может быть больше, чем количество модели!'
-      showWarning.value = true
-      return false
+      warningMessage.value = "Не может быть больше, чем количество модели!";
+      showWarning.value = true;
+      return false;
 
     default:
-      return true
+      return true;
   }
-}
+};
 
 const sendForm = async () => {
-  if (!validateFields()) return
+  if (!validateFields()) return;
   try {
+    isLoadSend.value = true;
+
     const payload1 = {
       tape_number: tape_number.value,
       variety: variety.value.code,
@@ -817,12 +825,17 @@ const sendForm = async () => {
       if (idx !== -1) {
         tasks.value.splice(idx, 1);
         showModel.value = false;
+        modelStore.clearModel();
       }
     }
   } catch (error) {
-    //alert("Error creating document");
+    warningMessage.value =
+      error.response?.data?.message || "Повторите попытку!";
+    showWarning.value = true;
+    isLoadSend.value = false;
   } finally {
     isSubmitting.value = false;
+    isLoadSend.value = false;
   }
   endclickSound.play();
 };
@@ -837,7 +850,7 @@ onMounted(async () => {
       status: task.status || "Ожидает",
     }));
     //tasks.value = response.data;
-    
+
     if (modelStore.model && modelStore.model.length > 0) {
       const first = modelStore.model[0];
       runToggle(first);
@@ -850,7 +863,13 @@ watch(
   async (newVal) => {
     if (Array.isArray(newVal) && newVal.length > 0) {
       const first = newVal[0];
-      if (first && first.article && first.productionplan && first.date_productionplan && first.tape_number) {
+      if (
+        first &&
+        first.article &&
+        first.productionplan &&
+        first.date_productionplan &&
+        first.tape_number
+      ) {
         await runToggle(first);
       } else {
       }
@@ -869,9 +888,8 @@ async function runToggle(first) {
       first.tape_number,
       0
     );
-  } catch (err) {
-  }
-};
+  } catch (err) {}
+}
 </script>
 
 <style>

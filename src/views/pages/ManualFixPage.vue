@@ -755,6 +755,7 @@ const toggle = async () => {
     }
 
     pressed.value = false;
+    modelStore.clearModel();
   } catch (error) {
   } finally {
     isSubmitting.value = false;
@@ -791,6 +792,7 @@ const toogleRefund = async () => {
       showModel.value = false;
     }
     pressed.value = false;
+    modelStore.clearModel();
   } catch (error) {
   } finally {
     isSubmitting.value = false;
