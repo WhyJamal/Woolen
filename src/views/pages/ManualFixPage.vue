@@ -285,258 +285,278 @@
             </div> -->
 
             <article
-  class="relative bg-white rounded-2xl p-6 border shadow-lg min-h-[260px] transition-all duration-300 hover:shadow-xl overflow-hidden"
->
-  <div
-    class="flex flex-wrap lg:flex-nowrap items-start justify-between gap-8 lg:gap-10 h-auto lg:h-[450px]"
-  >
-    <div class="flex flex-col items-center gap-4 flex-shrink-0">
-      <Listbox v-model="model[0].next_stage" as="div" class="relative w-48">
-        <ListboxButton
-          @click="
-            onOpen(
-              model[0].productionplan,
-              model[0].date_productionplan,
-              model[0].stage.code
-            )
-          "
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center justify-between bg-white hover:bg-gray-50 transition"
-        >
-          <span class="truncate">
-            {{ model[0].next_stage ? model[0].next_stage.name : "Этапы" }}
-          </span>
-          <svg
-            class="w-4 h-4 text-gray-500"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </ListboxButton>
-
-        <ListboxOptions
-          class="absolute mt-1 w-full bg-white border rounded-md shadow-md max-h-60 overflow-y-auto z-50"
-        >
-          <ListboxOption
-            v-if="loadingStages"
-            class="flex items-center justify-center py-4"
-          >
-            <div class="loader h-9 w-9"></div>
-          </ListboxOption>
-          <ListboxOption
-            v-else
-            v-for="stage in stages"
-            :key="stage.id"
-            :value="stage"
-            class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm transition"
-          >
-            {{ stage.name }}
-          </ListboxOption>
-        </ListboxOptions>
-      </Listbox>
-
-      <div
-        class="rounded-xl border-2 border-dashed flex items-center justify-center bg-gradient-to-b from-white to-[#fbfdff] overflow-hidden shadow-sm"
-        style="width: clamp(120px, 18vw, 288px); height: clamp(120px, 18vw, 288px);"
-      >
-        <img
-          v-if="model[0].nomenclature.photo"
-          :src="photo"
-          alt="Модель"
-          class="object-cover w-full h-full rounded-xl effect"
-        />
-        <svg
-          v-else
-          width="100%"
-          height="100%"
-          viewBox="0 0 260 260"
-          preserveAspectRatio="xMidYMid meet"
-        >
-          <defs>
-            <pattern
-              id="p"
-              width="20"
-              height="20"
-              patternUnits="userSpaceOnUse"
-              patternTransform="rotate(45)"
+              class="relative bg-white rounded-2xl p-6 border shadow-lg min-h-[260px] transition-all duration-300 hover:shadow-xl overflow-hidden"
             >
-              <rect width="12" height="1.6" fill="#dfe3e8" />
-            </pattern>
-          </defs>
-          <rect width="260" height="260" fill="url(#p)" />
-        </svg>
-      </div>
-    </div>
+              <div
+                class="flex flex-wrap lg:flex-nowrap items-start justify-between gap-8 lg:gap-10 h-auto lg:h-[450px]"
+              >
+                <div class="flex flex-col items-center gap-4 flex-shrink-0">
+                  <Listbox
+                    v-model="model[0].next_stage"
+                    as="div"
+                    class="relative w-48"
+                  >
+                    <ListboxButton
+                      @click="
+                        onOpen(
+                          model[0].productionplan,
+                          model[0].date_productionplan,
+                          model[0].stage.code
+                        )
+                      "
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center justify-between bg-white hover:bg-gray-50 transition"
+                    >
+                      <span class="truncate">
+                        {{
+                          model[0].next_stage
+                            ? model[0].next_stage.name
+                            : "Этапы"
+                        }}
+                      </span>
+                      <svg
+                        class="w-4 h-4 text-gray-500"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </ListboxButton>
 
-    <div class="flex-1 min-w-0 space-y-5">
-      <div class="border-b pb-4 mb-4">
-  <!-- Yuqori qator: Сновать ... ✏️ -->
-  <div class="flex items-center gap-3 flex-wrap justify-between">
-    <div class="flex items-center gap-2 flex-wrap">
-      <template v-if="!quantityChange">
-        <h3
-          class="text-lg font-extrabold tracking-tight whitespace-nowrap"
-        >
-          {{ model[0].nomenclature.article }}
-          {{ userStore.user.stage }} | {{ model[0].quantity }} M
-        </h3>
-      </template>
+                    <ListboxOptions
+                      class="absolute mt-1 w-full bg-white border rounded-md shadow-md max-h-60 overflow-y-auto z-50"
+                    >
+                      <ListboxOption
+                        v-if="loadingStages"
+                        class="flex items-center justify-center py-4"
+                      >
+                        <div class="loader h-9 w-9"></div>
+                      </ListboxOption>
+                      <ListboxOption
+                        v-else
+                        v-for="stage in stages"
+                        :key="stage.id"
+                        :value="stage"
+                        class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm transition"
+                      >
+                        {{ stage.name }}
+                      </ListboxOption>
+                    </ListboxOptions>
+                  </Listbox>
 
-      <template v-else>
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-lg font-extrabold tracking-tight">
-            {{ model[0].nomenclature.article }} {{ userStore.user.stage }}
-          </span>
-          <input
-            type="number"
-            v-model="model[0].quantity"
-            class="border rounded px-2 py-1 w-20"
-          />
-          <span class="text-lg font-extrabold tracking-tight">M</span>
-        </div>
-      </template>
+                  <div
+                    class="rounded-xl border-2 border-dashed flex items-center justify-center bg-gradient-to-b from-white to-[#fbfdff] overflow-hidden shadow-sm"
+                    style="
+                      width: clamp(120px, 18vw, 288px);
+                      height: clamp(120px, 18vw, 288px);
+                    "
+                  >
+                    <img
+                      v-if="model[0].nomenclature.photo"
+                      :src="photo"
+                      alt="Модель"
+                      class="object-cover w-full h-full rounded-xl effect"
+                    />
+                    <svg
+                      v-else
+                      width="100%"
+                      height="100%"
+                      viewBox="0 0 260 260"
+                      preserveAspectRatio="xMidYMid meet"
+                    >
+                      <defs>
+                        <pattern
+                          id="p"
+                          width="20"
+                          height="20"
+                          patternUnits="userSpaceOnUse"
+                          patternTransform="rotate(45)"
+                        >
+                          <rect width="12" height="1.6" fill="#dfe3e8" />
+                        </pattern>
+                      </defs>
+                      <rect width="260" height="260" fill="url(#p)" />
+                    </svg>
+                  </div>
+                </div>
 
-      <button
-        @click="toggleChangeQuantity(model[0].quantity)"
-        class="p-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition"
-      >
-        <svg
-          class="w-6 h-6"
-          fill="currentColor"
-          viewBox="0 0 1024 1024"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M834.3 705.7c0 82.2-66.8 149-149 149H325.9c-82.2 0-149-66.8-149-149V346.4c0-82.2 66.8-149 149-149h129.8v-42.7H325.9c-105.7 0-191.7 86-191.7 191.7v359.3c0 105.7 86 191.7 191.7 191.7h359.3c105.7 0 191.7-86 191.7-191.7V575.9h-42.7v129.8z"
-          />
-          <path
-            d="M889.7 163.4c-22.9-22.9-53-34.4-83.1-34.4s-60.1 11.5-83.1 34.4L312 574.9c-16.9 16.9-27.9 38.8-31.2 62.5l-19 132.8c-1.6 11.4 7.3 21.3 18.4 21.3 0.9 0 1.8-0.1 2.7-0.2l132.8-19c23.7-3.4 45.6-14.3 62.5-31.2l411.5-411.5c45.9-45.9 45.9-120.3 0-166.2z"
-          />
-        </svg>
-      </button>
-    </div>
-  </div>
+                <div class="flex-1 min-w-0 space-y-5">
+                  <div class="border-b pb-4 mb-4">
+                    <div
+                      class="flex items-center gap-3 flex-wrap justify-between"
+                    >
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <template v-if="!quantityChange">
+                          <h3
+                            class="text-lg font-extrabold tracking-tight whitespace-nowrap"
+                          >
+                            {{ model[0].nomenclature.article }}
+                            {{ userStore.user.stage }} |
+                            {{ model[0].quantity }} M
+                          </h3>
+                        </template>
 
-  <!-- Pastki qator: История / Дефекты -->
-  <div class="flex justify-end gap-3 mt-3">
-    <button
-      @click="toggleHistory"
-      class="px-4 py-1.5 rounded-full bg-white border font-semibold text-sm hover:bg-blue-300 transition"
-    >
-      История
-    </button>
-    <button
-      @click="toggleDefects"
-      class="px-4 py-1.5 rounded-full bg-gray-200 border font-semibold text-sm hover:bg-gray-400 transition"
-    >
-      Дефекты
-    </button>
-  </div>
-</div>
+                        <template v-else>
+                          <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-lg font-extrabold tracking-tight">
+                              {{ model[0].nomenclature.article }}
+                              {{ userStore.user.stage }}
+                            </span>
+                            <input
+                              type="number"
+                              v-model="model[0].quantity"
+                              class="border rounded px-2 py-1 w-20"
+                            />
+                            <span class="text-lg font-extrabold tracking-tight"
+                              >M</span
+                            >
+                          </div>
+                        </template>
 
+                        <button
+                          @click="toggleChangeQuantity(model[0].quantity)"
+                          class="p-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 transition"
+                        >
+                          <svg
+                            class="w-6 h-6"
+                            fill="currentColor"
+                            viewBox="0 0 1024 1024"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M834.3 705.7c0 82.2-66.8 149-149 149H325.9c-82.2 0-149-66.8-149-149V346.4c0-82.2 66.8-149 149-149h129.8v-42.7H325.9c-105.7 0-191.7 86-191.7 191.7v359.3c0 105.7 86 191.7 191.7 191.7h359.3c105.7 0 191.7-86 191.7-191.7V575.9h-42.7v129.8z"
+                            />
+                            <path
+                              d="M889.7 163.4c-22.9-22.9-53-34.4-83.1-34.4s-60.1 11.5-83.1 34.4L312 574.9c-16.9 16.9-27.9 38.8-31.2 62.5l-19 132.8c-1.6 11.4 7.3 21.3 18.4 21.3 0.9 0 1.8-0.1 2.7-0.2l132.8-19c23.7-3.4 45.6-14.3 62.5-31.2l411.5-411.5c45.9-45.9 45.9-120.3 0-166.2z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
 
-      <div>
-        <p class="text-sm text-gray-500 font-semibold">
-          Палитра — {{ model[0].color.name }}
-        </p>
-        <div class="flex items-center gap-3 mt-2">
-          <div
-            class="w-11 h-11 rounded-md border shadow-sm"
-            :style="{ background: model[0].color.Hex || '#ffffff' }"
-          ></div>
-        </div>
-      </div>
+                    <div class="flex justify-end gap-3 mt-3">
+                      <button
+                        @click="toggleHistory"
+                        class="px-4 py-1.5 rounded-full bg-white border font-semibold text-sm hover:bg-blue-300 transition"
+                      >
+                        История
+                      </button>
+                      <button
+                        @click="toggleDefects"
+                        class="px-4 py-1.5 rounded-full bg-gray-200 border font-semibold text-sm hover:bg-gray-400 transition"
+                      >
+                        Дефекты
+                      </button>
+                    </div>
+                  </div>
 
-      <div>
-        <p class="text-sm text-gray-500 font-semibold">Размер бердо</p>
-        <input
-          class="mt-2 p-2 rounded-md bg-gray-50 border focus:outline-none focus:ring-2 focus:ring-blue-300 transition w-[clamp(80px,12vw,120px)]"
-          :value="model[0]?.size"
-          readonly
-        />
-      </div>
+                  <div>
+                    <p class="text-sm text-gray-500 font-semibold">
+                      Палитра — {{ model[0].color.name }}
+                    </p>
+                    <div class="flex items-center gap-3 mt-2">
+                      <div
+                        class="w-11 h-11 rounded-md border shadow-sm"
+                        :style="{ background: model[0].color.Hex || '#ffffff' }"
+                      ></div>
+                    </div>
+                  </div>
 
-      <div>
-        <p class="text-sm text-gray-500 font-semibold">Комплектация</p>
-        <div
-          class="inline-block mt-2 px-5 py-2 rounded-md border bg-gray-50 shadow-sm truncate"
-        >
-          {{ model[0].equipment }}
-        </div>
-      </div>
+                  <div>
+                    <p class="text-sm text-gray-500 font-semibold">
+                      Размер бердо
+                    </p>
+                    <input
+                      class="mt-2 p-2 rounded-md bg-gray-50 border focus:outline-none focus:ring-2 focus:ring-blue-300 transition w-[clamp(80px,12vw,120px)]"
+                      :value="model[0]?.size"
+                      readonly
+                    />
+                  </div>
 
-      <div>
-        <p class="text-sm text-gray-500 font-semibold">Комплектующие</p>
-        <div
-          class="inline-block mt-2 px-5 py-2 rounded-md border bg-gray-50 shadow-sm truncate"
-        >
-          {{ model[0].accessories }}
-        </div>
-      </div>
-    </div>
+                  <div>
+                    <p class="text-sm text-gray-500 font-semibold">
+                      Комплектация
+                    </p>
+                    <div
+                      class="inline-block mt-2 px-5 py-2 rounded-md border bg-gray-50 shadow-sm truncate"
+                    >
+                      {{ model[0].equipment }}
+                    </div>
+                  </div>
 
-    <div
-      class="flex flex-col items-center justify-center gap-5 mt-[60px]"
-      style="width: clamp(120px, 18vw, 288px); height: auto;"
-    >
-      <div
-        class="rounded-full bg-white w-full aspect-square flex items-center justify-center shadow-xl"
-      >
-        <button
-          ref="bigBtn"
-          :aria-pressed="pressed"
-          @pointerdown="down"
-          @pointerup="reset"
-          @pointercancel="reset"
-          @pointerleave="reset"
-          @click="toggle"
-          @keydown.space.prevent="toggle"
-          @keydown.enter.prevent="toggle"
-          class="rounded-full shadow-lg transition-transform duration-200 w-[clamp(96px,14vw,192px)] h-[clamp(96px,14vw,192px)] bg-center bg-cover"
-          :style="{
-            backgroundImage: `url(${
-              pressed
-                ? '/buttons/green-button.png'
-                : '/buttons/orange-button.png'
-            })`,
-          }"
-        ></button>
-      </div>
+                  <div>
+                    <p class="text-sm text-gray-500 font-semibold">
+                      Комплектующие
+                    </p>
+                    <div
+                      class="inline-block mt-2 px-5 py-2 rounded-md border bg-gray-50 shadow-sm truncate"
+                    >
+                      {{ model[0].accessories }}
+                    </div>
+                  </div>
+                </div>
 
-      <button
-        @click="toogleRefund"
-        class="custom-btn mt-2 items-center justify-center flex mx-auto"
-      >
-        <div class="button-outer transition-transform">
-          <div class="button-inner flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            <span>Возврат</span>
-          </div>
-        </div>
-      </button>
-    </div>
-  </div>
-</article>
+                <div
+                  class="flex flex-col items-center justify-center gap-5 mt-[60px]"
+                  style="width: clamp(120px, 18vw, 288px); height: auto"
+                >
+                  <div
+                    class="rounded-full bg-white w-full aspect-square flex items-center justify-center shadow-xl"
+                  >
+                    <button
+                      ref="bigBtn"
+                      :aria-pressed="pressed"
+                      @pointerdown="down"
+                      @pointerup="reset"
+                      @pointercancel="reset"
+                      @pointerleave="reset"
+                      @click="toggle"
+                      @keydown.space.prevent="toggle"
+                      @keydown.enter.prevent="toggle"
+                      class="rounded-full shadow-lg transition-transform duration-200 w-[clamp(96px,14vw,192px)] h-[clamp(96px,14vw,192px)] bg-center bg-cover"
+                      :style="{
+                        backgroundImage: `url(${
+                          pressed
+                            ? '/buttons/green-button.png'
+                            : '/buttons/orange-button.png'
+                        })`,
+                      }"
+                    ></button>
+                  </div>
+
+                  <button
+                    @click="toogleRefund"
+                    class="custom-btn mt-2 items-center justify-center flex mx-auto"
+                  >
+                    <div class="button-outer transition-transform">
+                      <div class="button-inner flex items-center gap-2">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="w-5 h-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15 19l-7-7 7-7"
+                          />
+                        </svg>
+                        <span>Возврат</span>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </article>
           </section>
           <section
             v-if="!showModel && !isLoading"
@@ -864,7 +884,7 @@ const toggle = async () => {
       mode: detail.mode || "",
       comment_story: detail.comment || "",
       author: detail.author || "",
-    
+
       defects: foundDefects.length ? foundDefects : [],
     };
 
