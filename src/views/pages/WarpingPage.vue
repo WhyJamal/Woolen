@@ -151,13 +151,13 @@
                         v-if="task.tape_number > 0"
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-nowrap"
                       >
-                        Уровень задачи: Лента -#{{ task.tape_number }}
+                        Уровень задачи: Лента -#{{ task.nomenclature.level }}
                       </span>
                       <span
                         v-else
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-nowrap"
                       >
-                        Уровень задачи: Ящик
+                        Уровень задачи: Ящик -#{{ task.nomenclature.level }}
                       </span>
                     </div>
 
@@ -249,64 +249,111 @@
             <article
               class="relative bg-white rounded-2xl p-6 border shadow-lg min-h-[240px] transition hover:shadow-xl overflow-hidden"
             >
-              <div class="flex items-center justify-between gap-6 flex-nowrap">
-                <div
-                  class="rounded-xl border-2 border-dashed flex items-center justify-center bg-gradient-to-b from-white to-[#fbfdff] overflow-hidden"
-                  style="
-                    width: clamp(120px, 18vw, 288px);
-                    height: clamp(120px, 18vw, 288px);
-                  "
-                >
-                  <img
-                    v-if="model[0].nomenclature.photo"
-                    :src="photo"
-                    alt="Модель"
-                    class="object-cover w-full h-full rounded-xl effect"
-                  />
-                  <!--<img
-                    v-if="model[0].nomenclature.photo"
-                    :src="`http://localhost/api/hs/v1/photo?article=${model[0].nomenclature.article}`"
-                    alt="Модель"
-                    class="object-cover w-full h-full rounded-xl effect"
-                  /> -->
-                  <svg
-                    v-else
-                    width="100%"
-                    height="100%"
-                    viewBox="0 0 260 260"
-                    preserveAspectRatio="xMidYMid meet"
+              <div class="grid grid-cols-[auto,1fr,auto] items-center gap-8">
+                <div class="flex flex-col items-center gap-4 flex-shrink-0">
+                  <Listbox
+                    v-model="model[0].next_stage"
+                    as="div"
+                    class="relative w-48"
                   >
-                    <defs>
-                      <pattern
-                        id="p"
-                        width="20"
-                        height="20"
-                        patternUnits="userSpaceOnUse"
-                        patternTransform="rotate(45)"
+                    <ListboxButton
+                      @click="
+                        onOpen(
+                          model[0].productionplan,
+                          model[0].date_productionplan,
+                          model[0].stage.code
+                        )
+                      "
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center justify-between bg-white"
+                    >
+                      <span class="truncate">
+                        {{
+                          model[0].next_stage
+                            ? model[0].next_stage.name
+                            : "Этапы"
+                        }}
+                      </span>
+                      <svg
+                        class="w-4 h-4 text-gray-500"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        <rect width="12" height="1.6" fill="#dfe3e8" />
-                      </pattern>
-                    </defs>
-                    <rect width="260" height="260" fill="url(#p)" />
-                  </svg>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </ListboxButton>
+
+                    <ListboxOptions
+                      class="absolute mt-1 w-48 bg-white border rounded-md shadow-md max-h-60 overflow-y-auto z-50"
+                    >
+                      <ListboxOption
+                        v-if="loadingStages"
+                        class="flex items-center justify-center py-3"
+                      >
+                        <div class="loader h-8 w-8"></div>
+                      </ListboxOption>
+                      <ListboxOption
+                        v-else
+                        v-for="stage in stages"
+                        :key="stage.id"
+                        :value="stage"
+                        class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm"
+                      >
+                        {{ stage.name }}
+                      </ListboxOption>
+                    </ListboxOptions>
+                  </Listbox>
+
+                  <div
+                    class="rounded-xl border-2 border-dashed bg-gradient-to-b from-white to-[#fbfdff] overflow-hidden flex items-center justify-center"
+                    style="
+                      width: clamp(120px, 18vw, 288px);
+                      height: clamp(120px, 18vw, 288px);
+                    "
+                  >
+                    <img
+                      v-if="model[0].nomenclature.photo"
+                      :src="photo"
+                      alt="Модель"
+                      class="object-cover w-full h-full rounded-xl"
+                    />
+                    <svg
+                      v-else
+                      width="100%"
+                      height="100%"
+                      viewBox="0 0 260 260"
+                      preserveAspectRatio="xMidYMid meet"
+                    >
+                      <defs>
+                        <pattern
+                          id="p"
+                          width="20"
+                          height="20"
+                          patternUnits="userSpaceOnUse"
+                          patternTransform="rotate(45)"
+                        >
+                          <rect width="12" height="1.6" fill="#dfe3e8" />
+                        </pattern>
+                      </defs>
+                      <rect width="260" height="260" fill="url(#p)" />
+                    </svg>
+                  </div>
                 </div>
 
-                <div class="flex-1 min-w-0 space-y-5">
-                  <div
-                    class="flex items-center justify-between border-b pb-4 mb-4"
-                  >
-                    <div class="flex items-center gap-3">
-                      <button
-                        class="px-4 py-1.5 border rounded-lg text-sm font-medium bg-gray-50 hover:bg-gray-100 transition"
-                      >
-                        Заказ
-                      </button>
-                      <h3
-                        v-if="!quantityChange"
-                        class="text-lg font-extrabold tracking-tight"
-                      >
-                        Сновать {{ model[0].quantity }} M
-                      </h3>
+                <div class="flex flex-col justify-between min-w-0 space-y-5">
+                  <div class="border-b pb-4 mb-4">
+                    <div class="flex items-center gap-3 mb-3">
+                      <template v-if="!quantityChange">
+                        <h3 class="text-lg font-extrabold tracking-tight">
+                          Сновать {{ model[0].quantity }} M
+                        </h3>
+                      </template>
 
                       <div v-else class="flex items-center gap-2">
                         <span class="text-lg font-extrabold tracking-tight"
@@ -315,7 +362,7 @@
                         <input
                           type="number"
                           v-model="model[0].quantity"
-                          class="border rounded px-2 py-1 w-20"
+                          class="border rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-blue-300"
                         />
                         <span class="text-lg font-extrabold tracking-tight"
                           >M</span
@@ -324,49 +371,50 @@
 
                       <button
                         @click="toggleChangeQuantity(model[0].quantity)"
-                        class="px-2 py-1 rounded-lg text-sm font-medium effect"
+                        class="p-2 rounded-lg text-gray-600 hover:text-blue-600 transition"
                       >
                         <svg
-                          class="svg-icon"
-                          style="
-                            width: 1.5em;
-                            height: 1.5em;
-                            vertical-align: middle;
-                            fill: currentColor;
-                            overflow: hidden;
-                          "
+                          class="w-5 h-5"
                           viewBox="0 0 1024 1024"
-                          version="1.1"
+                          fill="currentColor"
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
                             d="M834.3 705.7c0 82.2-66.8 149-149 149H325.9c-82.2 0-149-66.8-149-149V346.4c0-82.2 66.8-149 149-149h129.8v-42.7H325.9c-105.7 0-191.7 86-191.7 191.7v359.3c0 105.7 86 191.7 191.7 191.7h359.3c105.7 0 191.7-86 191.7-191.7V575.9h-42.7v129.8z"
                           />
                           <path
-                            d="M889.7 163.4c-22.9-22.9-53-34.4-83.1-34.4s-60.1 11.5-83.1 34.4L312 574.9c-16.9 16.9-27.9 38.8-31.2 62.5l-19 132.8c-1.6 11.4 7.3 21.3 18.4 21.3 0.9 0 1.8-0.1 2.7-0.2l132.8-19c23.7-3.4 45.6-14.3 62.5-31.2l411.5-411.5c45.9-45.9 45.9-120.3 0-166.2zM362 585.3L710.3 237 816 342.8 467.8 691.1 362 585.3zM409.7 730l-101.1 14.4L323 643.3c1.4-9.5 4.8-18.7 9.9-26.7L436.3 720c-8 5.2-17.1 8.7-26.6 10z m449.8-430.7l-13.3 13.3-105.7-105.8 13.3-13.3c14.1-14.1 32.9-21.9 52.9-21.9s38.8 7.8 52.9 21.9c29.1 29.2 29.1 76.7-0.1 105.8z"
+                            d="M889.7 163.4c-22.9-22.9-53-34.4-83.1-34.4s-60.1 11.5-83.1 34.4L312 574.9c-16.9 16.9-27.9 38.8-31.2 62.5l-19 132.8c-1.6 11.4 7.3 21.3 18.4 21.3 0.9 0 1.8-0.1 2.7-0.2l132.8-19c23.7-3.4 45.6-14.3 62.5-31.2l411.5-411.5c45.9-45.9 45.9-120.3 0-166.2z"
                           />
                         </svg>
                       </button>
                     </div>
-                    <!-- @click="toggleHistory" -->
-                    <button
-                      @click="toggleHistory"
-                      :disabled="
-                        !(
-                          userStore.user.stage === 'Контроль 1' ||
-                          userStore.user.stage === 'Контроль01'
-                        )
-                      "
-                      class="px-4 py-1.5 rounded-full bg-white border font-semibold text-sm transition"
-                      :class="
-                        userStore.user.stage === 'Контроль 1' ||
-                        userStore.user.stage === 'Контроль01'
-                          ? 'hover:bg-blue-300 cursor-pointer'
-                          : 'opacity-50 cursor-not-allowed'
-                      "
-                    >
-                      История
-                    </button>
+
+                    <div class="flex justify-end gap-3">
+                      <button
+                        @click="toggleHistory"
+                        :disabled="!(userStore.user.stage === 'Контроль 1')"
+                        class="px-4 py-1.5 rounded-full border font-semibold text-sm transition"
+                        :class="
+                          userStore.user.stage === 'Контроль 1'
+                            ? 'bg-white hover:bg-blue-300 cursor-pointer'
+                            : 'bg-gray-100 opacity-60 cursor-not-allowed'
+                        "
+                      >
+                        История
+                      </button>
+
+                      <button
+                        @click="toggleDefects"
+                        class="px-4 py-1.5 rounded-full border font-semibold text-sm transition"
+                        :class="
+                          userStore.user.stage === 'Контроль 1'
+                            ? 'bg-gray-200 hover:bg-gray-400 cursor-pointer'
+                            : 'bg-gray-100 opacity-60 cursor-not-allowed'
+                        "
+                      >
+                        Дефекты
+                      </button>
+                    </div>
                   </div>
 
                   <div>
@@ -376,9 +424,7 @@
                     <div class="flex items-center gap-3 mt-2">
                       <div
                         class="w-11 h-11 rounded-md border shadow-sm"
-                        :style="{
-                          background: model[0].color.Hex || '#ffffff',
-                        }"
+                        :style="{ background: model[0].color.Hex || '#ffffff' }"
                       ></div>
                     </div>
                   </div>
@@ -399,7 +445,7 @@
                       Комплектация
                     </p>
                     <div
-                      class="inline-block mt-2 px-5 py-2 rounded-md border bg-gray-50 shadow-sm truncate"
+                      class="inline-block mt-2 px-5 py-2 rounded-md border bg-gray-50 shadow-sm truncate max-w-full"
                     >
                       {{ model[0].equipment }}
                     </div>
@@ -434,18 +480,13 @@
                             : '/buttons/orange-button.png'
                         })`,
                       }"
-                    ></button
-                    ><!-- :disabled="!isAvailable" :class="isAvailable ? 'bg-green-500 hover:bg-green-600 cursor-pointer' : 'bg-gray-400 cursor-not-allowed'" -->
+                    ></button>
                   </div>
-                  <!--<span
-                    class="mt-5 text-lg font-bold select-none text-green-700"
-                  >
-                    {{ pressed ? 'Сдать' : 'Начать' }}
-                  </span> :class="pressed ? 'text-green-700' : 'text-orange-600'" -->
                 </div>
               </div>
             </article>
           </section>
+
           <section
             v-if="!showModel && !isLoading"
             class="flex-1 flex flex-col items-center justify-center relative"
@@ -487,12 +528,24 @@
       @save="handleSave"
       @close="openHistory = false"
     />
+    <ModalDefects
+      v-if="openDefects"
+      :data="{
+        article: model[0].nomenclature.article,
+        productionplan: model[0].productionplan,
+        color: model[0].color.code,
+        date_productionplan: model[0].date_productionplan,
+        tape_number: model[0].tape_number,
+      }"
+      @close="openDefects = false"
+    />
   </Layout>
 </template>
 
 <script setup>
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
+import ModalDefects from "@/components/ui/ModalDefects.vue";
 import { onMounted, ref, reactive, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
@@ -504,7 +557,9 @@ import {
   ListboxOptions,
   ListboxOption,
 } from "@headlessui/vue";
+import { useDefectStore } from "@/stores/defects";
 
+const defectStore = useDefectStore();
 const modelStore = useModelStore();
 const tasks = ref([]);
 const model = ref([]);
@@ -515,6 +570,7 @@ const userStore = useUserStore();
 const bigBtn = ref(null);
 const pressed = ref(false);
 const openHistory = ref(false);
+const openDefects = ref(false);
 const showModel = ref(false);
 const isLoading = ref(false);
 const isSubmitting = ref(false);
@@ -540,7 +596,6 @@ const searchTypes = ref([
   { id: "tape", name: "Лента" },
 ]);
 const searchType = ref(null);
-//const isAvailable = computed(() => pressed.value && model[0].value.status === "Активный")
 
 //-Story-details-----------------------//
 const storyDetails = reactive([]);
@@ -645,6 +700,10 @@ function toggleHistory() {
   openHistory.value = !openHistory.value;
 }
 
+function toggleDefects() {
+  openDefects.value = !openDefects.value;
+}
+
 const down = () => {
   if (bigBtn.value) {
     bigBtn.value.style.transform = "translateY(6px) scale(.98)";
@@ -694,18 +753,35 @@ const toggle = async () => {
   isSubmitting.value = true;
 
   try {
+    const target = {
+      article: model.value[0].nomenclature.article,
+      tape_number: model.value[0].tape_number,
+      productionplan: model.value[0].productionplan,
+      color: model.value[0].color.code,
+    };
+
     const index = storyDetails.findIndex(
       (row) =>
-        row.article === model.value[0].nomenclature.article &&
-        row.tape_number === model.value[0].tape_number &&
-        row.productionplan === model.value[0].productionplan &&
-        row.color === model.value[0].color.code        
+        row.article === target.article &&
+        row.tape_number === target.tape_number &&
+        row.productionplan === target.productionplan &&
+        row.color === target.color.code
     );
 
     const detail = storyDetails[index] || {};
 
+    const foundDefects = defectStore.rows.filter(
+      (row) =>
+        row.article === target.article &&
+        row.tape_number === target.tape_number &&
+        row.productionplan === target.productionplan &&
+        row.color === target.color
+    );
+
+    //const foundDefect = defectStore.rows[defIndex] || {};
+
     const payload = {
-      stage: userStore.user.stage_code, //model.value[0].stage.code,
+      stage: model.value[0].next_stage.code, //userStore.user.stage_code,
       productionplan: model.value[0].productionplan,
       date_productionplan: model.value[0].date_productionplan,
       nomenclature: model.value[0].nomenclature.article,
@@ -730,6 +806,13 @@ const toggle = async () => {
       mode: detail.mode || "",
       comment_story: detail.comment || "",
       author: detail.author || "",
+
+      defects: foundDefects.length ? foundDefects : [],
+      // defects: foundDefects.map(d => ({
+      //   type: d.type,
+      //   quantity: d.quantity,
+      //   comment: d.comment,
+      // }))
     };
 
     const response = await api.post("/v1/create_document", payload);
@@ -746,6 +829,20 @@ const toggle = async () => {
       showModel.value = false;
       //tasks.value[idx].status = "Завершен";
     }
+
+    foundDefects.forEach((def) => {
+      const index = defectStore.rows.findIndex(
+        (r) =>
+          r.article === def.article &&
+          r.tape_number === def.tape_number &&
+          r.productionplan === def.productionplan &&
+          r.color === def.color
+      ); //r.date === def.date
+      if (index !== -1) {
+        defectStore.removeRow(index);
+      }
+    });
+
     pressed.value = false;
     modelStore.clearModel();
   } catch (error) {
@@ -806,6 +903,31 @@ async function runToggle(first) {
     );
   } catch (err) {}
 }
+
+const stages = ref([]);
+const loadingStages = ref(false);
+
+const fetchSearchTypes = async (number, date, stage) => {
+  try {
+    loadingStages.value = true;
+    const response = await api.get("/v1/stages", {
+      params: {
+        productionplan: number,
+        date_productionplan: date,
+        stage: stage,
+      },
+    });
+    stages.value = response.data;
+  } catch (err) {
+  } finally {
+    loadingStages.value = false;
+  }
+};
+
+const onOpen = async (number, date, stage) => {
+  stages.value = [];
+  await fetchSearchTypes(number, date, stage);
+};
 </script>
 
 <style>

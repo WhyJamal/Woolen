@@ -366,45 +366,100 @@
               class="relative bg-white rounded-2xl p-6 border shadow-lg min-h-[240px] transition hover:shadow-xl overflow-hidden"
             >
               <div class="flex items-center justify-between gap-6 flex-nowrap">
-                <div
-                  class="rounded-xl border-2 border-dashed flex items-center justify-center bg-gradient-to-b from-white to-[#fbfdff] overflow-hidden"
-                  style="
-                    width: clamp(120px, 18vw, 288px);
-                    height: clamp(120px, 18vw, 288px);
-                  "
-                >
-                  <img
-                    v-if="model[0].nomenclature.photo"
-                    :src="photo"
-                    alt="Модель"
-                    class="object-cover w-full h-full rounded-xl effect"
-                  />
-                  <!-- <img
-                    v-if="model[0].nomenclature.photo"
-                    :src="`http://localhost/api/hs/v1/photo?article=${model[0].nomenclature.article}`"
-                    alt="Модель"
-                    class="object-cover w-full h-full rounded-xl effect"
-                  /> -->
-                  <svg
-                    v-else
-                    width="100%"
-                    height="100%"
-                    viewBox="0 0 260 260"
-                    preserveAspectRatio="xMidYMid meet"
+                <div class="flex flex-col items-center gap-2 flex-shrink-0">
+                  <Listbox
+                    v-model="model[0].next_stage"
+                    as="div"
+                    class="relative"
                   >
-                    <defs>
-                      <pattern
-                        id="p"
-                        width="20"
-                        height="20"
-                        patternUnits="userSpaceOnUse"
-                        patternTransform="rotate(45)"
+                    <ListboxButton
+                      @click="
+                        onOpen(
+                          model[0].productionplan,
+                          model[0].date_productionplan,
+                          model[0].stage.code
+                        )
+                      "
+                      class="w-48 px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center justify-between"
+                    >
+                      <span class="truncate">
+                        {{
+                          model[0].next_stage
+                            ? model[0].next_stage.name
+                            : "Этапы"
+                        }}
+                      </span>
+                      <svg
+                        class="w-4 h-4 text-gray-500"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        <rect width="12" height="1.6" fill="#dfe3e8" />
-                      </pattern>
-                    </defs>
-                    <rect width="260" height="260" fill="url(#p)" />
-                  </svg>
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </ListboxButton>
+
+                    <ListboxOptions
+                      class="absolute mt-1 w-48 bg-white border rounded-md shadow-md max-h-60 overflow-y-auto z-50"
+                    >
+                      <ListboxOption
+                        v-if="loadingStages"
+                        class="flex-1 flex items-center justify-center"
+                      >
+                        <div class="loader h-9 w-9"></div>
+                      </ListboxOption>
+                      <ListboxOption
+                        v-eslse
+                        v-for="stage in stages"
+                        :key="stage.id"
+                        :value="stage"
+                        class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm"
+                      >
+                        {{ stage.name }}
+                      </ListboxOption>
+                    </ListboxOptions>
+                  </Listbox>
+
+                  <div
+                    class="rounded-xl border-2 border-dashed flex items-center justify-center bg-gradient-to-b from-white to-[#fbfdff] overflow-hidden"
+                    style="
+                      width: clamp(120px, 18vw, 288px);
+                      height: clamp(120px, 18vw, 288px);
+                    "
+                  >
+                    <img
+                      v-if="model[0].nomenclature.photo"
+                      :src="photo"
+                      alt="Модель"
+                      class="object-cover w-full h-full rounded-xl effect"
+                    />
+                    <svg
+                      v-else
+                      width="100%"
+                      height="100%"
+                      viewBox="0 0 260 260"
+                      preserveAspectRatio="xMidYMid meet"
+                    >
+                      <defs>
+                        <pattern
+                          id="p"
+                          width="20"
+                          height="20"
+                          patternUnits="userSpaceOnUse"
+                          patternTransform="rotate(45)"
+                        >
+                          <rect width="12" height="1.6" fill="#dfe3e8" />
+                        </pattern>
+                      </defs>
+                      <rect width="260" height="260" fill="url(#p)" />
+                    </svg>
+                  </div>
                 </div>
 
                 <div class="flex-1 min-w-0 space-y-5">
@@ -412,11 +467,11 @@
                     class="flex items-center justify-between border-b pb-4 mb-4"
                   >
                     <div class="flex items-center gap-3">
-                      <button
+                      <!-- <button
                         class="px-4 py-1.5 border rounded-lg text-sm font-medium bg-gray-50 hover:bg-gray-100 transition"
                       >
                         Заказ
-                      </button>
+                      </button> -->
                       <h3
                         v-if="!quantityChange"
                         class="text-lg font-extrabold tracking-tight"
@@ -757,39 +812,6 @@ const toggle = async () => {
   if (isSubmitting.value) return;
   isSubmitting.value = true;
   endclickSound.play();
-
-  // try {
-  //   const payload = {
-  //     stage: userStore.user.stage_code, //model.value[0].stage.code,
-  //     productionplan: model.value[0].productionplan,
-  //     date_productionplan: model.value[0].date_productionplan,
-  //     nomenclature: model.value[0].nomenclature.article,
-  //     size: model.value[0].size,
-  //     color: model.value[0].color.code,
-  //     quantity: model.value[0].quantity,
-  //     party: model.value[0].party,
-  //     equipment: model.value[0].equipment,
-  //     comment: "1",
-  //     owner: userStore.user.name,
-  //   };
-
-  //   const response = await api.post("/v1/create_document", payload);
-
-  //   const idx = tasks.value.findIndex(
-  //     (t) => t.productionplan === model.value[0].productionplan
-  //   );
-  //   if (idx !== -1) {
-  //     tasks.value.splice(idx, 1);
-  //     showModel.value = false;
-  //     //tasks.value[idx].status = "Завершен";
-  //   }
-
-  //   //alert("Document created successfully!");
-  //   pressed.value = false;
-  // } catch (error) {
-  // } finally {
-  //   isSubmitting.value = false;
-  // }
 };
 
 //-Отправка-Форма-------------------------//
@@ -839,7 +861,7 @@ const sendForm = async () => {
       count: count.value,
       comment: comment.value,
       //----------------------------------//
-      stage: userStore.user.stage_code, //model.value[0].stage.code,
+      stage: model.value[0].next_stage.code, //userStore.user.stage_code,
       productionplan: model.value[0].productionplan,
       date_productionplan: model.value[0].date_productionplan,
       nomenclature: model.value[0].nomenclature.article,
@@ -856,10 +878,10 @@ const sendForm = async () => {
     model.value[0].quantity = Number(model.value[0].quantity) - count.value;
     const idx = tasks.value.findIndex(
       (t) =>
-        t.productionplan === model.value[0].productionplan ||
-        t.order === model.value[0].order ||
-        t.color === model.value[0].color.name ||
-        t.tape_number === model.value[0].tape_number ||
+        t.productionplan === model.value[0].productionplan &&
+        t.order === model.value[0].order &&
+        t.color === model.value[0].color.name &&
+        t.tape_number === model.value[0].tape_number &&
         t.nomenclature.article === model.value[0].nomenclature.article
     );
     tasks.value[idx].quantity = model.value[0].quantity;
@@ -938,6 +960,32 @@ async function runToggle(first) {
     );
   } catch (err) {}
 }
+
+const stages = ref([]);
+const loadingStages = ref(false);
+const selectedStage = ref(null);
+
+const fetchSearchTypes = async (number, date, stage) => {
+  try {
+    loadingStages.value = true;
+    const response = await api.get("/v1/stages", {
+      params: {
+        productionplan: number,
+        date_productionplan: date,
+        stage: stage,
+      },
+    });
+    stages.value = response.data;
+  } catch (err) {
+  } finally {
+    loadingStages.value = false;
+  }
+};
+
+const onOpen = async (number, date, stage) => {
+  stages.value = [];
+  await fetchSearchTypes(number, date, stage);
+};
 </script>
 
 <style>

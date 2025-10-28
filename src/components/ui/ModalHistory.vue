@@ -47,7 +47,7 @@
               <div class="p-3 text-center">Масса</div>
               <div class="p-3 text-center">Брутто метр</div>
               <div class="p-3 text-center">Нетто метр</div>
-              <div class="p-3 text-center">Номер ткательной машины</div>
+              <div class="p-3 text-center">Номер ткацкого станка</div>
               <div class="p-3 text-center">Режим обработки</div>
               <div class="p-3 text-center">Комментарий</div>
               <div class="p-3 text-center">Автор</div>
@@ -424,7 +424,7 @@ async function fetchMachines() {
   if (isLoadingMachines.value) return;
   isLoadingMachines.value = true;
   try {
-    const response = await api.get("/v1/number_machines");
+    const response = await api.get("/v1/number_machines", {params: { stage: userStore.user.stage_code }});
     machines.value = response.data;
   } catch (error) {
   } finally {
