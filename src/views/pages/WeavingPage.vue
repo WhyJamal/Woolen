@@ -226,7 +226,7 @@
           <!-- Main -->
           <section v-if="showModel && !isLoading" class="flex-1 space-y-4">
             <div class="bg-gray-200 p-4 rounded-lg">
-              <div class="max-w-5xl mx-auto space-y-2">
+              <div class="w-full mx-auto space-y-2 px-4">
                 <div class="grid grid-cols-3 bg-white rounded-md shadow">
                   <div class="p-3 font-semibold">Модель</div>
                   <div class="p-3 font-semibold text-center">Действия</div>
@@ -252,7 +252,7 @@
                 </div>
                 <div
                   v-if="pressed"
-                  class="relative grid grid-cols-3 gap-2 bg-white rounded-md shadow p-3 w-full max-w-[1009px]"
+                  class="relative grid grid-cols-3 gap-2 bg-white rounded-md shadow p-3 w-full max-w-[1009px] lg:max-w-full"
                 >
                   <div
                     v-if="isLoadSend"
