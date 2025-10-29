@@ -138,7 +138,7 @@
                     index
                   )
                 "
-                class="group flex items-center gap-3 bg-white rounded-md p-2.5 shadow-sm border border-gray-100 hover:bg-blue-50 hover:shadow-md hover:-translate-y-0.5 transform transition-all duration-150 w-full overflow-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400"
+                class="group flex items-center gap-3 bg-white rounded-md p-2.5 shadow-sm border border-gray-100 hover:bg-blue-50 hover:shadow-md hover:-translate-y-0.5 transform transition-all duration-150 w-full overflow-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400 h-[100px]"
               >
                 <div
                   class="flex-shrink-0 w-1.5 rounded bg-gradient-to-b from-blue-500 to-purple-700 h-8"
@@ -180,7 +180,7 @@
 
                   <div class="mt-1 flex items-center gap-2 min-w-0">
                     <span
-                      v-if="task.order === ''"
+                      v-if="task.order !== '           '"
                       class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
                     >
                       № {{ task.order }}
@@ -243,7 +243,7 @@
                   <div class="p-3 font-semibold text-right">Производить</div>
                 </div>
                 <div class="grid grid-cols-3 bg-white rounded-md shadow">
-                  <div v-if="model[0].order === ''" class="p-3">
+                  <div v-if="model[0].order !== '           '" class="p-3">
                     {{ model[0].order }} - {{ model[0].nomenclature.article }}
                     {{ model[0].nomenclature.name }}
                   </div>
@@ -402,7 +402,7 @@
 
                     <div class="flex justify-end gap-3">
                       <button
-                        v-if="(userStore.user.stage === 'Контроль 1')"
+                        v-if="userStore.user.stage === 'Контроль 1'"
                         :disabled="!(userStore.user.stage === 'Контроль 1')"
                         @click="toggleHistory"
                         class="px-4 py-1.5 rounded-full border font-semibold text-sm transition"

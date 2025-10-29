@@ -176,7 +176,7 @@
 
                   <div class="mt-1 flex items-center gap-2 min-w-0">
                     <span
-                      v-if="task.order === ''"
+                      v-if="task.order !== '           '"
                       class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
                     >
                       № {{ task.order }}
@@ -241,7 +241,7 @@
                   <div class="p-3 font-semibold text-right">Производить</div>
                 </div>
                 <div class="grid grid-cols-3 bg-white rounded-md shadow">
-                  <div v-if="model[0].order === ''" class="p-3" :class="{ 'border-b pb-2': pressed }">
+                  <div v-if="model[0].order !== '           '" class="p-3" :class="{ 'border-b pb-2': pressed }">
                     {{ model[0].order }} - {{ model[0].nomenclature.article }} -
                     {{ model[0].nomenclature.name }}
                   </div>
