@@ -10,7 +10,7 @@
         class="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#eef1f4] to-[#f8fafc]"
       >        
         <div
-          class="relative bg-white rounded-2xl shadow-xl border p-6 w-full max-w-sm flex flex-col gap-4"
+          class="relative bg-white/10 rounded-2xl shadow-xl border border-white/20 p-6 w-full max-w-sm flex flex-col gap-4 backdrop-blur-md transition hover:bg-white/15"
         >
 
           <div
@@ -20,9 +20,9 @@
             <div class="loader"></div>
           </div>
 
-          <h2 class="text-xl font-bold text-center">{{ $t("login") }}</h2>
+          <h2 class="text-xl font-bold text-center text-white">{{ $t("login") }}</h2>
           <div
-            class="relative bg-gray-100 border border-slate-200 rounded-2xl shadow-lg p-8 flex flex-col items-center gap-6"
+            class="relative bg-black/30 rounded-2xl shadow-2xl border border-white/10 p-8 w-full max-w-sm flex flex-col items-center gap-6 backdrop-blur-lg transition hover:bg-black/40 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
           >
             <div class="relative w-48 h-32 flex items-center justify-center">
               <div
@@ -51,7 +51,7 @@
               </div>
             </div>
 
-            <h2 class="text-lg font-semibold text-slate-800">
+            <h2 class="text-lg font-semibold text-gray-100">
               {{ $t("attach_card") }}
             </h2>
 
@@ -78,7 +78,7 @@
               ref="inputRef"
               v-model="code"
               type="text"
-              class="w-full pl-10 pr-4 py-3 rounded-xl border bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
+              class="w-full pl-10 pr-4 py-3 rounded-xl border bg-white/10 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
               :placeholder="$t('enter_employee_code')"
               @blur="keepFocus"
               @keydown.tab.prevent
@@ -182,7 +182,7 @@ const loading = ref(false);
 
 const handleLogin = async () => {
   if (!code.value.trim()) {
-    alert("Введите код сотрудника.");
+    //alert("Введите код сотрудника.");
     return;
   }
 
