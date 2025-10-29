@@ -151,7 +151,7 @@
             class="w-full sm:w-80 lg:w-96 max-w-full lg:max-w-[26rem] space-y-4"
           >
             <div
-              class="flex h-[600px] flex-col gap-3 overflow-y-auto max-h-[80vh] bg-gray-200 rounded-lg p-3"
+              class="flex h-[600px] flex-col gap-3 max-h-[80vh] bg-gray-200 rounded-lg p-3 overflow-y-scroll scroll-soft"
             >
               <article
                 v-for="(task, index) in tasks"

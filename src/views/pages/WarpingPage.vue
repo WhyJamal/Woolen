@@ -104,7 +104,7 @@
             class="w-full sm:w-80 lg:w-96 max-w-full lg:max-w-[26rem] space-y-4"
           >
             <div
-              class="flex h-[600px] flex-col gap-3 overflow-y-auto max-h-[80vh] bg-gray-200 rounded-lg p-3"
+              class="flex h-[600px] flex-col gap-3 max-h-[80vh] bg-gray-200 rounded-lg p-3 overflow-y-scroll scroll-soft"
             >
               <article
                 v-for="(task, index) in tasks"
@@ -180,9 +180,16 @@
 
                   <div class="mt-1 flex items-center gap-2 min-w-0">
                     <span
+                      v-if="task.order === ''"
                       class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
                     >
                       № {{ task.order }}
+                    </span>
+                    <span
+                      v-else
+                      class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
+                    >
+                      Для склада
                     </span>
 
                     <span
@@ -236,8 +243,12 @@
                   <div class="p-3 font-semibold text-right">Производить</div>
                 </div>
                 <div class="grid grid-cols-3 bg-white rounded-md shadow">
-                  <div class="p-3">
+                  <div v-if="model[0].order === ''" class="p-3">
                     {{ model[0].order }} - {{ model[0].nomenclature.article }}
+                    {{ model[0].nomenclature.name }}
+                  </div>
+                  <div v-else class="p-3">
+                    Для склада - {{ model[0].nomenclature.article }}
                     {{ model[0].nomenclature.name }}
                   </div>
                   <div class="p-3 text-center"></div>
