@@ -531,7 +531,7 @@
                   </div>
 
                   <button
-                    v-if="!(useUserStore.user.stage === 'Браковка' || useUserStore.user.stage === 'Браковка 2')"
+                    v-if="!(userStore.user.stage === 'Браковка' || userStore.user.stage === 'Браковка 2')"
                     @click="toogleRefund"
                     class="custom-btn mt-2 items-center justify-center flex mx-auto"
                   >

@@ -362,13 +362,13 @@
                     <div class="flex items-center gap-3 mb-3">
                       <template v-if="!quantityChange">
                         <h3 class="text-lg font-extrabold tracking-tight">
-                          Сновать {{ model[0].quantity }} M
+                          {{userStore.user.stage}} | {{ model[0].quantity }} M
                         </h3>
                       </template>
 
                       <div v-else class="flex items-center gap-2">
                         <span class="text-lg font-extrabold tracking-tight"
-                          >Сновать</span
+                          >{{userStore.user.stage}}</span
                         >
                         <input
                           type="number"
