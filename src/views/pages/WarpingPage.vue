@@ -685,6 +685,34 @@ async function toggleModel(
     modelStore.setModel(model.value);
     showModel.value = true;
 
+    const defectsArray = model.value[0].arrayDefects;
+
+    defectsArray.forEach((row) => {
+      const exists = defectStore.rows.some(
+        (r) =>
+          r.defect?.code === row.defect?.code &&
+          r.category?.code === row.category?.code &&
+          r.note === row.note &&
+          r.locations === row.locations &&
+          r.length === row.length &&
+          r.operator === row.operator &&
+          r.article === (model.value[0].nomenclature?.article || "") &&
+          r.productionplan === (model.value[0].productionplan || "") &&
+          r.color === (model.value[0].color?.code || "") &&
+          r.tape_number === (model.value[0].tape_number || "")
+      );
+
+      if (!exists) {
+        defectStore.addRow({
+          ...row,
+          article: model.value[0].nomenclature?.article || "",
+          productionplan: model.value[0].productionplan || "",
+          color: model.value[0].color?.code || "",
+          tape_number: model.value[0].tape_number || "",
+        });
+      }
+    });
+    
     //-Загрузить-Фото-----------------------------------//
     const photoResponse = await api.get(`/v1/photo`, {
       params: { article },

@@ -531,7 +531,12 @@
                   </div>
 
                   <button
-                    v-if="!(userStore.user.stage === 'Браковка' || userStore.user.stage === 'Браковка 2')"
+                    v-if="
+                      !(
+                        userStore.user.stage === 'Браковка' ||
+                        userStore.user.stage === 'Браковка 2'
+                      )
+                    "
                     @click="toogleRefund"
                     class="custom-btn mt-2 items-center justify-center flex mx-auto"
                   >
@@ -610,8 +615,8 @@
         tape_number: model[0].tape_number,
       }"
       @close="openDefects = false"
-    />
-  </Layout>
+    /> </Layout
+  >{{ defectStore }}
 </template>
 
 <script setup>
@@ -739,6 +744,34 @@ async function toggleModel(
     model.value = response.data;
     modelStore.setModel(model.value);
     showModel.value = true;
+
+    const defectsArray = model.value[0].arrayDefects;
+
+    defectsArray.forEach((row) => {
+      const exists = defectStore.rows.some(
+        (r) =>
+          r.defect?.code === row.defect?.code &&
+          r.category?.code === row.category?.code &&
+          r.note === row.note &&
+          r.locations === row.locations &&
+          r.length === row.length &&
+          r.operator === row.operator &&
+          r.article === (model.value[0].nomenclature?.article || "") &&
+          r.productionplan === (model.value[0].productionplan || "") &&
+          r.color === (model.value[0].color?.code || "") &&
+          r.tape_number === (model.value[0].tape_number || "")
+      );
+
+      if (!exists) {
+        defectStore.addRow({
+          ...row,
+          article: model.value[0].nomenclature?.article || "",
+          productionplan: model.value[0].productionplan || "",
+          color: model.value[0].color?.code || "",
+          tape_number: model.value[0].tape_number || "",
+        });
+      }
+    });
 
     //-Загрузить-Фото-----------------------------------//
     const photoResponse = await api.get(`/v1/photo`, {
@@ -928,6 +961,21 @@ const toggle = async () => {
 
 const toogleRefund = async () => {
   try {
+    const target = {
+      article: model.value[0].nomenclature.article,
+      tape_number: model.value[0].tape_number,
+      productionplan: model.value[0].productionplan,
+      color: model.value[0].color.code,
+    };
+
+    const foundDefects = defectStore.rows.filter(
+      (row) =>
+        row.article === (target.article || "") &&
+        row.tape_number === (target.tape_number || "") &&
+        row.productionplan === (target.productionplan || "") &&
+        row.color === (target.color || "")
+    );
+
     const payloadRefund = {
       stage: userStore.user.stage_code, //model.value[0].stage.code,
       productionplan: model.value[0].productionplan,
@@ -943,6 +991,8 @@ const toogleRefund = async () => {
       sort: model.value[0].sort || "",
       comment: "Возврат",
       owner: userStore.user.name,
+
+      defects: foundDefects.length ? foundDefects : [],
     };
 
     const response = await api.post("/v1/refund", payloadRefund);
@@ -958,6 +1008,20 @@ const toogleRefund = async () => {
       tasks.value.splice(idx, 1);
       showModel.value = false;
     }
+
+    foundDefects.forEach((def) => {
+      const index = defectStore.rows.findIndex(
+        (r) =>
+          r.article === def.article &&
+          r.tape_number === def.tape_number &&
+          r.productionplan === def.productionplan &&
+          r.color === def.color
+      ); //r.date === def.date
+      if (index !== -1) {
+        defectStore.removeRow(index);
+      }
+    });
+
     pressed.value = false;
     modelStore.clearModel();
   } catch (error) {

@@ -406,17 +406,17 @@ onMounted(async () => {
   isLoading.value = true;
 
   try {
-    const response = await api.get("/v1/model/defects", {
-      params: {
-        article: props.data.article,
-        productionplan: props.data.productionplan,
-        date_productionplan: props.data.date_productionplan,
-        tape_number: props.data.tape_number,
-        color: props.data.color,
-      },
-    });
+    // const response = await api.get("/v1/model/defects", {
+    //   params: {
+    //     article: props.data.article,
+    //     productionplan: props.data.productionplan,
+    //     date_productionplan: props.data.date_productionplan,
+    //     tape_number: props.data.tape_number,
+    //     color: props.data.color,
+    //   },
+    // });
 
-    rows.value = response.data;
+    // rows.value = response.data;
 
     const foundDefects = defectStore.rows.filter(
       (row) =>
@@ -462,43 +462,24 @@ async function fetchDefectCategoryes() {
 }
 
 function onFixedChange(row) {
-  Object.assign(row, {
-    article: props.data.article,
-    productionplan: props.data.productionplan,
-    date_productionplan: props.data.date_productionplan,
-    tape_number: props.data.tape_number,
-    color: props.data.color,
+  defectsArray.forEach((row) => {
+  const matchingRows = defectStore.rows.filter((r) =>
+    r.defect?.code === row.defect?.code &&
+    r.category?.code === row.category?.code &&
+    r.note === row.note &&
+    r.locations === row.locations &&
+    r.length === row.length &&
+    r.operator === row.operator &&
+    r.article === (row.article || "") &&
+    r.productionplan === (row.productionplan || "") &&
+    r.tape_number === (row.tape_number || "") &&
+    r.color === (row.color || "")
+  );
+
+  matchingRows.forEach((r) => {
+    r.fixed = !!row.fixed; 
   });
-
-  if (row.fixed) {
-    defectStore.addRow(row);
-  } else {
-    const matchingRows = defectStore.rows
-      .map((r, i) => ({ r, i }))
-      .filter(
-        ({ r }) =>
-          r.defect?.code === row.defect?.code &&
-          r.category?.code === row.category?.code &&
-          r.note === row.note &&
-          r.locations === row.locations &&
-          r.length === row.length &&
-          r.operator === row.operator &&
-          r.article === row.article &&
-          r.productionplan === row.productionplan &&
-          r.date_productionplan === row.date_productionplan &&
-          r.tape_number === row.tape_number &&
-          r.color === row.color
-      );
-
-    if (matchingRows.length > 0) {
-      const latest = matchingRows.reduce((prev, current) =>
-        new Date(prev.r.date) > new Date(current.r.date) ? prev : current
-      );
-
-      defectStore.rows.splice(latest.i, 1);
-      defectStore.saveToLocalStorage();
-    }
-  }
+});
 }
 </script>
 
