@@ -610,7 +610,7 @@
       }"
       @close="openDefects = false"
     />
-  </Layout>
+  </Layout>{{defectStore}}
 </template>
 
 <script setup>
@@ -902,6 +902,19 @@ const toggle = async () => {
       showModel.value = false;
       //tasks.value[idx].status = "Завершен";
     }
+
+    foundDefects.forEach((def) => {
+      const index = defectStore.rows.findIndex(
+        (r) =>
+          r.article === def.article &&
+          r.tape_number === def.tape_number &&
+          r.productionplan === def.productionplan &&
+          r.color === def.color
+      ); //r.date === def.date
+      if (index !== -1) {
+        defectStore.removeRow(index);
+      }
+    });
 
     pressed.value = false;
     modelStore.clearModel();

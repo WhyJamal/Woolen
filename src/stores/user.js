@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useModelStore } from './model'
+import { useDefectStore } from "@/stores/defects";
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -17,6 +18,9 @@ export const useUserStore = defineStore('user', {
 
       const modelStore = useModelStore()
       modelStore.clearModel()
+
+      const defectStore = useDefectStore();
+      defectStore.clearRows()      
     },
   },
   getters: {

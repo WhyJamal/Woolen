@@ -67,7 +67,14 @@
                   id="default-checkbox"
                   type="checkbox"
                   v-model="row.fixed"
-                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500"
+                  @change="onFixedChange(row)"
+                  :disabled="!isRejectionStage"
+                  :class="[
+                    'w-4 h-4 rounded-sm border-gray-300 focus:ring-blue-500 transition',
+                    isRejectionStage
+                      ? 'bg-gray-100 text-blue-600 cursor-pointer hover:opacity-90'
+                      : 'bg-gray-200 opacity-40 cursor-not-allowed',
+                  ]"
                 />
               </div>
             </div>
@@ -78,8 +85,14 @@
       <div class="flex justify-end mt-5">
         <button
           v-if="!isLoading"
+          :disabled="!isControlStage"
           @click="openForm"
-          class="bg-indigo-600 hover:opacity-90 text-white font-semibold py-2 px-5 rounded-xl shadow-lg"
+          :class="[
+            'text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-colors',
+            isControlStage
+              ? 'bg-indigo-600 hover:opacity-90 cursor-pointer'
+              : 'bg-gray-200 opacity-50 cursor-not-allowed',
+          ]"
         >
           Добавить
         </button>
@@ -252,7 +265,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted } from "vue";
+import { ref, nextTick, onMounted, computed } from "vue";
 import { Datepicker } from "flowbite-datepicker";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -282,6 +295,12 @@ const datepickerInput = ref(null);
 const isLoading = ref(false);
 const rows = ref([]);
 const warningMassage = ref("");
+const isControlStage = computed(() =>
+  ["Контроль 1", "Контроль 2", "Контроль 3"].includes(userStore.user.stage)
+);
+const isRejectionStage = computed(() =>
+  ["Браковка", "Браковка 2"].includes(userStore.user.stage)
+);
 
 const today = new Date();
 const formatDate = (d) =>
@@ -383,7 +402,7 @@ onMounted(async () => {
   isLoading.value = true;
 
   try {
-    const response = await api.get("/v1/story_details", {
+    const response = await api.get("/v1/model/defects", {
       params: {
         article: props.data.article,
         productionplan: props.data.productionplan,
@@ -403,8 +422,7 @@ onMounted(async () => {
         row.color === props.data.color
     );
 
-    rows.value.push(...foundDefects); 
-
+    rows.value.push(...foundDefects);
   } catch (error) {
   } finally {
     isLoading.value = false;
@@ -436,6 +454,46 @@ async function fetchDefectCategoryes() {
   } catch (error) {
   } finally {
     isLoadingCategoryes.value = false;
+  }
+}
+
+function onFixedChange(row) {
+  Object.assign(row, {
+    article: props.data.article,
+    productionplan: props.data.productionplan,
+    date_productionplan: props.data.date_productionplan,
+    tape_number: props.data.tape_number,
+    color: props.data.color,
+  });
+
+  if (row.fixed) {
+    defectStore.addRow(row);
+  } else {
+    const matchingRows = defectStore.rows
+      .map((r, i) => ({ r, i }))
+      .filter(
+        ({ r }) =>
+          r.defect?.code === row.defect?.code &&
+          r.category?.code === row.category?.code &&
+          r.note === row.note &&
+          r.locations === row.locations &&
+          r.length === row.length &&
+          r.operator === row.operator &&
+          r.article === row.article &&
+          r.productionplan === row.productionplan &&
+          r.date_productionplan === row.date_productionplan &&
+          r.tape_number === row.tape_number &&
+          r.color === row.color
+      );
+
+    if (matchingRows.length > 0) {
+      const latest = matchingRows.reduce((prev, current) =>
+        new Date(prev.r.date) > new Date(current.r.date) ? prev : current
+      );
+
+      defectStore.rows.splice(latest.i, 1);
+      defectStore.saveToLocalStorage();
+    }
   }
 }
 </script>

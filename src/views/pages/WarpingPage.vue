@@ -99,7 +99,7 @@
           </div>
         </div>
 
-        <div class="flex flex-col lg:flex-row gap-6">
+        <div class="flex flex-col lg:flex-row gap-6 scale-container">
           <aside
             class="w-full sm:w-80 lg:w-96 max-w-full lg:max-w-[26rem] space-y-4"
           >
@@ -391,8 +391,9 @@
 
                     <div class="flex justify-end gap-3">
                       <button
-                        @click="toggleHistory"
+                        v-if="(userStore.user.stage === 'Контроль 1')"
                         :disabled="!(userStore.user.stage === 'Контроль 1')"
+                        @click="toggleHistory"
                         class="px-4 py-1.5 rounded-full border font-semibold text-sm transition"
                         :class="
                           userStore.user.stage === 'Контроль 1'
@@ -404,10 +405,12 @@
                       </button>
 
                       <button
+                        v-if="isControlStage"
+                        :disabled="!isControlStage"
                         @click="toggleDefects"
                         class="px-4 py-1.5 rounded-full border font-semibold text-sm transition"
                         :class="
-                          userStore.user.stage === 'Контроль 1'
+                          isControlStage
                             ? 'bg-gray-200 hover:bg-gray-400 cursor-pointer'
                             : 'bg-gray-100 opacity-60 cursor-not-allowed'
                         "
@@ -539,7 +542,7 @@
       }"
       @close="openDefects = false"
     />
-  </Layout>
+  </Layout>{{defectStore}}
 </template>
 
 <script setup>
@@ -596,6 +599,9 @@ const searchTypes = ref([
   { id: "tape", name: "Лента" },
 ]);
 const searchType = ref(null);
+const isControlStage = computed(() =>
+  ["Контроль 1", "Контроль 2", "Контроль 3"].includes(userStore.user.stage)
+);
 
 //-Story-details-----------------------//
 const storyDetails = reactive([]);
@@ -954,5 +960,33 @@ const onOpen = async (number, date, stage) => {
 }
 .effect:hover {
   transform: scale(1.2);
+}
+
+@media (max-width: 1280px) {
+  .scale-container {
+    transform: scale(0.95);
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 1024px) {
+  .scale-container {
+    transform: scale(0.9);
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 768px) {
+  .scale-container {
+    transform: scale(0.8);
+    transform-origin: top center;
+  }
+}
+
+@media (max-width: 640px) {
+  .scale-container {
+    transform: scale(0.7);
+    transform-origin: top center;
+  }
 }
 </style>
