@@ -771,7 +771,7 @@ const toggle = async () => {
         row.article === target.article &&
         row.tape_number === target.tape_number &&
         row.productionplan === target.productionplan &&
-        row.color === target.color.code
+        row.color === target.color
     );
 
     const detail = storyDetails[index] || {};

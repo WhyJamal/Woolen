@@ -122,24 +122,32 @@
           <input
             v-model="newRow.width"
             type="number"
+            inputmode="decimal"
+            step="any"
             placeholder="Ширина"
             class="input"
           />
           <input
             v-model="newRow.mass"
             type="number"
+            inputmode="decimal"
+            step="any"
             placeholder="Масса"
             class="input"
           />
           <input
             v-model="newRow.brutto"
             type="number"
+            inputmode="decimal"
+            step="any"
             placeholder="Брутто"
             class="input"
           />
           <input
             v-model="newRow.netto"
             type="number"
+            inputmode="decimal"
+            step="any"
             placeholder="Нетто"
             class="input"
           />
@@ -303,7 +311,7 @@ const close = () => {
 const openForm = async () => {
   showForm.value = true;
 
-  await nextTick(); 
+  await nextTick();
 
   if (datepickerInput.value) {
     const picker = new Datepicker(datepickerInput.value, {
@@ -393,7 +401,7 @@ onMounted(async () => {
         row.article === props.data.article &&
         row.tape_number === props.data.tape_number &&
         row.productionplan === props.data.productionplan &&
-        row.color === props.data.color 
+        row.color === props.data.color
     );
 
     if (index !== -1) {
@@ -424,7 +432,9 @@ async function fetchMachines() {
   if (isLoadingMachines.value) return;
   isLoadingMachines.value = true;
   try {
-    const response = await api.get("/v1/number_machines", {params: { stage: userStore.user.stage_code }});
+    const response = await api.get("/v1/number_machines", {
+      params: { stage: userStore.user.stage_code },
+    });
     machines.value = response.data;
   } catch (error) {
   } finally {

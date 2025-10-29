@@ -531,6 +531,7 @@
                   </div>
 
                   <button
+                    v-if="!(useUserStore.user.stage === 'Браковка' || useUserStore.user.stage === 'Браковка 2')"
                     @click="toogleRefund"
                     class="custom-btn mt-2 items-center justify-center flex mx-auto"
                   >
@@ -940,7 +941,7 @@ const toogleRefund = async () => {
       tape_number: model.value[0].tape_number,
       accessories: model.value[0].accessories || "",
       sort: model.value[0].sort || "",
-      comment: "Возврать",
+      comment: "Возврат",
       owner: userStore.user.name,
     };
 

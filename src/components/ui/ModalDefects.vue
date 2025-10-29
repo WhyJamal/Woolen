@@ -214,12 +214,16 @@
           <input
             v-model="newRow.locations"
             type="number"
+            inputmode="decimal"
+            step="any"
             placeholder="Местоположения"
             class="input"
           />
           <input
             v-model="newRow.length"
             type="number"
+            inputmode="decimal"
+            step="any"
             placeholder="Протояженность"
             class="input"
           />
