@@ -229,7 +229,7 @@
           </div>
           <section v-if="showModel && !isLoading" class="flex-1 space-y-4">
             <div class="bg-gray-200 p-4 rounded-lg">
-              <div class="max-w-5xl mx-auto space-y-2">
+              <div class="w-full mx-auto space-y-2 px-4">
                 <div class="grid grid-cols-3 bg-white rounded-md shadow">
                   <div class="p-3 font-semibold">Модель</div>
                   <div class="p-3 font-semibold text-center">Действия</div>
