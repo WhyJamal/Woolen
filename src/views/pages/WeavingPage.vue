@@ -782,6 +782,11 @@ const reset = () => {
 };
 
 const toggle = async () => {
+  tape_number.value = "";
+  variety.value = null;
+  count.value = null;
+  comment.value = "";
+
   if (!pressed.value) {
     pressed.value = true;
 
