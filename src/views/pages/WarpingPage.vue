@@ -104,7 +104,7 @@
             class="w-full sm:w-80 lg:w-96 max-w-full lg:max-w-[26rem] space-y-4"
           >
             <div
-              class="flex h-[600px] flex-col gap-3 max-h-[80vh] bg-gray-200 rounded-lg p-3 overflow-y-scroll scroll-soft"
+              class="flex h-[600px] flex-col gap-3 max-h-[80vh] bg-gray-200 rounded-lg p-3 overflow-y-auto scroll-soft"
             >
               <article
                 v-for="(task, index) in tasks"
@@ -138,7 +138,7 @@
                     index
                   )
                 "
-                class="group flex items-center gap-3 bg-white rounded-md p-2.5 shadow-sm border border-gray-100 hover:bg-blue-50 hover:shadow-md hover:-translate-y-0.5 transform transition-all duration-150 w-full overflow-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400 h-[100px]"
+                class="group flex items-center gap-3 bg-white rounded-md p-2.5 shadow-sm border border-gray-100 hover:bg-blue-50 hover:shadow-md hover:-translate-y-0.5 transform transition-all duration-150 w-full overflow-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400 flex-shrink-0"
               >
                 <div
                   class="flex-shrink-0 w-1.5 rounded bg-gradient-to-b from-blue-500 to-purple-700 h-8"
