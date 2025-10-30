@@ -111,7 +111,9 @@
 
                 <div class="cell border-r border-gray-300">{{ task.size }}</div>
 
-                <div class="cell border-r border-gray-300 flex items-center gap-2">
+                <div
+                  class="cell border-r border-gray-300 flex items-center gap-2"
+                >
                   <span
                     class="w-10 h-10 rounded-full border border-gray-400"
                     :style="{ backgroundColor: task.color.Hex }"
@@ -201,7 +203,9 @@ import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
+import { useDefectStore } from "@/stores/defects";
 
+const defectStore = useDefectStore();
 const pressed = ref(false);
 const tasks = ref([]);
 const router = useRouter();
@@ -258,6 +262,37 @@ onMounted(async () => {
       ...task,
       status: task.status || "Ожидает",
     }));
+
+    tasks.value.forEach((task) => {
+      const defectsArray = task.arrayDefects || [];
+
+      defectsArray.forEach((row) => {
+        const exists = defectStore.rows.some(
+          (r) =>
+            r.defect?.code === row.defect?.code &&
+            r.category?.code === row.category?.code &&
+            r.note === row.note &&
+            r.locations === row.locations &&
+            r.length === row.length &&
+            r.operator === row.operator &&
+            r.article === (task.nomenclature?.article || "") &&
+            r.productionplan === (task.productionplan || "") &&
+            r.color === (task.color?.code || "") &&
+            r.tape_number === (task.tape_number || "")
+        );
+
+        if (!exists) {
+          defectStore.addRow({
+            ...row,
+            article: task.nomenclature?.article || "",
+            productionplan: task.productionplan || "",
+            color: task.color?.code || "",
+            tape_number: task.tape_number || "",
+          });
+        }
+      });
+    });
+
     //tasks.value = response.data;
   } catch (error) {
   } finally {
@@ -302,6 +337,21 @@ const toggleStart = async (task) => {
   isSubmitting.value = true;
 
   try {
+    const target = {
+      article: task.nomenclature.article,
+      tape_number: task.tape_number,
+      productionplan: task.productionplan,
+      color: task.color.code,
+    };
+
+    const foundDefects = defectStore.rows.filter(
+      (row) =>
+        row.article === target.article &&
+        row.tape_number === target.tape_number &&
+        row.productionplan === target.productionplan &&
+        row.color === target.color
+    );
+
     const payload = {
       stage: userStore.user.stage_code, //task.stage.code,
       productionplan: task.productionplan,
@@ -319,20 +369,36 @@ const toggleStart = async (task) => {
       owner: userStore.user.name,
       netto: task.netto,
       brutto: task.brutto,
+
+      defects: foundDefects.length ? foundDefects : [],
     };
 
     const response = await api.post("/v1/create_document", payload);
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === task.productionplan &&
-             t.tape_number === model.value[0].tape_number &&
-             t.nomenclature.article === model.value[0].nomenclature.article && 
-             t.color.name === model.value[0].color.name
+      (t) =>
+        t.productionplan === task.productionplan &&
+        t.tape_number === task.tape_number &&
+        t.nomenclature.article === task.nomenclature.article &&
+        t.color.name === task.color.name
     );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);
       showModel.value = false;
     }
+
+    foundDefects.forEach((def) => {
+      const index = defectStore.rows.findIndex(
+        (r) =>
+          r.article === def.article &&
+          r.tape_number === def.tape_number &&
+          r.productionplan === def.productionplan &&
+          r.color === def.color
+      );
+      if (index !== -1) {
+        defectStore.removeRow(index);
+      }
+    });
 
     pressed.value = false;
   } catch (error) {
@@ -343,6 +409,21 @@ const toggleStart = async (task) => {
 };
 
 const toogleRefund = async (task) => {
+  const target = {
+    article: task.nomenclature.article,
+    tape_number: task.tape_number,
+    productionplan: task.productionplan,
+    color: task.color.code,
+  };
+
+  const foundDefects = defectStore.rows.filter(
+    (row) =>
+      row.article === target.article &&
+      row.tape_number === target.tape_number &&
+      row.productionplan === target.productionplan &&
+      row.color === target.color
+  );
+
   try {
     const payloadRefund = {
       stage: userStore.user.stage_code, //task.stage.code,
@@ -359,19 +440,36 @@ const toogleRefund = async (task) => {
       sort: task.sort || "",
       comment: "Возврат",
       owner: userStore.user.name,
+
+      defects: foundDefects.length ? foundDefects : [],
     };
 
     const response = await api.post("/v1/refund", payloadRefund);
 
     const idx = tasks.value.findIndex(
-      (t) => t.productionplan === task.productionplan &&
-             t.tape_number === task.tape_number &&
-             t.nomenclature.article === task.nomenclature.article && 
-             t.color.name === task.color.name
+      (t) =>
+        t.productionplan === task.productionplan &&
+        t.tape_number === task.tape_number &&
+        t.nomenclature.article === task.nomenclature.article &&
+        t.color.name === task.color.name
     );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);
     }
+
+    foundDefects.forEach((def) => {
+      const index = defectStore.rows.findIndex(
+        (r) =>
+          r.article === def.article &&
+          r.tape_number === def.tape_number &&
+          r.productionplan === def.productionplan &&
+          r.color === def.color
+      );
+      if (index !== -1) {
+        defectStore.removeRow(index);
+      }
+    });
+
     pressed.value = false;
   } catch (error) {
   } finally {
