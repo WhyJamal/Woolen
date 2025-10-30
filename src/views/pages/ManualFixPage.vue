@@ -195,9 +195,10 @@
                   <div class="flex items-center justify-between gap-2">
                     <div class="min-w-0">
                       <span
-                        class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-nowrap"
+                        class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-normal text-center"
                       >
-                        Уровень задачи: Лента -#{{ task.nomenclature.level }}
+                        Уровень задачи: {{ task.nomenclature.level }}<br />
+                        Лента - #{{ task.nomenclature.level }}
                       </span>
                     </div>
 
@@ -220,9 +221,17 @@
 
                   <div class="mt-1 flex items-center gap-2 min-w-0">
                     <span
+                      v-if="task.order !== ''"
                       class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
                     >
                       № {{ task.order }}
+                    </span>
+                    
+                    <span
+                      v-else
+                      class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
+                    >
+                      Для склада
                     </span>
 
                     <span
@@ -615,8 +624,8 @@
         tape_number: model[0].tape_number,
       }"
       @close="openDefects = false"
-    /> </Layout
-  >
+    />
+  </Layout>
 </template>
 
 <script setup>

@@ -153,7 +153,7 @@
                       <span
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-nowrap"
                       >
-                        Уровень задачи: Ящик
+                        Уровень задачи: Ящик {{ task.nomenclature.level }}
                       </span>
                     </div>
 
@@ -176,7 +176,7 @@
 
                   <div class="mt-1 flex items-center gap-2 min-w-0">
                     <span
-                      v-if="task.order !== '           '"
+                      v-if="task.order !== ''"
                       class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
                     >
                       № {{ task.order }}
