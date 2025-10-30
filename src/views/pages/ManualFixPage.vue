@@ -879,7 +879,7 @@ const toggle = async () => {
         row.article === target.article &&
         row.tape_number === target.tape_number &&
         row.productionplan === target.productionplan &&
-        row.color === target.color.code
+        row.color === target.color
     );
 
     const detail = storyDetails[index] || {};
@@ -893,8 +893,7 @@ const toggle = async () => {
     );
 
     if (
-      (userStore.user.stage === "Контроль 3" ||
-        userStore.user.stage === "Контроль03") &&
+      userStore.user.stage === "Контроль 3" &&
       (!detail.width || detail.width === 0)
     ) {
       showWarning.value = true;
