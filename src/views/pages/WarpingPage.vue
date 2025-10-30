@@ -148,7 +148,7 @@
                   <div class="flex items-center justify-between gap-2">
                     <div class="min-w-0">
                       <span
-                        v-if="task.tape_number > 0"
+                        v-if="task.tape_number !== ''"
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-normal text-center"
                       >
                         Уровень задачи: {{ task.nomenclature.level }}<br />
