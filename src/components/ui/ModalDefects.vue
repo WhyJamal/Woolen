@@ -68,10 +68,14 @@
                   type="checkbox"
                   v-model="row.fixed"
                   @change="onFixedChange(row)"
-                  :disabled="!isRejectionStage"
+                  :disabled="
+                    !isRejectionStage ||
+                    (row.operator !== userStore.user.name && row.fixed)
+                  "
                   :class="[
                     'w-4 h-4 rounded-sm border-gray-300 focus:ring-blue-500 transition',
-                    isRejectionStage
+                    isRejectionStage ||
+                    (row.operator !== userStore.user.name && row.fixed)
                       ? 'bg-gray-100 text-blue-600 cursor-pointer hover:opacity-90'
                       : 'bg-gray-200 opacity-40 cursor-not-allowed',
                   ]"
@@ -266,6 +270,7 @@
       @close="showWarning = false"
     />
   </div>
+  {{ fix }}
 </template>
 
 <script setup>
@@ -406,6 +411,7 @@ onMounted(async () => {
   isLoading.value = true;
 
   try {
+    
     // const response = await api.get("/v1/model/defects", {
     //   params: {
     //     article: props.data.article,
@@ -461,26 +467,24 @@ async function fetchDefectCategoryes() {
   }
 }
 
-function onFixedChange(row) {
-  defectsArray.forEach((row) => {
-  const matchingRows = defectStore.rows.filter((r) =>
-    r.defect?.code === row.defect?.code &&
-    r.category?.code === row.category?.code &&
-    r.note === row.note &&
-    r.locations === row.locations &&
-    r.length === row.length &&
-    r.operator === row.operator &&
-    r.article === (row.article || "") &&
-    r.productionplan === (row.productionplan || "") &&
-    r.tape_number === (row.tape_number || "") &&
-    r.color === (row.color || "")
-  );
+const fixedFalse = ref(true);
 
-  matchingRows.forEach((r) => {
-    r.fixed = !!row.fixed; 
-  });
-});
-}
+function onFixedChange(row) {
+  const foundDefects = defectStore.rows.findIndex(
+      (r) =>
+        r.defect?.code === row.defect?.code &&
+        r.category?.code === row.category?.code &&
+        r.note === row.note &&
+        r.locations === row.locations &&
+        r.length === row.length &&
+        r.article === (props.data.article || "") &&
+        r.productionplan === (props.data.productionplan || "") &&
+        r.color === (props.data.color || "") &&
+        r.tape_number === (props.data.tape_number || "")
+    );
+    defectStore.rows[foundDefects].fixed = !!row.fixed; 
+    defectStore.rows[foundDefects].operator = userStore.user.name; 
+  }
 </script>
 
 <style scoped>

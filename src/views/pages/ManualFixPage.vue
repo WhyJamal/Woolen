@@ -625,7 +625,7 @@
       }"
       @close="openDefects = false"
     />
-  </Layout>
+  </Layout>{{defectStore}}
 </template>
 
 <script setup>
