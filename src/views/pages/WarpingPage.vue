@@ -151,7 +151,7 @@
                         v-if="task.tape_number > 0"
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-normal text-center"
                       >
-                        Уровень задачи: {{ task.nomenclature.level }}}<br />
+                        Уровень задачи: {{ task.nomenclature.level }}<br />
                         Лента -#{{ task.tape_number }}
                       </span>
                       <span
