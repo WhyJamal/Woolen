@@ -954,7 +954,7 @@ const sendForm = async () => {
 
 // function Toggle Complate
 const ConfirmModal = defineAsyncComponent(() =>
-  import('@/components/ui/ConfirmModal.vue')
+  import("@/components/ui/ConfirmModal.vue")
 );
 const showConfirm = ref(false);
 
@@ -971,15 +971,15 @@ const toggleComplete = async () => {
       tape_number: "", // tape_number.value
       variety: "", // variety.value.code
       count: "", // count.value
-      comment: "", // comment.value
+      comment: "Завершен", // comment.value
       //----------------------------------//
-      stage: "", // model.value[0].next_stage.code
+      stage: "003", // model.value[0].next_stage.code
       productionplan: model.value[0].productionplan,
       date_productionplan: model.value[0].date_productionplan,
       nomenclature: model.value[0].nomenclature.article,
       size: model.value[0].size,
       color: model.value[0].color.code,
-      quantity: model.value[0].quantity,
+      quantity: 0,// model.value[0].quantity
       party: model.value[0].party,
       equipment: model.value[0].equipment,
       owner: userStore.user.GUID,
@@ -1001,15 +1001,14 @@ const toggleComplete = async () => {
     count.value = null;
     comment.value = "";
     // pressed = false
-    if (model.value[0].quantity === 0) {
-      if (idx !== -1) {
-        tasks.value.splice(idx, 1);
-        showModel.value = false;
-        modelStore.clearModel();
-      }
+    if (idx !== -1) {
+      tasks.value.splice(idx, 1);
+      showModel.value = false;
+      modelStore.clearModel();
     }
   } catch (error) {
-    warningMessage.value = error.response?.data?.message || "Повторите попытку!";
+    warningMessage.value =
+      error.response?.data?.message || "Повторите попытку!";
     showWarning.value = true;
     isLoadSend.value = false;
   } finally {
