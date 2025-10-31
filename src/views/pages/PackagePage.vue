@@ -353,7 +353,7 @@ const toggleStart = async (task) => {
     );
 
     const payload = {
-      stage: userStore.user.stage_code, //task.stage.code,
+      stage: task.next_stage.code, //task.stage.code,userStore.user.stage_code
       productionplan: task.productionplan,
       date_productionplan: task.date_productionplan,
       nomenclature: task.nomenclature.article,
@@ -371,6 +371,7 @@ const toggleStart = async (task) => {
       brutto: task.brutto,
 
       defects: foundDefects.length ? foundDefects : [],
+      storyDetails: task.storyDetails.length ? task.storyDetails : [],
     };
 
     const response = await api.post("/v1/create_document", payload);
@@ -442,6 +443,7 @@ const toogleRefund = async (task) => {
       owner: userStore.user.name,
 
       defects: foundDefects.length ? foundDefects : [],
+      storyDetails: task.storyDetails.length ? task.storyDetails : [],
     };
 
     const response = await api.post("/v1/refund", payloadRefund);
