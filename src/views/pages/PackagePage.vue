@@ -371,7 +371,7 @@ const toggleStart = async (task) => {
       brutto: task.brutto,
 
       defects: foundDefects.length ? foundDefects : [],
-      storyDetails: task.storyDetails.length ? task.storyDetails : [],
+      storyDetails: task.storyDetails || {},
     };
 
     const response = await api.post("/v1/create_document", payload);
@@ -443,7 +443,7 @@ const toogleRefund = async (task) => {
       owner: userStore.user.GUID,
 
       defects: foundDefects.length ? foundDefects : [],
-      storyDetails: task.storyDetails.length ? task.storyDetails : [],
+      storyDetails: task.storyDetails || {},
     };
 
     const response = await api.post("/v1/refund", payloadRefund);

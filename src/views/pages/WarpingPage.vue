@@ -1,5 +1,7 @@
 <template>
   <Layout>
+    <NotificationModal v-if="showWarning" @close="closeNotification" />
+
     <template #exit-button>
       <button
         @click="exit"
@@ -158,7 +160,7 @@
                         v-else
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-nowrap"
                       >
-                        Уровень задачи: Ящик - {{ task.nomenclature.level }}  
+                        Уровень задачи: Ящик - {{ task.nomenclature.level }}
                       </span>
                     </div>
 
@@ -363,14 +365,14 @@
                     <div class="flex items-center gap-3 mb-3">
                       <template v-if="!quantityChange">
                         <h3 class="text-lg font-extrabold tracking-tight">
-                          {{userStore.user.stage}} | {{ model[0].quantity }} M
+                          {{ userStore.user.stage }} | {{ model[0].quantity }} M
                         </h3>
                       </template>
 
                       <div v-else class="flex items-center gap-2">
-                        <span class="text-lg font-extrabold tracking-tight"
-                          >{{userStore.user.stage}}</span
-                        >
+                        <span class="text-lg font-extrabold tracking-tight">{{
+                          userStore.user.stage
+                        }}</span>
                         <input
                           type="number"
                           v-model="model[0].quantity"
@@ -561,6 +563,7 @@
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
 import ModalDefects from "@/components/ui/ModalDefects.vue";
+import NotificationModal from "@/components/ui/NotificationModal.vue";
 import { onMounted, ref, reactive, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
@@ -587,6 +590,7 @@ const pressed = ref(false);
 const openHistory = ref(false);
 const openDefects = ref(false);
 const showModel = ref(false);
+const showWarning = ref(false);
 const isLoading = ref(false);
 const isSubmitting = ref(false);
 const selectedTask = ref(null);
@@ -713,7 +717,7 @@ async function toggleModel(
         });
       }
     });
-    
+
     //-Загрузить-Фото-----------------------------------//
     const photoResponse = await api.get(`/v1/photo`, {
       params: { article },
@@ -816,6 +820,13 @@ const toggle = async () => {
 
     const detail = storyDetails[index] || {};
 
+    if (userStore.user.stage === "Контроль 1" &&
+      (!detail.width || detail.width === 0)
+    ) {
+      showWarning.value = true;
+      return;
+    }
+
     const foundDefects = defectStore.rows.filter(
       (row) =>
         row.article === target.article &&
@@ -843,17 +854,18 @@ const toggle = async () => {
       owner: userStore.user.GUID,
 
       // Story details
-      date: detail.date || "",
-      width: detail.width || 0,
-      mass: detail.mass || 0,
+      // date: detail.date || "",
+      // width: detail.width || 0,
+      // mass: detail.mass || 0,
       brutto: detail.brutto || 0,
       netto: detail.netto || 0,
-      machine: detail.machine?.code || "",
-      mode: detail.mode || "",
-      comment_story: detail.comment || "",
-      author: detail.author || "",
+      // machine: detail.machine?.code || "",
+      // mode: detail.mode || "",
+      // comment_story: detail.comment || "",
+      // author: detail.author || "",
 
       defects: foundDefects.length ? foundDefects : [],
+      storyDetails: detail || {},
       // defects: foundDefects.map(d => ({
       //   type: d.type,
       //   quantity: d.quantity,
@@ -974,6 +986,10 @@ const onOpen = async (number, date, stage) => {
   stages.value = [];
   await fetchSearchTypes(number, date, stage);
 };
+
+function closeNotification() {
+  showWarning.value = false
+}
 </script>
 
 <style>

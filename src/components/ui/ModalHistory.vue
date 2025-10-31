@@ -67,7 +67,7 @@
               <div class="p-3 text-center">{{ row.mode }}</div>
               <div class="p-3 truncate">{{ row.comment }}</div>
               <div class="p-3 text-right font-medium text-blue-600 truncate">
-                {{ row.author }}
+                {{ row.author.name }}
               </div>
             </div>
           </div>
@@ -222,7 +222,7 @@
             class="input col-span-2"
           />
           <input
-            :value="newRow.author"
+            :value="newRow.author.name"
             type="text"
             placeholder="Автор"
             class="input col-span-2"
@@ -299,7 +299,7 @@ const newRow = ref({
   machine: "",
   mode: "",
   comment: "",
-  author: userStore.user.name,
+  author: { name: userStore.user.name, GUID: userStore.user.GUID } 
 });
 
 const machines = ref([]);
