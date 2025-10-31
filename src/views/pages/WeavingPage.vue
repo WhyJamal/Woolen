@@ -927,12 +927,14 @@ const sendForm = async () => {
         t.nomenclature.article === model.value[0].nomenclature.article
     );
     tasks.value[idx].quantity = model.value[0].quantity;
+    tasks.value[idx].status = "Ожидает";
 
     tape_number.value = "";
     variety.value = null;
     count.value = null;
     comment.value = "";
-    // pressed = false
+    pressed.value = false;
+
     if (model.value[0].quantity === 0) {
       if (idx !== -1) {
         tasks.value.splice(idx, 1);
@@ -979,7 +981,7 @@ const toggleComplete = async () => {
       nomenclature: model.value[0].nomenclature.article,
       size: model.value[0].size,
       color: model.value[0].color.code,
-      quantity: 0,// model.value[0].quantity
+      quantity: 0, // model.value[0].quantity
       party: model.value[0].party,
       equipment: model.value[0].equipment,
       owner: userStore.user.GUID,
