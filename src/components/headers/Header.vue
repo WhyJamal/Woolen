@@ -46,7 +46,7 @@
           @click.stop="isOpen = !isOpen"
           class="flex items-center gap-1 text-sm text-blue-700"
         >
-          {{ currentLanguageLabel || 'Русский' }}
+          {{ currentLanguageLabel || "Русский" }}
           <svg
             class="w-4 h-4"
             fill="none"
@@ -80,8 +80,15 @@
         </div>
       </div>
 
+      <div v-if="userStore.user?.image">
+        <img
+          :src="userStore.user.image"
+          alt="User Avatar"
+          class="w-9 h-9 rounded-full object-cover"
+        />
+      </div>
       <div
-        v-if="userStore.user?.name"
+        v-else-if="userStore.user?.name"
         class="w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center font-semibold"
       >
         {{ firstLetter(userStore.user.name) }}

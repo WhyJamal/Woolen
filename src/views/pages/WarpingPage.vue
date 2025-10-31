@@ -335,7 +335,7 @@
                       v-if="model[0].nomenclature.photo"
                       :src="photo"
                       alt="Модель"
-                      class="object-cover w-full h-full rounded-xl"
+                      class="object-cover w-full h-full rounded-xl effect"
                     />
                     <svg
                       v-else
