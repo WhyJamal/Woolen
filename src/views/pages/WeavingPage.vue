@@ -181,14 +181,14 @@
                     >
                       № {{ task.order }}
                     </span>
-                    
+
                     <span
                       v-else
                       class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
                     >
                       Для склада
                     </span>
-                    
+
                     <span
                       class="flex-1 truncate whitespace-nowrap text-sm font-semibold text-gray-900"
                       :title="`${task.productionplan} — ${task.nomenclature?.article} — ${task.nomenclature?.name}`"
@@ -241,7 +241,11 @@
                   <div class="p-3 font-semibold text-right">Производить</div>
                 </div>
                 <div class="grid grid-cols-3 bg-white rounded-md shadow">
-                  <div v-if="model[0].order !== ''" class="p-3" :class="{ 'border-b pb-2': pressed }">
+                  <div
+                    v-if="model[0].order !== ''"
+                    class="p-3"
+                    :class="{ 'border-b pb-2': pressed }"
+                  >
                     {{ model[0].order }} - {{ model[0].nomenclature.article }} -
                     {{ model[0].nomenclature.name }}
                   </div>
@@ -364,8 +368,9 @@
 
                       <button
                         @click="sendForm"
-                        class="w-full text-base font-semibold sm:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                        class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white shadow-sm active:scale-95 transition-transform"
                       >
+                        <Check class="w-4 h-4" />
                         Отправить
                       </button>
                     </div>
@@ -607,6 +612,17 @@
                       }"
                     ></button>
                   </div>
+                  <div v-else>
+                    <button
+                      @click="openConfirmModal"
+                      class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white shadow-sm active:scale-95 transition-transform"
+                      aria-pressed="false"
+                      aria-label="Завершить"
+                    >
+                      <Power class="w-4 h-4" />
+                      <span>Завершить</span>
+                    </button>
+                  </div>
                   <!--<span
                     class="mt-5 text-lg font-bold select-none text-green-700"
                   >
@@ -649,14 +665,22 @@
         @close="showWarning = false"
       />
     </main>
-    <ModalHistory v-if="openHistory" />
+    <!-- <ModalHistory v-if="openHistory" /> -->
+    <ConfirmModal
+      v-if="showConfirm"
+      title="Хотите закончить работу?"
+      @cancel="showConfirm = false"
+      @confirm="toggleComplete"
+    >
+      <p class="text-sm text-gray-600">Это действие не может быть отменено.</p>
+    </ConfirmModal>
   </Layout>
 </template>
 
 <script setup>
+import { onMounted, ref, watch, defineAsyncComponent } from "vue";
 import Layout from "@/components/Layout.vue";
-import ModalHistory from "@/components/ui/ModalHistory.vue";
-import { onMounted, ref, watch } from "vue";
+// import ModalHistory from "@/components/ui/ModalHistory.vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -668,6 +692,7 @@ import {
   ListboxOption,
 } from "@headlessui/vue";
 import WarningModal from "@/components/ui/WarningModal.vue";
+import { Power, Check } from "lucide-vue-next";
 
 const modelStore = useModelStore();
 const tasks = ref([]);
@@ -872,7 +897,7 @@ const sendForm = async () => {
   try {
     isLoadSend.value = true;
 
-    const payload1 = {
+    const payload = {
       tape_number: tape_number.value,
       variety: variety.value.code,
       count: count.value,
@@ -890,7 +915,7 @@ const sendForm = async () => {
       owner: userStore.user.GUID,
     };
 
-    const response = await api.post("/v1/weaving", payload1);
+    const response = await api.post("/v1/weaving", payload);
 
     model.value[0].quantity = Number(model.value[0].quantity) - count.value;
     const idx = tasks.value.findIndex(
@@ -918,6 +943,73 @@ const sendForm = async () => {
   } catch (error) {
     warningMessage.value =
       error.response?.data?.message || "Повторите попытку!";
+    showWarning.value = true;
+    isLoadSend.value = false;
+  } finally {
+    isSubmitting.value = false;
+    isLoadSend.value = false;
+  }
+  endclickSound.play();
+};
+
+// function Toggle Complate
+const ConfirmModal = defineAsyncComponent(() =>
+  import('@/components/ui/ConfirmModal.vue')
+);
+const showConfirm = ref(false);
+
+function openConfirmModal() {
+  showConfirm.value = true;
+}
+
+const toggleComplete = async () => {
+  showConfirm.value = false;
+  try {
+    isLoadSend.value = true;
+
+    const payload = {
+      tape_number: "", // tape_number.value
+      variety: "", // variety.value.code
+      count: "", // count.value
+      comment: "", // comment.value
+      //----------------------------------//
+      stage: "", // model.value[0].next_stage.code
+      productionplan: model.value[0].productionplan,
+      date_productionplan: model.value[0].date_productionplan,
+      nomenclature: model.value[0].nomenclature.article,
+      size: model.value[0].size,
+      color: model.value[0].color.code,
+      quantity: model.value[0].quantity,
+      party: model.value[0].party,
+      equipment: model.value[0].equipment,
+      owner: userStore.user.GUID,
+    };
+
+    const response = await api.post("/v1/weaving", payload);
+
+    const idx = tasks.value.findIndex(
+      (t) =>
+        t.productionplan === model.value[0].productionplan &&
+        t.order === model.value[0].order &&
+        t.color === model.value[0].color.name &&
+        t.tape_number === model.value[0].tape_number &&
+        t.nomenclature.article === model.value[0].nomenclature.article
+    );
+
+    tape_number.value = "";
+    variety.value = null;
+    count.value = null;
+    comment.value = "";
+    // pressed = false
+    if (model.value[0].quantity === 0) {
+      if (idx !== -1) {
+        tasks.value.splice(idx, 1);
+        showModel.value = false;
+        modelStore.clearModel();
+      }
+    }
+  } catch (error) {
+    warningMessage.value = error.response?.data?.message || "Повторите попытку!";
     showWarning.value = true;
     isLoadSend.value = false;
   } finally {
