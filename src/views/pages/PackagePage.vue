@@ -366,7 +366,7 @@ const toggleStart = async (task) => {
       accessories: task.accessories || "",
       sort: task.sort || "",
       comment: "Упаковка",
-      owner: userStore.user.name,
+      owner: userStore.user.GUID,
       netto: task.netto,
       brutto: task.brutto,
 
@@ -440,7 +440,7 @@ const toogleRefund = async (task) => {
       accessories: task.accessories || "",
       sort: task.sort || "",
       comment: "Возврат",
-      owner: userStore.user.name,
+      owner: userStore.user.GUID,
 
       defects: foundDefects.length ? foundDefects : [],
       storyDetails: task.storyDetails.length ? task.storyDetails : [],

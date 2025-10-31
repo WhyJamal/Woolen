@@ -887,7 +887,7 @@ const sendForm = async () => {
       quantity: model.value[0].quantity,
       party: model.value[0].party,
       equipment: model.value[0].equipment,
-      owner: userStore.user.name,
+      owner: userStore.user.GUID,
     };
 
     const response = await api.post("/v1/weaving", payload1);

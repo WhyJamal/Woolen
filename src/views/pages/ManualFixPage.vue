@@ -914,7 +914,7 @@ const toggle = async () => {
       accessories: model.value[0].accessories || "",
       sort: model.value[0].sort || "",
       comment: "1",
-      owner: userStore.user.name,
+      owner: userStore.user.GUID,
 
       // Story details
       date: detail.date || "",
@@ -998,7 +998,7 @@ const toogleRefund = async () => {
       accessories: model.value[0].accessories || "",
       sort: model.value[0].sort || "",
       comment: "Возврат",
-      owner: userStore.user.name,
+      owner: userStore.user.GUID,
 
       defects: foundDefects.length ? foundDefects : [],
     };
