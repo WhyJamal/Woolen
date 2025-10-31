@@ -246,11 +246,11 @@
                   <div class="p-3 font-semibold text-right">Производить</div>
                 </div>
                 <div class="grid grid-cols-3 bg-white rounded-md shadow">
-                  <div v-if="model[0].order !== '           '" class="p-3">
+                  <div v-if="model[0].order !== ''" class="p-3">
                     {{ model[0].order }} - {{ model[0].nomenclature.article }}
                     {{ model[0].nomenclature.name }}
                   </div>
-                  <div v-else class="p-3">
+                  <div v-else class="p-3">  
                     Для склада - {{ model[0].nomenclature.article }}
                     {{ model[0].nomenclature.name }}
                   </div>
@@ -540,7 +540,9 @@
         color: model[0].color.code,
         date_productionplan: model[0].date_productionplan,
         tape_number: model[0].tape_number,
+        quantity: model[0].quantity,
         arrayStory: storyDetails,
+        arrayDefects: defectStore
       }"
       @save="handleSave"
       @close="openHistory = false"
@@ -857,8 +859,8 @@ const toggle = async () => {
       // date: detail.date || "",
       // width: detail.width || 0,
       // mass: detail.mass || 0,
-      brutto: detail.brutto || 0,
-      netto: detail.netto || 0,
+      netto: detail.netto || model.value[0].netto || 0,
+      brutto: detail.brutto || model.value[0].brutto || 0,
       // machine: detail.machine?.code || "",
       // mode: detail.mode || "",
       // comment_story: detail.comment || "",

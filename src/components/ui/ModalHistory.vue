@@ -163,7 +163,7 @@
               <div class="relative">
                 <ListboxButton
                   @click="fetchMachines"
-                  class="w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                  class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
                   <span>
                     {{
@@ -290,12 +290,43 @@ const formatDate = (d) =>
     "0"
   )}.${d.getFullYear()}`;
 
+const arrayDefects = props.data.arrayDefects;
+const defectsrows = Array.isArray(arrayDefects?.rows) ? arrayDefects.rows : [];
+
+const foundDefects = defectsrows.filter(
+  (row) =>
+    row.article === props.data.article &&
+    row.tape_number === props.data.tape_number &&
+    row.productionplan === props.data.productionplan &&
+    row.color === props.data.color
+);
+
+let nettoCalculated = props.data.netto;
+
+if (["Контроль 1"].includes(userStore.user?.stage)) {
+  const falseCount = foundDefects.filter(d => d.fixed === false).length;
+  nettoCalculated = props.data.quantity - falseCount * 0.10;
+}
+
+else if (["Контроль 2", "Контроль 3"].includes(userStore.user?.stage)) {
+  const trueCount = foundDefects.filter(d => d.fixed === false).length;
+  nettoCalculated = props.data.brutto - trueCount * 0.10;
+}
+
+else if (["Браковка", "Браковка 2"].includes(userStore.user?.stage)) {
+  const trueCount = foundDefects.filter(d => d.fixed === true).length;
+  const falseCount = foundDefects.filter(d => d.fixed === false).length;
+  nettoCalculated = props.data.brutto - (falseCount + trueCount) * 0.10;
+  nettoCalculated = nettoCalculated + trueCount * 0.10;
+}
+
+
 const newRow = ref({
   date: formatDate(today),
-  width: "",
+  width: "150",
   mass: "",
-  brutto: "",
-  netto: "",
+  brutto: props.data.quantity,
+  netto: nettoCalculated,
   machine: "",
   mode: "",
   comment: "",

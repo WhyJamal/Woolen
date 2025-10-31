@@ -567,7 +567,11 @@
         color: model[0].color.code,
         date_productionplan: model[0].date_productionplan,
         tape_number: model[0].tape_number,
+        quantity: model[0].quantity,
+        netto: model[0].netto,
+        brutto: model[0].brutto,
         arrayStory: storyDetails,
+        arrayDefects: defectStore
       }"
       @save="handleSave"
       @close="openHistory = false"
@@ -880,8 +884,8 @@ const toggle = async () => {
       // date: detail.date || "",
       // width: detail.width || 0,
       // mass: detail.mass || 0,
-      brutto: detail.brutto || 0,
-      netto: detail.netto || 0,
+      netto: detail.netto || model.value[0].netto || 0,
+      brutto: detail.brutto || model.value[0].brutto || 0,
       // machine: detail.machine?.code || "",
       // mode: detail.mode || "",
       // comment_story: detail.comment || "",
@@ -960,6 +964,8 @@ const toogleRefund = async () => {
       sort: model.value[0].sort || "",
       comment: "Возврат",
       owner: userStore.user.GUID,
+      netto: model.value[0].netto || 0,
+      brutto: model.value[0].brutto || 0,
 
       defects: foundDefects.length ? foundDefects : [],
     };

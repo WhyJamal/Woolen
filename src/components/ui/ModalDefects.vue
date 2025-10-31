@@ -116,9 +116,9 @@
             <div class="relative">
               <ListboxButton
                 @click="fetchDefects"
-                class="w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
               >
-                <span>
+                <span class="hover:text-gray-800">
                   {{ newRow.defect?.name || "Выберите Дефект..." }}
                 </span>
                 <svg
@@ -168,9 +168,9 @@
             <div class="relative">
               <ListboxButton
                 @click="fetchDefectCategoryes"
-                class="w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
               >
-                <span>
+                <span class="text-gray-800">
                   {{ newRow.category?.name || "Выберите категорию..." }}
                 </span>
                 <svg

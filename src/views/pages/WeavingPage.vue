@@ -241,7 +241,7 @@
                   <div class="p-3 font-semibold text-right">Производить</div>
                 </div>
                 <div class="grid grid-cols-3 bg-white rounded-md shadow">
-                  <div v-if="model[0].order !== '           '" class="p-3" :class="{ 'border-b pb-2': pressed }">
+                  <div v-if="model[0].order !== ''" class="p-3" :class="{ 'border-b pb-2': pressed }">
                     {{ model[0].order }} - {{ model[0].nomenclature.article }} -
                     {{ model[0].nomenclature.name }}
                   </div>
@@ -290,7 +290,7 @@
                       <div class="relative">
                         <ListboxButton
                           @click="fetchMachines"
-                          class="w-full p-2 pt-item__label rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                          class="w-full p-2 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                         >
                           <span>
                             {{ variety ? variety.name : "Выберите сорт..." }}
