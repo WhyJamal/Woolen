@@ -1,23 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import LoginPage from '@/views/pages/LoginPage.vue'
-import WarpingPage from '@/views/pages/WarpingPage.vue'
-import WeavingPage from '@/views/pages/WeavingPage.vue'
-import ManualFixPage from '@/views/pages/ManualFixPage.vue'
-import PackagePage from '@/views/pages/PackagePage.vue'
-import ExpenseHistory from '@/views/pages/ExpenseHistory.vue'
-import HistoryAction from '@/views/pages/HistoryAction.vue'
-import PrintLabel from '@/views/pages/PrintLabel.vue'
 
 const routes = [
-  { path: '/', name: 'login', component: LoginPage },
-  { path: '/warping', name: 'Warping', component: WarpingPage, meta: { requiresAuth: true } },
-  { path: '/weaving', name: 'Weaving', component: WeavingPage, meta: { requiresAuth: true } },
-  { path: '/manualfix', name: 'ManualFix', component: ManualFixPage, meta: { requiresAuth: true } },
-  { path: '/package', name: 'Package', component: PackagePage, meta: { requiresAuth: true } },
-  { path: '/consumes', name: 'ExpenseHistory', component: ExpenseHistory, meta: { requiresAuth: true } },
-  { path: '/history', name: 'HistoryAction', component: HistoryAction, meta: { requiresAuth: true } },
-  { path: '/print-label', name: 'PrintLabel', component: PrintLabel, meta: { requiresAuth: true } },
+  { path: '/', name: 'login', component: () => import('@/views/pages/LoginPage.vue') },
+  { path: '/warping', name: 'Warping', component: () => import('@/views/pages/WarpingPage.vue'), meta: { requiresAuth: true } },
+  { path: '/weaving', name: 'Weaving', component: () => import('@/views/pages/WeavingPage.vue'), meta: { requiresAuth: true } },
+  { path: '/manualfix', name: 'ManualFix', component: () => import('@/views/pages/ManualFixPage.vue'), meta: { requiresAuth: true } },
+  { path: '/package', name: 'Package', component: () => import('@/views/pages/PackagePage.vue'), meta: { requiresAuth: true } },
+  { path: '/consumes', name: 'ExpenseHistory', component: () => import('@/views/pages/ExpenseHistory.vue'), meta: { requiresAuth: true } },
+  { path: '/history', name: 'HistoryAction', component: () => import('@/views/pages/HistoryAction.vue'), meta: { requiresAuth: true } },
+  { path: '/print-label', name: 'PrintLabel', component: () => import('@/views/pages/PrintLabel.vue'), meta: { requiresAuth: true } },
   { path: '/not-authorized', name: 'not-authorized', component: () => import('@/views/pages/maintenance/error/Error401Page.vue') },
   { path: '/:pathMatch(.*)*', component: () => import('@/views/pages/maintenance/error/Error404Page.vue') },
 ]
