@@ -680,7 +680,6 @@
 <script setup>
 import { onMounted, ref, watch, defineAsyncComponent } from "vue";
 import Layout from "@/components/Layout.vue";
-// import ModalHistory from "@/components/ui/ModalHistory.vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -691,8 +690,13 @@ import {
   ListboxOptions,
   ListboxOption,
 } from "@headlessui/vue";
-import WarningModal from "@/components/ui/WarningModal.vue";
+// import WarningModal from "@/components/ui/WarningModal.vue";
+// import ModalHistory from "@/components/ui/ModalHistory.vue";
 import { Power, Check } from "lucide-vue-next";
+
+const WarningModal = defineAsyncComponent(() =>
+  import("@/components/ui/WarningModal.vue")
+);
 
 const modelStore = useModelStore();
 const tasks = ref([]);
@@ -865,31 +869,32 @@ const comment = ref("");
 const showWarning = ref(false);
 const warningMessage = ref("");
 
+function showWarningModal(message) {
+  warningMessage.value = message;
+  showWarning.value = true;
+}
+
 const validateFields = () => {
   switch (true) {
-    case !tape_number.value:
-      warningMessage.value = "Введите номер лента!";
-      showWarning.value = true;
-      return false;
+  case !tape_number.value:
+    showWarningModal("Введите номер лента!");
+    return false;
 
-    case !variety.value:
-      warningMessage.value = "Введите сорт!";
-      showWarning.value = true;
-      return false;
+  case !variety.value:
+    showWarningModal("Введите сорт!");
+    return false;
 
-    case !count.value:
-      warningMessage.value = "Введите кол-во!";
-      showWarning.value = true;
-      return false;
+  case !count.value:
+    showWarningModal("Введите кол-во!");
+    return false;
 
-    case Number(model.value[0].quantity) - count.value < 0:
-      warningMessage.value = "Не может быть больше, чем количество модели!";
-      showWarning.value = true;
-      return false;
+  case Number(model.value[0].quantity) - count.value < 0:
+    showWarningModal("Не может быть больше, чем количество модели!");
+    return false;
 
-    default:
-      return true;
-  }
+  default:
+    return true;
+}
 };
 
 const sendForm = async () => {
