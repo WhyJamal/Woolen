@@ -113,7 +113,7 @@
                 v-if="tasks === null"
                 class="text-gray-400 text-center py-10"
               >
-                Loading...
+                Загрузить...
               </div>
               <EmptyState v-else-if="!tasks.length" />
               <article
