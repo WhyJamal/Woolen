@@ -588,9 +588,6 @@
 
 <script setup>
 import Layout from "@/components/Layout.vue";
-import ModalHistory from "@/components/ui/ModalHistory.vue";
-import ModalDefects from "@/components/ui/ModalDefects.vue";
-import NotificationModal from "@/components/ui/NotificationModal.vue";
 import { onMounted, ref, reactive, watch, defineAsyncComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
@@ -769,9 +766,17 @@ function exit() {
   router.push("/");
 }
 
+const ModalHistory = defineAsyncComponent(() =>
+  import("@/components/ui/ModalHistory.vue")
+);
+
 function toggleHistory() {
   openHistory.value = !openHistory.value;
 }
+
+const ModalDefects = defineAsyncComponent(() =>
+  import("@/components/ui/ModalDefects.vue")
+);
 
 function toggleDefects() {
   openDefects.value = !openDefects.value;
@@ -1081,6 +1086,9 @@ const onOpen = async (number, date, stage) => {
   await fetchSearchTypes(number, date, stage);
 };
 
+const NotificationModal = defineAsyncComponent(() =>
+  import("@/components/ui/NotificationModal.vue")
+);
 
 function closeNotification() {
   showWarning.value = false

@@ -660,7 +660,6 @@
         @close="showWarning = false"
       />
     </main>
-    <!-- <ModalHistory v-if="openHistory" /> -->
     <ConfirmModal
       v-if="showConfirm"
       title="Хотите закончить работу?"
@@ -685,8 +684,6 @@ import {
   ListboxOptions,
   ListboxOption,
 } from "@headlessui/vue";
-// import WarningModal from "@/components/ui/WarningModal.vue";
-// import ModalHistory from "@/components/ui/ModalHistory.vue";
 import { Power, Check } from "lucide-vue-next";
 
 const WarningModal = defineAsyncComponent(() =>
