@@ -7,7 +7,7 @@ export const stageRoutes = {
     "Контроль 2": "/manualfix",
     "Контроль 3": "/manualfix",
     "Автоклав": "/manualfix",
-    "Пылесос щетка": "/manualfix",
+    "Обработка": "/manualfix",
     "Браковка": "/manualfix",
     "Браковка 2": "/manualfix",   
     "Упаковка": "/package",
