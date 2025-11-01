@@ -109,6 +109,13 @@
             <div
               class="flex h-[600px] flex-col gap-3 max-h-[80vh] bg-gray-200 rounded-lg p-3 overflow-y-auto scroll-soft"
             >
+              <div
+                v-if="tasks === null"
+                class="text-gray-400 text-center py-10"
+              >
+                Loading...
+              </div>
+              <EmptyState v-else-if="!tasks.length" />
               <article
                 v-for="(task, index) in tasks"
                 :key="index"
@@ -213,18 +220,6 @@
                   </div>
                 </div>
               </article>
-
-              <div
-                v-if="!tasks.length"
-                class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4"
-              >
-                <img
-                  src="@/assets/images/empty-product.svg"
-                  title="No data found"
-                  class="w-32 h-32 object-contain"
-                />
-                <p class="text-center text-sm font-bold">No data</p>
-              </div>
             </div>
           </aside>
 
@@ -699,7 +694,7 @@ const WarningModal = defineAsyncComponent(() =>
 );
 
 const modelStore = useModelStore();
-const tasks = ref([]);
+const tasks = ref(null);
 const model = ref([]);
 const router = useRouter();
 const userStore = useUserStore();
@@ -876,25 +871,25 @@ function showWarningModal(message) {
 
 const validateFields = () => {
   switch (true) {
-  case !tape_number.value:
-    showWarningModal("Введите номер лента!");
-    return false;
+    case !tape_number.value:
+      showWarningModal("Введите номер лента!");
+      return false;
 
-  case !variety.value:
-    showWarningModal("Введите сорт!");
-    return false;
+    case !variety.value:
+      showWarningModal("Введите сорт!");
+      return false;
 
-  case !count.value:
-    showWarningModal("Введите кол-во!");
-    return false;
+    case !count.value:
+      showWarningModal("Введите кол-во!");
+      return false;
 
-  case Number(model.value[0].quantity) - count.value < 0:
-    showWarningModal("Не может быть больше, чем количество модели!");
-    return false;
+    case Number(model.value[0].quantity) - count.value < 0:
+      showWarningModal("Не может быть больше, чем количество модели!");
+      return false;
 
-  default:
-    return true;
-}
+    default:
+      return true;
+  }
 };
 
 const sendForm = async () => {
@@ -1040,7 +1035,9 @@ onMounted(async () => {
       const first = modelStore.model[0];
       runToggle(first);
     }
-  } catch (error) {}
+  } catch (error) {
+    tasks.value = [];
+  }
 });
 
 watch(
@@ -1101,6 +1098,10 @@ const onOpen = async (number, date, stage) => {
   stages.value = [];
   await fetchSearchTypes(number, date, stage);
 };
+
+const EmptyState = defineAsyncComponent(() =>
+  import("@/components/ui/EmptyState.vue")
+);
 </script>
 
 <style>

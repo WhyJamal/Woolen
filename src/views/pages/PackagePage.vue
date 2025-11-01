@@ -29,20 +29,12 @@
       <div v-if="isLoading" class="flex-1 flex items-center justify-center">
         <div class="loader"></div>
       </div>
-
-      <div
-        v-if="tasks.length === 0 && !isLoading"
-        class="flex flex-col bg-white items-center justify-center p-4 mt-4 rounded-lg text-gray-500"
-      >
-        <img
-          src="@/assets/images/empty-product.svg"
-          title="No data found"
-          class="w-32 h-32 object-contain"
-        />
-        <p class="text-center text-sm font-bold">No data</p>
+      <div v-if="tasks === null" class="text-gray-400 text-center py-10">
+        Загрузить...
       </div>
+      <EmptyState v-else-if="!tasks.length" />
 
-      <div v-if="!isLoading">
+      <div v-else="!isLoading">
         <div
           v-for="(orderTasks, order) in groupedTasks"
           :key="order"
@@ -199,7 +191,7 @@
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
 import PrintLabel from "@/views/pages/PrintLabel.vue";
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, defineAsyncComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -207,7 +199,7 @@ import { useDefectStore } from "@/stores/defects";
 
 const defectStore = useDefectStore();
 const pressed = ref(false);
-const tasks = ref([]);
+const tasks = ref(null);
 const router = useRouter();
 const userStore = useUserStore();
 const openHistory = ref(false);
@@ -295,6 +287,7 @@ onMounted(async () => {
 
     //tasks.value = response.data;
   } catch (error) {
+    tasks.value = [];
   } finally {
     isLoading.value = false;
   }
@@ -479,6 +472,10 @@ const toogleRefund = async (task) => {
   }
   endclickSound.play();
 };
+
+const EmptyState = defineAsyncComponent(() =>
+  import("@/components/ui/EmptyState.vue")
+);
 </script>
 
 <style>

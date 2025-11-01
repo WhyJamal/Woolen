@@ -111,6 +111,14 @@
             <div
               class="flex h-[600px] flex-col gap-3 max-h-[80vh] bg-gray-200 rounded-lg p-3 overflow-y-auto scroll-soft"
             >
+              <div
+                v-if="tasks === null"
+                class="text-gray-400 text-center py-10"
+              >
+                Loading...
+              </div>
+              <EmptyState v-else-if="!tasks.length" />
+
               <article
                 v-for="(task, index) in tasks"
                 :key="index"
@@ -216,18 +224,6 @@
                   </div>
                 </div>
               </article>
-
-              <div
-                v-if="!tasks.length"
-                class="flex flex-col bg-white items-center justify-center text-gray-500 rounded-lg text-center py-4"
-              >
-                <img
-                  src="@/assets/images/empty-product.svg"
-                  title="No data found"
-                  class="w-32 h-32 object-contain"
-                />
-                <p class="text-center text-sm font-bold">No data</p>
-              </div>
             </div>
           </aside>
 
@@ -595,7 +591,7 @@ import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
 import ModalDefects from "@/components/ui/ModalDefects.vue";
 import NotificationModal from "@/components/ui/NotificationModal.vue";
-import { onMounted, ref, reactive, watch } from "vue";
+import { onMounted, ref, reactive, watch, defineAsyncComponent } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -610,7 +606,7 @@ import { useDefectStore } from "@/stores/defects";
 
 const defectStore = useDefectStore();
 const modelStore = useModelStore();
-const tasks = ref([]);
+const tasks = ref(null);
 const model = ref([]);
 const quantityChange = ref(false);
 const changedQuantity = ref(null);
@@ -1021,7 +1017,9 @@ onMounted(async () => {
       const first = modelStore.model[0];
       runToggle(first);
     }
-  } catch (error) {}
+  } catch (error) {
+    tasks.value = [];
+  }
 });
 
 watch(
@@ -1087,6 +1085,10 @@ const onOpen = async (number, date, stage) => {
 function closeNotification() {
   showWarning.value = false
 }
+
+const EmptyState = defineAsyncComponent(() =>
+  import("@/components/ui/EmptyState.vue")
+);
 </script>
 
 <style>
