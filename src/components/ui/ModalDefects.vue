@@ -61,21 +61,17 @@
               <div class="p-3 text-center">{{ row.note || "" }}</div>
               <div class="p-3 text-center">{{ row.locations || "" }}</div>
               <div class="p-3 text-center">{{ row.length || "" }}</div>
-              <div class="p-3 text-center">{{ row.operator || "" }}</div>
+              <div class="p-3 text-center">{{ row.operator.name || "" }}</div>
               <div class="p-3 flex justify-center items-center">
                 <input
                   id="default-checkbox"
                   type="checkbox"
                   v-model="row.fixed"
                   @change="onFixedChange(row)"
-                  :disabled="
-                    !isRejectionStage ||
-                    (row.operator !== userStore.user.name && row.fixed)
-                  "
+                  :disabled="!isControlStage"
                   :class="[
                     'w-4 h-4 rounded-sm border-gray-300 focus:ring-blue-500 transition',
-                    isRejectionStage ||
-                    (row.operator !== userStore.user.name && row.fixed)
+                    isControlStage
                       ? 'bg-gray-100 text-blue-600 cursor-pointer hover:opacity-90'
                       : 'bg-gray-200 opacity-40 cursor-not-allowed',
                   ]"
@@ -238,13 +234,57 @@
             placeholder="Примечание"
             class="input col-span-2"
           />
-          <input
-            :value="newRow.operator"
-            type="text"
-            placeholder="Оператор"
-            class="input col-span-2"
-            disabled
-          />
+
+          <Listbox v-model="newRow.operator">
+            <div class="relative">
+              <ListboxButton
+                @click="fetchOperators"
+                class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+              >
+                <span class="text-gray-800">
+                  {{ newRow.operator?.name || "Выберите оператора..." }}
+                </span>
+                <svg
+                  class="w-5 h-5 ml-2 text-gray-500"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </ListboxButton>
+
+              <ListboxOptions
+                class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
+              >
+                <ListboxOption
+                  v-if="isLoadingOperators"
+                  class="flex items-center justify-center py-4"
+                >
+                  <div class="loader w-10 h-10"></div>
+                </ListboxOption>
+
+                <ListboxOption
+                  v-else
+                  v-for="operator in operators"
+                  :key="operator.GUID"
+                  :value="operator"
+                  class="cursor-pointer p-2 hover:bg-blue-50"
+                >
+                  <div class="flex justify-between items-center">
+                    <span>{{ operator.name }}</span>
+                    <!-- <span class="text-gray-400 text-sm">{{ operator.code }}</span> -->
+                  </div>
+                </ListboxOption>
+              </ListboxOptions>
+            </div>
+          </Listbox>
 
           <div class="col-span-2 flex justify-end space-x-3 mt-3">
             <button
@@ -324,7 +364,7 @@ const newRow = ref({
   note: "",
   locations: "",
   length: "",
-  operator: userStore.user.name,
+  operator: { name: "", GUID: "" },
   fixed: false,
   article: props.data.article,
   productionplan: props.data.productionplan,
@@ -335,6 +375,7 @@ const newRow = ref({
 
 const defects = ref([]);
 const defectCategoryes = ref([]);
+const operators = ref([]);
 
 const close = () => {
   emit("close");
@@ -378,6 +419,11 @@ const validateFields = () => {
       showWarning.value = true;
       return false;
 
+    case !newRow.value.operator || !newRow.value.operator.name:
+      warningMessage.value = "Введите оператор!";
+      showWarning.value = true;
+      return false;
+
     default:
       return true;
   }
@@ -395,7 +441,7 @@ const addRow = () => {
     note: "",
     locations: "",
     length: "",
-    operator: userStore.user.name,
+    operator: { name: "", GUID: "" },
     fixed: false,
     article: props.data.article,
     productionplan: props.data.productionplan,
@@ -411,7 +457,6 @@ onMounted(async () => {
   isLoading.value = true;
 
   try {
-    
     // const response = await api.get("/v1/model/defects", {
     //   params: {
     //     article: props.data.article,
@@ -467,24 +512,38 @@ async function fetchDefectCategoryes() {
   }
 }
 
+const isLoadingOperators = ref(false);
+
+async function fetchOperators() {
+  if (isLoadingOperators.value) return;
+  isLoadingOperators.value = true;
+  try {
+    const response = await api.get("/v1/operators/list");
+    operators.value = response.data;
+  } catch (error) {
+  } finally {
+    isLoadingOperators.value = false;
+  }
+}
+
 const fixedFalse = ref(true);
 
 function onFixedChange(row) {
   const foundDefects = defectStore.rows.findIndex(
-      (r) =>
-        r.defect?.code === row.defect?.code &&
-        r.category?.code === row.category?.code &&
-        r.note === row.note &&
-        r.locations === row.locations &&
-        r.length === row.length &&
-        r.article === (props.data.article || "") &&
-        r.productionplan === (props.data.productionplan || "") &&
-        r.color === (props.data.color || "") &&
-        r.tape_number === (props.data.tape_number || "")
-    );
-    defectStore.rows[foundDefects].fixed = !!row.fixed; 
-    defectStore.rows[foundDefects].operator = userStore.user.name; 
-  }
+    (r) =>
+      r.defect?.code === row.defect?.code &&
+      r.category?.code === row.category?.code &&
+      r.note === row.note &&
+      r.locations === row.locations &&
+      r.length === row.length &&
+      r.article === (props.data.article || "") &&
+      r.productionplan === (props.data.productionplan || "") &&
+      r.color === (props.data.color || "") &&
+      r.tape_number === (props.data.tape_number || "")
+  );
+  defectStore.rows[foundDefects].fixed = !!row.fixed;
+  // defectStore.rows[foundDefects].operator = userStore.user.name;
+}
 </script>
 
 <style scoped>
