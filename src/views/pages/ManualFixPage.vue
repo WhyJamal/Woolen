@@ -567,7 +567,6 @@
         netto: model[0].netto,
         brutto: model[0].brutto,
         arrayStory: storyDetails,
-        arrayDefects: defectStore
       }"
       @save="handleSave"
       @close="openHistory = false"

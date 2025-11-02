@@ -537,7 +537,6 @@
         tape_number: model[0].tape_number,
         quantity: model[0].quantity,
         arrayStory: storyDetails,
-        arrayDefects: defectStore,
       }"
       @save="handleSave"
       @close="openHistory = false"
