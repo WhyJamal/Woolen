@@ -9,6 +9,13 @@
       </button>
     </template>
 
+    <div
+      v-if="isLoadSend"
+      class="fixed inset-0 bg-white/70 flex items-center justify-center z-[9999] cursor-not-allowed"
+    >
+      <div class="loader"></div>
+    </div>
+
     <!-- PAGE -->
     <main class="page-wrap px-4 py-6">
       <div class="flex flex-col gap-6">
@@ -265,12 +272,12 @@
                   v-if="pressed"
                   class="relative grid grid-cols-2 gap-4 bg-white rounded-md shadow p-4 w-full max-w-[1009px] lg:max-w-full"
                 >
-                  <div
+                  <!-- <div
                     v-if="isLoadSend"
                     class="absolute inset-0 bg-white/70 flex items-center justify-center z-10 cursor-not-allowed"
                   >
                     <div class="loader"></div>
-                  </div>
+                  </div> -->
 
                   <div class="flex flex-col w-full">
                     <label class="p-2 font-semibold pt-item__row"
@@ -610,6 +617,7 @@
                   <div v-else>
                     <button
                       @click="openConfirmModal"
+                      :disabled="isLoadSend"
                       class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white shadow-sm active:scale-95 transition-transform"
                       aria-pressed="false"
                       aria-label="Завершить"
@@ -887,30 +895,40 @@ const validateFields = () => {
 
 const sendForm = async () => {
   if (!validateFields()) return;
+
   try {
     isLoadSend.value = true;
 
-    const payload = {
-      tape_number: tape_number.value,
-      // variety: variety.value.code,
-      count: count.value,
-      comment: comment.value,
-      //----------------------------------//
-      stage: model.value[0].next_stage.code, //userStore.user.stage_code,
-      productionplan: model.value[0].productionplan,
-      date_productionplan: model.value[0].date_productionplan,
-      nomenclature: model.value[0].nomenclature.article,
-      size: model.value[0].size,
-      color: model.value[0].color.code,
-      quantity: model.value[0].quantity,
-      party: model.value[0].party,
-      equipment: model.value[0].equipment,
-      owner: userStore.user.GUID,
-    };
+    const totalQuantity = Number(model.value[0].quantity);
+    const batchSize = Number(count.value);
+    const fullCycles = Math.floor(totalQuantity / batchSize);
+    let tapeNum = Number(tape_number.value);
 
-    const response = await api.post("/v1/weaving", payload);
+    for (let i = 0; i < fullCycles; i++) {
+      const payload = {
+        tape_number: tapeNum,
+        count: batchSize,
+        comment: comment.value,
+        stage: model.value[0].next_stage.code,
+        productionplan: model.value[0].productionplan,
+        date_productionplan: model.value[0].date_productionplan,
+        nomenclature: model.value[0].nomenclature.article,
+        size: model.value[0].size,
+        color: model.value[0].color.code,
+        quantity: model.value[0].quantity,
+        party: model.value[0].party,
+        equipment: model.value[0].equipment,
+        owner: userStore.user.GUID,
+      };
 
-    model.value[0].quantity = Number(model.value[0].quantity) - count.value;
+      await api.post("/v1/weaving", payload);
+
+      tape_number.value = tapeNum + 1;
+
+      model.value[0].quantity -= batchSize;
+      tapeNum++;
+    }
+
     const idx = tasks.value.findIndex(
       (t) =>
         t.productionplan === model.value[0].productionplan &&
@@ -919,32 +937,29 @@ const sendForm = async () => {
         t.tape_number === model.value[0].tape_number &&
         t.nomenclature.article === model.value[0].nomenclature.article
     );
-    tasks.value[idx].quantity = model.value[0].quantity;
-    tasks.value[idx].status = "Ожидает";
+
+    if (idx !== -1) {
+      tasks.value[idx].quantity = model.value[0].quantity;
+    }
+
+    if (model.value[0].quantity <= 0 && idx !== -1) {
+      tasks.value.splice(idx, 1);
+      showModel.value = false;
+      modelStore.clearModel();
+    }
 
     tape_number.value = "";
-    // variety.value = null;
     count.value = null;
     comment.value = "";
-    pressed.value = false;
-
-    if (model.value[0].quantity === 0) {
-      if (idx !== -1) {
-        tasks.value.splice(idx, 1);
-        showModel.value = false;
-        modelStore.clearModel();
-      }
-    }
   } catch (error) {
     warningMessage.value =
       error.response?.data?.message || "Повторите попытку!";
     showWarning.value = true;
-    isLoadSend.value = false;
   } finally {
-    isSubmitting.value = false;
     isLoadSend.value = false;
+    isSubmitting.value = false;
+    endclickSound.play();
   }
-  endclickSound.play();
 };
 
 // function Toggle Complate
