@@ -263,7 +263,7 @@
                 </div>
                 <div
                   v-if="pressed"
-                  class="relative grid grid-cols-3 gap-2 bg-white rounded-md shadow p-3 w-full max-w-[1009px] lg:max-w-full"
+                  class="relative grid grid-cols-2 gap-4 bg-white rounded-md shadow p-4 w-full max-w-[1009px] lg:max-w-full"
                 >
                   <div
                     v-if="isLoadSend"
@@ -271,11 +271,11 @@
                   >
                     <div class="loader"></div>
                   </div>
-                  <div class="p-3 font-semibold pt-item__row">Номер Ленты:</div>
-                  <div class="p-3 font-semibold pt-item__row">Сорт (1-5):</div>
-                  <div class="p-3 font-semibold pt-item__row">Кол-во:</div>
 
-                  <div class="p-2">
+                  <div class="flex flex-col w-full">
+                    <label class="p-2 font-semibold pt-item__row"
+                      >Номер Ленты:</label
+                    >
                     <input
                       v-model="tape_number"
                       type="number"
@@ -284,7 +284,7 @@
                     />
                   </div>
 
-                  <div class="p-2">
+                  <!-- <div class="p-2">
                     <Listbox v-model="variety">
                       <div class="relative">
                         <ListboxButton
@@ -334,9 +334,11 @@
                         </ListboxOptions>
                       </div>
                     </Listbox>
-                  </div>
-
-                  <div class="p-2">
+                  </div> -->
+                  <div class="flex flex-col w-full">
+                    <label class="p-2 font-semibold pt-item__row"
+                      >Кол-во:</label
+                    >
                     <input
                       v-model.number="count"
                       type="number"
@@ -346,21 +348,19 @@
                     />
                   </div>
 
-                  <div class="col-span-3 p-2">
+                  <div class="col-span-2 p-2">
                     <div
                       class="flex flex-col sm:flex-row items-start sm:items-center gap-2"
                     >
                       <label class="block text-sm mb-1 font-semibold"
                         >Комментарий:</label
                       >
-
                       <textarea
                         v-model="comment"
                         rows="1"
                         class="flex-1 p-2 border rounded resize-y focus:outline-none pt-item__label"
                         placeholder="Ваш комментарий..."
                       ></textarea>
-
                       <button
                         @click="sendForm"
                         class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white shadow-sm active:scale-95 transition-transform"
@@ -720,7 +720,7 @@ const form = ref({
   owner: "",
   tape_number: "",
 });
-const varietyes = [{ name: "1", code: "001" }];
+// const varietyes = [{ name: "1", code: "001" }];
 const searchTypes = ref([
   { id: "model", name: "Модел" },
   { id: "order", name: "ЗаказID" },
@@ -816,7 +816,7 @@ const reset = () => {
 
 const toggle = async () => {
   tape_number.value = "";
-  variety.value = null;
+  // variety.value = null;
   count.value = null;
   comment.value = "";
 
@@ -854,7 +854,7 @@ const toggle = async () => {
 
 //-Отправка-Форма-------------------------//
 const tape_number = ref("");
-const variety = ref("");
+// const variety = ref("");
 const count = ref(null);
 const comment = ref("");
 
@@ -870,10 +870,6 @@ const validateFields = () => {
   switch (true) {
     case !tape_number.value:
       showWarningModal("Введите номер лента!");
-      return false;
-
-    case !variety.value:
-      showWarningModal("Введите сорт!");
       return false;
 
     case !count.value:
@@ -896,7 +892,7 @@ const sendForm = async () => {
 
     const payload = {
       tape_number: tape_number.value,
-      variety: variety.value.code,
+      // variety: variety.value.code,
       count: count.value,
       comment: comment.value,
       //----------------------------------//
@@ -927,7 +923,7 @@ const sendForm = async () => {
     tasks.value[idx].status = "Ожидает";
 
     tape_number.value = "";
-    variety.value = null;
+    // variety.value = null;
     count.value = null;
     comment.value = "";
     pressed.value = false;
@@ -968,7 +964,7 @@ const toggleComplete = async () => {
 
     const payload = {
       tape_number: "", // tape_number.value
-      variety: "", // variety.value.code
+      // variety: "", // variety.value.code
       count: "", // count.value
       comment: "Завершен", // comment.value
       //----------------------------------//
@@ -996,7 +992,7 @@ const toggleComplete = async () => {
     );
 
     tape_number.value = "";
-    variety.value = null;
+    // variety.value = null;
     count.value = null;
     comment.value = "";
     // pressed = false
