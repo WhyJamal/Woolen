@@ -1,18 +1,17 @@
 <template>
   <div class="login-page relative overflow-hidden">
     <Header />
-        <div
-          class="absolute inset-0 bg-cover scale-105 bg-center filter animate-pulse-slow"
-          style="background-image: url('src/assets/images/WZ010.jpg')"
-        ></div>    
+    <div
+      class="absolute inset-0 bg-cover scale-105 bg-center filter animate-pulse-slow"
+      style="background-image: url('src/assets/images/WZ010.jpg')"
+    ></div>
     <form @submit.prevent="handleLogin">
       <div
         class="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#eef1f4] to-[#f8fafc]"
-      >        
+      >
         <div
           class="relative bg-white/10 rounded-2xl shadow-xl border border-white/20 p-6 w-full max-w-sm flex flex-col gap-4 backdrop-blur-md transition hover:bg-white/15"
         >
-
           <div
             v-if="loading"
             class="absolute inset-0 bg-gray-400/70 flex items-center justify-center rounded-2xl z-10"
@@ -20,7 +19,9 @@
             <div class="loader"></div>
           </div>
 
-          <h2 class="text-xl font-bold text-center text-white">{{ $t("login") }}</h2>
+          <h2 class="text-xl font-bold text-center text-white">
+            {{ $t("login") }}
+          </h2>
           <div
             class="relative bg-black/30 rounded-2xl shadow-2xl border border-white/10 p-8 w-full max-w-sm flex flex-col items-center gap-6 backdrop-blur-lg transition hover:bg-black/40 hover:shadow-[0_0_20px_rgba(255,255,255,0.1)]"
           >
@@ -195,8 +196,10 @@ const handleLogin = async () => {
       user.code = code.value;
       userStore.setUser(user);
 
-      const stage = user.stage;
-      const route = stageRoutes[stage] || "/not-authorized";
+      const stage = user.stage_code;
+      const route = !stage
+        ? "/not-authorized"
+        : stageRoutes[stage] || "/warping";
       router.push(route);
     } else {
       errorAuthentication.value = true;

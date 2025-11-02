@@ -1,15 +1,15 @@
 export const stageRoutes = {
-    "Сновальная": "/warping",
-    "ОТК": "/weaving",
-    "Ткацкий": "/warping",
-    "Проборка": "/warping",
-    "Контроль 1": "/warping",
-    "Контроль 2": "/manualfix",
-    "Контроль 3": "/manualfix",
-    "Автоклав": "/manualfix",
-    "Обработка": "/manualfix",
-    "Браковка": "/manualfix",
-    "Браковка 2": "/manualfix",   
-    "Упаковка": "/package",
+    "001": "/warping", // Сновальная
+    "002": "/warping", // Проборка
+    "003": "/weaving", // ОТК
+    "004": "/warping", // Ткацкий
+    "005": "/warping", // Контроль 1
+    "006": "/manualfix", // Браковка
+    "007": "/manualfix", // Обработка
+    "008": "/manualfix", // Контроль 2
+    "009": "/manualfix", // Браковка   
+    "010": "/manualfix", // Автоклав
+    "011": "/manualfix", // Контроль 3
+    "012": "/package", // Упаковка
   };
   
