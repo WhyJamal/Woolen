@@ -167,7 +167,7 @@
                         v-else
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-nowrap"
                       >
-                        Уровень задачи: Ящик - {{ task.nomenclature.level }}
+                        Уровень задачи: {{ task.nomenclature.level }}
                       </span>
                     </div>
 
@@ -400,18 +400,18 @@
 
                     <div class="flex justify-end gap-3">
                       <button
-                        v-if="userStore.user.stage === 'Контроль 1'"
-                        :disabled="!(userStore.user.stage === 'Контроль 1')"
+                        v-if="userStore.user.stage_code === '005'"
+                        :disabled="!(userStore.user.stage_code === '005')"
                         @click="toggleHistory"
                         class="px-4 py-1.5 rounded-full border font-semibold text-sm transition"
                         :class="
-                          userStore.user.stage === 'Контроль 1'
+                          userStore.user.stage_code === '005'
                             ? 'bg-white hover:bg-blue-300 cursor-pointer'
                             : 'bg-gray-100 opacity-60 cursor-not-allowed'
                         "
                       >
                         История
-                      </button>
+                      </button> <!-- 005: Колнтрол 1 -->
 
                       <button
                         v-if="isControlStage"
@@ -609,7 +609,7 @@ const searchTypes = ref([
 ]);
 const searchType = ref(null);
 const isControlStage = computed(() =>
-  ["Контроль 1", "Контроль 2", "Контроль 3"].includes(userStore.user.stage)
+  ["005", "008", "011"].includes(userStore.user.stage_code)
 );
 
 //-Story-details-----------------------//
@@ -622,6 +622,7 @@ const DataStore = reactive({
   machine: null,
   mode: null,
   comment: null,
+  sort: null,
   author: null,
 });
 
@@ -693,7 +694,7 @@ async function toggleModel(
           r.note === row.note &&
           r.locations === row.locations &&
           r.length === row.length &&
-          r.operator === row.operator &&
+          r.operator?.GUID === row.operator?.GUID &&
           r.article === (model.value[0].nomenclature?.article || "") &&
           r.productionplan === (model.value[0].productionplan || "") &&
           r.color === (model.value[0].color?.code || "") &&
@@ -822,10 +823,10 @@ const toggle = async () => {
     const detail = storyDetails[index] || {};
 
     if (
-      userStore.user.stage === "Контроль 1" &&
+      userStore.user.stage_code === "005" &&
       (!detail.width || detail.width === 0)
     ) {
-      showWarning.value = true;
+      showWarning.value = true; // 005: Контроль 1
       return;
     }
 

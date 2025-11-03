@@ -94,71 +94,108 @@
         <h2 class="text-lg font-bold mb-4">Новая запись</h2>
 
         <form @submit.prevent="addRow" class="grid grid-cols-2 gap-4">
-          <div class="relative max-w-sm">
-            <div
-              class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
+          <div class="relative max-w-sm flex flex-col">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Дата</label
             >
-              <svg
-                class="w-4 h-4 text-gray-500"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="currentColor"
-                viewBox="0 0 20 20"
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
               >
-                <path
-                  d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
-                />
-              </svg>
+                <svg
+                  class="w-4 h-4 text-gray-500"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
+                  />
+                </svg>
+              </div>
+              <input
+                ref="datepickerInput"
+                v-model="newRow.date"
+                type="text"
+                placeholder="Выберите дату"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+              />
             </div>
+          </div>
+
+          <div class="flex flex-col">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Ширина</label
+            >
             <input
-              ref="datepickerInput"
-              v-model="newRow.date"
-              type="text"
-              placeholder="Выберите дату"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+              v-model="newRow.width"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder=""
+              class="input"
             />
           </div>
 
-          <input
-            v-model="newRow.width"
-            type="number"
-            inputmode="decimal"
-            step="any"
-            placeholder="Ширина"
-            class="input"
-          />
-          <input
-            v-model="newRow.mass"
-            type="number"
-            inputmode="decimal"
-            step="any"
-            placeholder="Масса"
-            class="input"
-          />
-          <input
-            v-model="newRow.brutto"
-            type="number"
-            inputmode="decimal"
-            step="any"
-            placeholder="Брутто"
-            class="input"
-          />
-          <input
-            v-model="newRow.netto"
-            type="number"
-            inputmode="decimal"
-            step="any"
-            placeholder="Нетто"
-            class="input"
-          />
-          <input
-            v-model="newRow.mode"
-            type="text"
-            placeholder="Режим"
-            class="input"
-          />
+          <div class="flex flex-col">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Масса</label
+            >
+            <input
+              v-model="newRow.mass"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder=""
+              class="input"
+            />
+          </div>
 
-          <div class="col-span-2 relative z-20">
+          <div class="flex flex-col">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Брутто</label
+            >
+            <input
+              v-model="newRow.brutto"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder=""
+              class="input"
+            />
+          </div>
+
+          <div class="flex flex-col">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Нетто</label
+            >
+            <input
+              v-model="newRow.netto"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder=""
+              class="input"
+            />
+          </div>
+
+          <div class="flex flex-col">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Режим</label
+            >
+            <input
+              v-model="newRow.mode"
+              type="text"
+              placeholder=""
+              class="input"
+            />
+          </div>
+
+          <div class="col-span-2 relative z-20 flex flex-col">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Машина</label
+            >
             <Listbox v-model="newRow.machine">
               <div class="relative">
                 <ListboxButton
@@ -215,19 +252,91 @@
             </Listbox>
           </div>
 
-          <input
-            v-model="newRow.comment"
-            type="text"
-            placeholder="Комментарий"
-            class="input col-span-2"
-          />
-          <input
-            :value="newRow.author.name"
-            type="text"
-            placeholder="Автор"
-            class="input col-span-2"
-            disabled
-          />
+          <div class="col-span-2 flex flex-col">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Комментарий</label
+            >
+            <input
+              v-model="newRow.comment"
+              type="text"
+              placeholder=""
+              class="input"
+            />
+          </div>
+
+          <div
+            v-if="userStore.user.stage_code === '011'"
+            class="col-span-1 relative flex flex-col"
+          >
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Сорт</label
+            >
+            <Listbox v-model="newRow.sort">
+              <div class="relative">
+                <ListboxButton
+                  @click="fetchFabricGrade"
+                  class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                >
+                  <span>
+                    {{
+                      newRow.sort?.name ? newRow.sort.name : "Выберите сорт..."
+                    }}
+                  </span>
+                  <svg
+                    class="w-5 h-5 ml-2 text-gray-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </ListboxButton>
+
+                <ListboxOptions
+                  class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
+                >
+                  <ListboxOption
+                    v-if="isLoadingGrades"
+                    class="flex-1 flex items-center justify-center"
+                  >
+                    <div class="loader w-10 h-10"></div>
+                  </ListboxOption>
+
+                  <ListboxOption
+                    v-else
+                    v-for="sort in grades"
+                    :key="sort.code"
+                    :value="sort"
+                    class="cursor-pointer p-2 hover:bg-blue-50"
+                  >
+                    <div class="flex justify-between items-center">
+                      <span>{{ sort.name }}</span>
+                      <span class="text-gray-400 text-sm">{{ sort.code }}</span>
+                    </div>
+                  </ListboxOption>
+                </ListboxOptions>
+              </div>
+            </Listbox>
+          </div>
+
+          <div class="flex flex-col">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Автор</label
+            >
+            <input
+              :value="newRow.author.name"
+              type="text"
+              class="input"
+              :class="[userStore.user.stage_code === '011' ? 'col-span-1' : 'col-span-2']"
+              disabled
+            />
+          </div>
 
           <div class="col-span-2 flex justify-end space-x-3 mt-3">
             <button
@@ -326,13 +435,15 @@ const newRow = ref({
   mass: "",
   brutto: props.data.quantity,
   netto: props.data.netto,
-  machine: "",
+  machine: { name: props.data.machine.name, code: props.data.machine.code },
   mode: "",
   comment: "",
-  author: { name: userStore.user.name, GUID: userStore.user.GUID } 
+  sort: { name: "", code: "" },
+  author: { name: userStore.user.name, GUID: userStore.user.GUID },
 });
 
 const machines = ref([]);
+const grades = ref([]);
 
 const close = () => {
   emit("close");
@@ -392,6 +503,11 @@ const validateFields = () => {
 
     case !newRow.value.machine?.name:
       warningMessage.value = "Заполните ткательную машину!";
+      showWarning.value = true;
+      return false;
+
+    case userStore.user.stage_code === "011" && !newRow.value.sort?.name:
+      warningMessage.value = "Заполните сорт!";
       showWarning.value = true;
       return false;
 
@@ -472,6 +588,20 @@ async function fetchMachines() {
   }
 }
 
+const isLoadingGrades = ref(false);
+
+async function fetchFabricGrade() {
+  if (isLoadingGrades.value) return;
+  isLoadingGrades.value = true;
+  try {
+    const response = await api.get("/v1/fabric/grade");
+    grades.value = response.data;
+  } catch (error) {
+  } finally {
+    isLoadingGrades.value = false;
+  }
+}
+
 const emit = defineEmits(["save"]);
 
 const date = ref(null);
@@ -482,6 +612,7 @@ const netto = ref(0);
 const machine = ref(null);
 const mode = ref(null);
 const comment = ref(null);
+const sort = ref(null);
 const author = ref(null);
 
 function saveData(newData) {
@@ -498,6 +629,7 @@ function saveData(newData) {
     machine: newData.machine,
     mode: newData.mode,
     comment: newData.comment,
+    sort: newData.sort,
     author: newData.author,
   });
 }

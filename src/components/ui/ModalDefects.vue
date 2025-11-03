@@ -40,13 +40,15 @@
         <div class="overflow-x-auto bg-gray-100 p-4 rounded-xl">
           <div class="max-w-6xl mx-auto space-y-2">
             <div
-              class="grid grid-cols-7 bg-gray-50 rounded-lg shadow text-sm font-semibold text-gray-700"
+              class="grid grid-cols-9 bg-gray-50 rounded-lg shadow text-sm font-semibold text-gray-700"
             >
               <div class="p-3 text-center">Дефект</div>
               <div class="p-3 text-center">Категория дефекта</div>
               <div class="p-3 text-center">Примечание</div>
-              <div class="p-3 text-center">Местоположения</div>
-              <div class="p-3 text-center">Протояженность</div>
+              <div class="p-3 text-center">Местопол.</div><!-- Местоположения -->
+              <div class="p-3 text-center">Протояженн.</div> <!-- Протояженность -->
+              <div class="p-3 text-center">Метр исправлено</div>
+              <div class="p-3 text-center">Остаток брака</div>
               <div class="p-3 text-center">Оператор</div>
               <div class="p-3 text-center">Исправлено</div>
             </div>
@@ -54,13 +56,15 @@
             <div
               v-for="row in rows"
               :key="row.id"
-              class="grid grid-cols-7 bg-white rounded-lg shadow text-sm hover:bg-blue-50 transition"
+              class="grid grid-cols-9 bg-white rounded-lg shadow text-sm hover:bg-blue-50 transition"
             >
               <div class="p-3 text-center">{{ row.defect?.name || "" }}</div>
               <div class="p-3 text-center">{{ row.category?.name || "" }}</div>
               <div class="p-3 text-center">{{ row.note || "" }}</div>
               <div class="p-3 text-center">{{ row.locations || "" }}</div>
               <div class="p-3 text-center">{{ row.length || "" }}</div>
+              <div class="p-3 text-center">{{ row.correctedMeter || "" }}</div>
+              <div class="p-3 text-center">{{ row.defectBalance || "" }}</div>
               <div class="p-3 text-center">{{ row.operator.name || "" }}</div>
               <div class="p-3 flex justify-center items-center">
                 <input
@@ -108,183 +112,243 @@
         <h2 class="text-lg font-bold mb-4">Новая запись</h2>
 
         <form @submit.prevent="addRow" class="grid grid-cols-2 gap-4">
-          <Listbox v-model="newRow.defect">
-            <div class="relative">
-              <ListboxButton
-                @click="fetchDefects"
-                class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
-              >
-                <span class="hover:text-gray-800">
-                  {{ newRow.defect?.name || "Выберите Дефект..." }}
-                </span>
-                <svg
-                  class="w-5 h-5 ml-2 text-gray-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Дефект</label
+            >
+            <Listbox v-model="newRow.defect">
+              <div class="relative">
+                <ListboxButton
+                  @click="fetchDefects"
+                  class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </ListboxButton>
+                  <span class="hover:text-gray-800">
+                    {{ newRow.defect?.name || "Выберите Дефект..." }}
+                  </span>
+                  <svg
+                    class="w-5 h-5 ml-2 text-gray-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </ListboxButton>
 
-              <ListboxOptions
-                class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
-              >
-                <ListboxOption
-                  v-if="isLoadingDefects"
-                  class="flex-1 flex items-center justify-center"
+                <ListboxOptions
+                  class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
                 >
-                  <div class="loader w-10 h-10"></div>
-                </ListboxOption>
+                  <ListboxOption
+                    v-if="isLoadingDefects"
+                    class="flex-1 flex items-center justify-center"
+                  >
+                    <div class="loader w-10 h-10"></div>
+                  </ListboxOption>
 
-                <ListboxOption
-                  v-else
-                  v-for="def in defects"
-                  :key="def.code"
-                  :value="def"
-                  class="cursor-pointer p-2 hover:bg-blue-50"
+                  <ListboxOption
+                    v-else
+                    v-for="def in defects"
+                    :key="def.code"
+                    :value="def"
+                    class="cursor-pointer p-2 hover:bg-blue-50"
+                  >
+                    <div class="flex justify-between items-center">
+                      <span>{{ def.name }}</span>
+                      <span class="text-gray-400 text-sm">{{ def.code }}</span>
+                    </div>
+                  </ListboxOption>
+                </ListboxOptions>
+              </div>
+            </Listbox>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Категория</label
+            >
+            <Listbox v-model="newRow.category">
+              <div class="relative">
+                <ListboxButton
+                  @click="fetchDefectCategoryes"
+                  class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
-                  <div class="flex justify-between items-center">
-                    <span>{{ def.name }}</span>
-                    <span class="text-gray-400 text-sm">{{ def.code }}</span>
-                  </div>
-                </ListboxOption>
-              </ListboxOptions>
-            </div>
-          </Listbox>
-          <!-- bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full -->
+                  <span class="text-gray-800">
+                    {{ newRow.category?.name || "Выберите категорию..." }}
+                  </span>
+                  <svg
+                    class="w-5 h-5 ml-2 text-gray-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </ListboxButton>
 
-          <Listbox v-model="newRow.category">
-            <div class="relative">
-              <ListboxButton
-                @click="fetchDefectCategoryes"
-                class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
-              >
-                <span class="text-gray-800">
-                  {{ newRow.category?.name || "Выберите категорию..." }}
-                </span>
-                <svg
-                  class="w-5 h-5 ml-2 text-gray-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+                <ListboxOptions
+                  class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </ListboxButton>
+                  <ListboxOption
+                    v-if="isLoadingCategoryes"
+                    class="flex items-center justify-center py-4"
+                  >
+                    <div class="loader w-10 h-10"></div>
+                  </ListboxOption>
 
-              <ListboxOptions
-                class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
-              >
-                <ListboxOption
-                  v-if="isLoadingCategoryes"
-                  class="flex items-center justify-center py-4"
+                  <ListboxOption
+                    v-else
+                    v-for="cat in defectCategoryes"
+                    :key="cat.code"
+                    :value="cat"
+                    class="cursor-pointer p-2 hover:bg-blue-50"
+                  >
+                    <div class="flex justify-between items-center">
+                      <span>{{ cat.name }}</span>
+                      <span class="text-gray-400 text-sm">{{ cat.code }}</span>
+                    </div>
+                  </ListboxOption>
+                </ListboxOptions>
+              </div>
+            </Listbox>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Местоположения</label
+            >
+            <input
+              v-model="newRow.locations"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder=""
+              class="input"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Протяженность</label
+            >
+            <input
+              v-model="newRow.length"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder=""
+              class="input"
+              @change="onLengthChange(newRow)"
+            />
+          </div>
+
+          <div class="col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Примечание</label
+            >
+            <input
+              v-model="newRow.note"
+              type="text"
+              placeholder=""
+              class="input w-full"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Исправлено (м)</label
+            >
+            <input
+              v-model="newRow.correctedMeter"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder=""
+              class="input"
+              @change="onCorrectedMeterChange(newRow)"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Остаток брака (м)</label
+            >
+            <input
+              v-model="newRow.defectBalance"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              placeholder=""
+              class="input"
+              readonly
+            />
+          </div>
+
+          <div class="col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Оператор</label
+            >
+            <Listbox v-model="newRow.operator">
+              <div class="relative">
+                <ListboxButton
+                  @click="fetchOperators"
+                  class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
-                  <div class="loader w-10 h-10"></div>
-                </ListboxOption>
+                  <span class="text-gray-800">
+                    {{ newRow.operator?.name || "Выберите оператора..." }}
+                  </span>
+                  <svg
+                    class="w-5 h-5 ml-2 text-gray-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </ListboxButton>
 
-                <ListboxOption
-                  v-else
-                  v-for="cat in defectCategoryes"
-                  :key="cat.code"
-                  :value="cat"
-                  class="cursor-pointer p-2 hover:bg-blue-50"
+                <ListboxOptions
+                  class="absolute bottom-full mb-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
                 >
-                  <div class="flex justify-between items-center">
-                    <span>{{ cat.name }}</span>
-                    <span class="text-gray-400 text-sm">{{ cat.code }}</span>
-                  </div>
-                </ListboxOption>
-              </ListboxOptions>
-            </div>
-          </Listbox>
+                  <ListboxOption
+                    v-if="isLoadingOperators"
+                    class="flex items-center justify-center py-4"
+                  >
+                    <div class="loader w-10 h-10"></div>
+                  </ListboxOption>
 
-          <input
-            v-model="newRow.locations"
-            type="number"
-            inputmode="decimal"
-            step="any"
-            placeholder="Местоположения"
-            class="input"
-          />
-          <input
-            v-model="newRow.length"
-            type="number"
-            inputmode="decimal"
-            step="any"
-            placeholder="Протояженность"
-            class="input"
-          />
-
-          <input
-            v-model="newRow.note"
-            type="text"
-            placeholder="Примечание"
-            class="input col-span-2"
-          />
-
-          <Listbox v-model="newRow.operator">
-            <div class="relative">
-              <ListboxButton
-                @click="fetchOperators"
-                class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
-              >
-                <span class="text-gray-800">
-                  {{ newRow.operator?.name || "Выберите оператора..." }}
-                </span>
-                <svg
-                  class="w-5 h-5 ml-2 text-gray-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </ListboxButton>
-
-              <ListboxOptions
-                class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
-              >
-                <ListboxOption
-                  v-if="isLoadingOperators"
-                  class="flex items-center justify-center py-4"
-                >
-                  <div class="loader w-10 h-10"></div>
-                </ListboxOption>
-
-                <ListboxOption
-                  v-else
-                  v-for="operator in operators"
-                  :key="operator.GUID"
-                  :value="operator"
-                  class="cursor-pointer p-2 hover:bg-blue-50"
-                >
-                  <div class="flex justify-between items-center">
-                    <span>{{ operator.name }}</span>
-                    <!-- <span class="text-gray-400 text-sm">{{ operator.code }}</span> -->
-                  </div>
-                </ListboxOption>
-              </ListboxOptions>
-            </div>
-          </Listbox>
+                  <ListboxOption
+                    v-else
+                    v-for="operator in operators"
+                    :key="operator.GUID"
+                    :value="operator"
+                    class="cursor-pointer p-2 hover:bg-blue-50"
+                  >
+                    <div class="flex justify-between items-center">
+                      <span>{{ operator.name }}</span>
+                    </div>
+                  </ListboxOption>
+                </ListboxOptions>
+              </div>
+            </Listbox>
+          </div>
 
           <div class="col-span-2 flex justify-end space-x-3 mt-3">
             <button
@@ -310,7 +374,6 @@
       @close="showWarning = false"
     />
   </div>
-  {{ fix }}
 </template>
 
 <script setup>
@@ -345,11 +408,11 @@ const isLoading = ref(false);
 const rows = ref([]);
 const warningMassage = ref("");
 const isControlStage = computed(() =>
-  ["Контроль 1", "Контроль 2", "Контроль 3"].includes(userStore.user.stage)
-);
+  ["005", "008", "011"].includes(userStore.user.stage_code) 
+); // 005: Контроль 1, 008: Контроль 2, 011: Контроль 3
 const isRejectionStage = computed(() =>
-  ["Браковка", "Браковка 2"].includes(userStore.user.stage)
-);
+  ["006", "009"].includes(userStore.user.stage_code)
+); // 006: Браковка, 009: Браковка 2
 
 const today = new Date();
 const formatDate = (d) =>
@@ -365,6 +428,8 @@ const newRow = ref({
   locations: "",
   length: "",
   operator: { name: "", GUID: "" },
+  correctedMeter: "",
+  defectBalance: "",
   fixed: false,
   article: props.data.article,
   productionplan: props.data.productionplan,
@@ -544,6 +609,19 @@ function onFixedChange(row) {
   defectStore.rows[foundDefects].fixed = !!row.fixed;
   // defectStore.rows[foundDefects].operator = userStore.user.name;
 }
+
+function onLengthChange(row) {
+  row.defectBalance = row.length;   
+}
+
+function onCorrectedMeterChange(row) {
+  if(row.correctedMeter === 0) {
+    row.defectBalance = row.length;
+  }else {
+    row.defectBalance = row.defectBalance - row.correctedMeter;   
+  }
+}
+
 </script>
 
 <style scoped>

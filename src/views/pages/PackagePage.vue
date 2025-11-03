@@ -266,7 +266,7 @@ onMounted(async () => {
             r.note === row.note &&
             r.locations === row.locations &&
             r.length === row.length &&
-            r.operator === row.operator &&
+            r.operator?.GUID === row.operator?.GUID &&
             r.article === (task.nomenclature?.article || "") &&
             r.productionplan === (task.productionplan || "") &&
             r.color === (task.color?.code || "") &&

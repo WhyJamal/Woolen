@@ -566,6 +566,7 @@
         quantity: model[0].quantity,
         netto: model[0].netto,
         brutto: model[0].brutto,
+        machine: model[0].machine,
         arrayStory: storyDetails,
       }"
       @save="handleSave"
@@ -586,19 +587,19 @@
 </template>
 
 <script setup>
-import Layout from "@/components/Layout.vue";
 import { onMounted, ref, reactive, watch, defineAsyncComponent } from "vue";
+import api from "@/utils/axios";
+import Layout from "@/components/Layout.vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
-import api from "@/utils/axios";
 import { useModelStore } from "@/stores/model";
+import { useDefectStore } from "@/stores/defects";
 import {
   Listbox,
   ListboxButton,
   ListboxOptions,
   ListboxOption,
 } from "@headlessui/vue";
-import { useDefectStore } from "@/stores/defects";
 
 const defectStore = useDefectStore();
 const modelStore = useModelStore();
@@ -648,6 +649,7 @@ const DataStore = reactive({
   machine: null,
   mode: null,
   comment: null,
+  sort: null,
   author: null,
 });
 
@@ -719,7 +721,7 @@ async function toggleModel(
           r.note === row.note &&
           r.locations === row.locations &&
           r.length === row.length &&
-          r.operator === row.operator &&
+          r.operator?.GUID === row.operator?.GUID &&
           r.article === (model.value[0].nomenclature?.article || "") &&
           r.productionplan === (model.value[0].productionplan || "") &&
           r.color === (model.value[0].color?.code || "") &&
@@ -856,11 +858,11 @@ const toggle = async () => {
     );
 
     if (
-      (userStore.user.stage === "Контроль 3" ||
-        userStore.user.stage === "Контроль 2") &&
+      (userStore.user.stage_code === "011" ||
+        userStore.user.stage_code === "008") &&
       (!detail.width || detail.width === 0)
     ) {
-      showWarning.value = true;
+      showWarning.value = true; // 008: Контроль 2, 011: Контроль 3
       return;
     }
 

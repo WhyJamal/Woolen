@@ -167,7 +167,7 @@
                       <span
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-nowrap"
                       >
-                        Уровень задачи: Ящик {{ task.nomenclature.level }}
+                        Уровень задачи: {{ task.nomenclature.level }}
                       </span>
                     </div>
 
@@ -614,7 +614,7 @@
                       }"
                     ></button>
                   </div>
-                  <div v-else>
+                  <!-- <div v-else>
                     <button
                       @click="openConfirmModal"
                       :disabled="isLoadSend"
@@ -625,7 +625,7 @@
                       <Power class="w-4 h-4" />
                       <span>Завершить</span>
                     </button>
-                  </div>
+                  </div> -->
                   <!--<span
                     class="mt-5 text-lg font-bold select-none text-green-700"
                   >
