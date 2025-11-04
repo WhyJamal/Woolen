@@ -72,32 +72,13 @@
                 </svg>
               </div>
               <input
+                v-model="searchQuery"
                 type="text"
                 id="simple-search"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full ps-10 p-2.5"
                 placeholder="Поиск..."
               />
             </div>
-            <button
-              type="submit"
-              class="p-2.5 text-sm font-medium text-white bg-gray-400 rounded-lg border border-gray-200 hover:bg-gray-500 focus:ring-4 focus:outline-none focus:ring-blue-300"
-            >
-              <svg
-                class="w-4 h-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
-            </button>
           </div>
         </div>
 
@@ -116,7 +97,7 @@
               </div>
               <EmptyState v-else-if="!tasks.length" />
               <article
-                v-for="(task, index) in tasks"
+                v-for="(task, index) in getFilteredTasks()"
                 :key="index"
                 role="button"
                 tabindex="0"
@@ -411,7 +392,8 @@
                         "
                       >
                         История
-                      </button> <!-- 005: Колнтрол 1 -->
+                      </button>
+                      <!-- 005: Колнтрол 1 -->
 
                       <button
                         v-if="isControlStage"
@@ -552,12 +534,19 @@
       }"
       @close="openDefects = false"
     />
-  </Layout>
+  </Layout>{{model[0]}}
 </template>
 
 <script setup>
 import Layout from "@/components/Layout.vue";
-import { onMounted, ref, reactive, watch, computed, defineAsyncComponent } from "vue";
+import {
+  onMounted,
+  ref,
+  reactive,
+  watch,
+  computed,
+  defineAsyncComponent,
+} from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -603,9 +592,9 @@ const form = ref({
   owner: "",
 });
 const searchTypes = ref([
-  { id: "model", name: "Модел" },
-  { id: "order", name: "ЗаказID" },
-  { id: "tape", name: "Лента" },
+  { id: "article", name: "Номенклатура" },
+  { id: "order", name: "Заказ ID" },
+  { id: "tape_number", name: "Лента" },
 ]);
 const searchType = ref(null);
 const isControlStage = computed(() =>
@@ -680,7 +669,10 @@ async function toggleModel(
         tape_number,
       },
     });
-    model.value = response.data;
+    model.value = {
+      ...response.data,
+      startDate: "0001.01.01",
+    };
     modelStore.setModel(model.value);
     showModel.value = true;
 
@@ -786,6 +778,7 @@ const toggle = async () => {
     );
     if (idx !== -1) {
       tasks.value[idx].status = "Активный";
+      model.value[0].startDate = new Date().toISOString();
     }
 
     if (bigBtn.value) {
@@ -855,7 +848,8 @@ const toggle = async () => {
       sort: model.value[0].sort || "",
       comment: "1",
       owner: userStore.user.GUID,
-
+      startDate: model.value[0].startDate,
+      endDate: new Date().toISOString(),
       // Story details
       // date: detail.date || "",
       // width: detail.width || 0,
@@ -1003,6 +997,33 @@ function closeNotification() {
 const EmptyState = defineAsyncComponent(() =>
   import("@/components/ui/EmptyState.vue")
 );
+
+const searchQuery = ref(null);
+
+function getFilteredTasks() {
+  if (!searchQuery.value) return tasks.value; 
+
+  return tasks.value.filter((task) => {
+    if (!searchType.value) return true; 
+
+    switch (searchType.value.id) {
+      case "article":
+        return task.nomenclature?.article
+          .toLowerCase()
+          .includes(searchQuery.value.toLowerCase());
+      case "order":
+        return task.order
+          ?.toLowerCase()
+          .includes(searchQuery.value.toLowerCase());
+      case "tape_number":
+        return task.tape_number
+          ?.toLowerCase()
+          .includes(searchQuery.value.toLowerCase());
+      default:
+        return true;
+    }
+  });
+}
 </script>
 
 <style>

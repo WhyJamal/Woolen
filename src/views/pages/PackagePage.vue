@@ -253,6 +253,7 @@ onMounted(async () => {
     tasks.value = response.data.map((task) => ({
       ...task,
       status: task.status || "Ожидает",
+      startDate: "0001.01.01"
     }));
 
     tasks.value.forEach((task) => {
@@ -316,6 +317,7 @@ function toggleHistory() {
 const toggleStart = async (task) => {
   if (task.status === "Ожидает") {
     task.status = "Активний";
+    task.startDate = new Date().toISOString();
     clickSound.play();
     return;
   } else {
@@ -362,6 +364,8 @@ const toggleStart = async (task) => {
       owner: userStore.user.GUID,
       netto: task.netto,
       brutto: task.brutto,
+      startDate: task.startDate,
+      endDate: new Date().toISOString(),
 
       defects: foundDefects.length ? foundDefects : [],
       storyDetails: task.storyDetails || {},

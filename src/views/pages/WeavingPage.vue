@@ -79,32 +79,13 @@
                 </svg>
               </div>
               <input
+                v-model="searchQuery"
                 type="text"
                 id="simple-search"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full ps-10 p-2.5"
                 placeholder="Поиск..."
               />
             </div>
-            <button
-              type="submit"
-              class="p-2.5 text-sm font-medium text-white bg-gray-400 rounded-lg border border-gray-200 hover:bg-gray-500 focus:ring-4 focus:outline-none focus:ring-blue-300"
-            >
-              <svg
-                class="w-4 h-4"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                />
-              </svg>
-            </button>
           </div>
         </div>
 
@@ -124,7 +105,7 @@
               </div>
               <EmptyState v-else-if="!tasks.length" />
               <article
-                v-for="(task, index) in tasks"
+                v-for="(task, index) in getFilteredTasks()"
                 :key="index"
                 role="button"
                 tabindex="0"
@@ -730,9 +711,9 @@ const form = ref({
 });
 // const varietyes = [{ name: "1", code: "001" }];
 const searchTypes = ref([
-  { id: "model", name: "Модел" },
-  { id: "order", name: "ЗаказID" },
-  { id: "tape", name: "Лента" },
+  { id: "article", name: "Номенклатура" },
+  { id: "order", name: "Заказ ID" },
+  { id: "tape_number", name: "Лента" },
 ]);
 const searchType = ref(null);
 
@@ -886,6 +867,10 @@ const validateFields = () => {
 
     case Number(model.value[0].quantity) - count.value < 0:
       showWarningModal("Не может быть больше, чем количество модели!");
+      return false;
+
+    case (Number(model.value[0].quantity) % count.value) !== 0:
+      showWarningModal("Проверьте метраж ленты, Лента делится с остатком!");
       return false;
 
     default:
@@ -1110,6 +1095,33 @@ const onOpen = async (number, date, stage) => {
 const EmptyState = defineAsyncComponent(() =>
   import("@/components/ui/EmptyState.vue")
 );
+
+const searchQuery = ref(null);
+
+function getFilteredTasks() {
+  if (!searchQuery.value) return tasks.value; 
+
+  return tasks.value.filter((task) => {
+    if (!searchType.value) return true; 
+
+    switch (searchType.value.id) {
+      case "article":
+        return task.nomenclature?.article
+          .toLowerCase()
+          .includes(searchQuery.value.toLowerCase());
+      case "order":
+        return task.order
+          ?.toLowerCase()
+          .includes(searchQuery.value.toLowerCase());
+      case "tape_number":
+        return task.tape_number
+          ?.toLowerCase()
+          .includes(searchQuery.value.toLowerCase());
+      default:
+        return true;
+    }
+  });
+}
 </script>
 
 <style>
