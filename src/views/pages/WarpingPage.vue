@@ -534,7 +534,7 @@
       }"
       @close="openDefects = false"
     />
-  </Layout>{{model[0]}}
+  </Layout>
 </template>
 
 <script setup>
