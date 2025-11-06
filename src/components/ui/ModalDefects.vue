@@ -583,7 +583,7 @@ async function fetchOperators() {
   if (isLoadingOperators.value) return;
   isLoadingOperators.value = true;
   try {
-    const response = await api.get("/v1/operators/list");
+    const response = await api.get("/v1/operators/list", { params: { stage: userStore.user.stage_code } });
     operators.value = response.data;
   } catch (error) {
   } finally {

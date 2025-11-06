@@ -333,7 +333,7 @@
               :value="newRow.author.name"
               type="text"
               class="input"
-              :class="[userStore.user.stage_code === '011' ? 'col-span-1' : 'col-span-2']"
+              :class="[userStore.user.stage_code === '017' ? 'col-span-1' : 'col-span-2']"
               disabled
             />
           </div>
