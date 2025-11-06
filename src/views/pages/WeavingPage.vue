@@ -148,7 +148,7 @@
                       <span
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-nowrap"
                       >
-                        Уровень задачи: {{ task.nomenclature.level }} - <span class="text-red-500">{{ task.stage ? "-" + task.stage : "" }}</span>
+                        Уровень задачи: {{ task.nomenclature.level }} <span class="text-red-500"> - {{ task.stage ? "-" + task.stage : "" }}</span>
                       </span>
                     </div>
 
