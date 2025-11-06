@@ -91,10 +91,11 @@
             >
               <div
                 v-if="tasks === null"
-                class="text-gray-400 text-center py-10"
+                class="flex items-center justify-center h-full pt-4"
               >
-                Загрузить...
+                <div class="loader-text"></div>
               </div>
+
               <EmptyState v-else-if="!tasks.length" />
               <article
                 v-for="(task, index) in getFilteredTasks()"
@@ -1001,10 +1002,10 @@ const EmptyState = defineAsyncComponent(() =>
 const searchQuery = ref(null);
 
 function getFilteredTasks() {
-  if (!searchQuery.value) return tasks.value; 
+  if (!searchQuery.value) return tasks.value;
 
   return tasks.value.filter((task) => {
-    if (!searchType.value) return true; 
+    if (!searchType.value) return true;
 
     switch (searchType.value.id) {
       case "article":

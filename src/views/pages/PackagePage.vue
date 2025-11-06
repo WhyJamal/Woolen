@@ -29,9 +29,13 @@
       <div v-if="isLoading" class="flex-1 flex items-center justify-center">
         <div class="loader"></div>
       </div>
-      <div v-if="tasks === null" class="text-gray-400 text-center py-10">
-        Загрузить...
+      <div
+        v-if="tasks === null"
+        class="flex items-center justify-center h-full pt-4"
+      >
+        <div class="loader-text"></div>
       </div>
+
       <EmptyState v-else-if="!tasks.length" />
 
       <div v-else="!isLoading">
@@ -253,7 +257,7 @@ onMounted(async () => {
     tasks.value = response.data.map((task) => ({
       ...task,
       status: task.status || "Ожидает",
-      startDate: "0001.01.01"
+      startDate: "0001.01.01",
     }));
 
     tasks.value.forEach((task) => {

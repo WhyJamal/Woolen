@@ -114,9 +114,9 @@
             >
               <div
                 v-if="tasks === null"
-                class="text-gray-400 text-center py-10"
+                class="flex items-center justify-center h-full pt-4"
               >
-                Загрузить...
+                <div class="loader-text"></div>
               </div>
               <EmptyState v-else-if="!tasks.length" />
 
