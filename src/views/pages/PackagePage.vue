@@ -226,11 +226,12 @@ const form = ref({
   comment: "",
   owner: "",
 });
-let currentDate = "";
 
-async function loadDate() {
-  const module = await import("@/utils/getISODate");
-  currentDate = module.getISODate();
+function loadDate() {
+  return (async () => {
+    const module = await import("@/utils/getISODate");
+    return module.getISODate();
+  })();
 }
 
 //-Print-label---------------------------//
@@ -327,7 +328,7 @@ function toggleHistory() {
 const toggleStart = async (task) => {
   if (task.status === "Ожидает") {
     task.status = "Активний";
-    task.startDate = currentDate;
+    task.startDate = await loadDate();
     clickSound.play();
     return;
   } else {
@@ -375,7 +376,7 @@ const toggleStart = async (task) => {
       netto: task.netto,
       brutto: task.brutto,
       startDate: task.startDate,
-      endDate: currentDate,
+      endDate: await loadDate(),
 
       defects: foundDefects.length ? foundDefects : [],
       storyDetails: task.storyDetails || {},

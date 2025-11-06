@@ -1,7 +1,7 @@
 <template>
   <Layout>
     <NotificationModal v-if="showWarning" @close="closeNotification" />
-    
+
     <template #exit-button>
       <button
         @click="exit"
@@ -165,7 +165,10 @@
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-normal text-center"
                       >
                         Уровень задачи: {{ task.nomenclature.level }}<br />
-                        Лента - #{{ task.tape_number }} <span class="text-red-500">{{ task.stage ? "-" + task.stage : "" }}</span>
+                        Лента - #{{ task.tape_number }}
+                        <span class="text-red-500">{{
+                          task.stage ? "-" + task.stage : ""
+                        }}</span>
                       </span>
                     </div>
 
@@ -307,7 +310,7 @@
                         v-for="stage in stages"
                         :key="stage.id"
                         :value="stage"
-                        :disabled="visibleStages" 
+                        :disabled="visibleStages"
                         class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm transition"
                       >
                         {{ stage.name }}
@@ -589,7 +592,14 @@
 </template>
 
 <script setup>
-import { onMounted, ref, reactive, watch, defineAsyncComponent, computed } from "vue";
+import {
+  onMounted,
+  ref,
+  reactive,
+  watch,
+  defineAsyncComponent,
+  computed,
+} from "vue";
 import api from "@/utils/axios";
 import Layout from "@/components/Layout.vue";
 import { useRouter } from "vue-router";
@@ -643,11 +653,12 @@ const searchType = ref(null);
 const visibleStages = computed(() =>
   ["001", "002", "004"].includes(userStore.user.stage_code)
 );
-let currentDate = "";
 
-async function loadDate() {
-  const module = await import("@/utils/getISODate");
-  currentDate = module.getISODate();
+function loadDate() {
+  return (async () => {
+    const module = await import("@/utils/getISODate");
+    return module.getISODate();
+  })();
 }
 
 //-Story-details-----------------------//
@@ -660,6 +671,7 @@ const DataStore = reactive({
   machine: null,
   mode: null,
   comment: null,
+  lot: null,
   sort: null,
   author: null,
 });
@@ -827,7 +839,7 @@ const toggle = async () => {
     );
     if (idx !== -1) {
       tasks.value[idx].status = "Активный";
-      model.value[0].startDate = currentDate;
+      tasks.value[idx].startDate = await loadDate();
     }
 
     if (bigBtn.value) {
@@ -872,6 +884,16 @@ const toggle = async () => {
         row.color === target.color
     );
 
+    const idx = tasks.value.findIndex(
+      (t) =>
+        t.productionplan === model.value[0].productionplan &&
+        t.tape_number === model.value[0].tape_number &&
+        t.nomenclature.article === model.value[0].nomenclature.article &&
+        t.color === model.value[0].color.name
+    );
+
+    const currentTask = tasks.value[idx];
+
     if (
       (userStore.user.stage_code === "013" ||
         userStore.user.stage_code === "017") &&
@@ -896,18 +918,11 @@ const toggle = async () => {
       sort: model.value[0].sort || "",
       comment: "1",
       owner: userStore.user.GUID,
-      startDate: model.value[0].startDate,
-      endDate: currentDate,
+      startDate: currentTask.startDate,
+      endDate: await loadDate(),
       // Story details
-      // date: detail.date || "",
-      // width: detail.width || 0,
-      // mass: detail.mass || 0,
       netto: detail.netto || model.value[0].netto || 0,
       brutto: detail.brutto || model.value[0].brutto || 0,
-      // machine: detail.machine?.code || "",
-      // mode: detail.mode || "",
-      // comment_story: detail.comment || "",
-      // author: detail.author || "",
 
       storyDetails: detail || {},
       defects: foundDefects.length ? foundDefects : [],
@@ -915,13 +930,6 @@ const toggle = async () => {
 
     const response = await api.post("/v1/create_document", payload);
 
-    const idx = tasks.value.findIndex(
-      (t) =>
-        t.productionplan === model.value[0].productionplan &&
-        t.tape_number === model.value[0].tape_number &&
-        t.nomenclature.article === model.value[0].nomenclature.article &&
-        t.color === model.value[0].color.name
-    );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);
       showModel.value = false;
@@ -1108,7 +1116,7 @@ const NotificationModal = defineAsyncComponent(() =>
 );
 
 function closeNotification() {
-  showWarning.value = false
+  showWarning.value = false;
 }
 
 const EmptyState = defineAsyncComponent(() =>
@@ -1118,10 +1126,10 @@ const EmptyState = defineAsyncComponent(() =>
 const searchQuery = ref(null);
 
 function getFilteredTasks() {
-  if (!searchQuery.value) return tasks.value; 
+  if (!searchQuery.value) return tasks.value;
 
   return tasks.value.filter((task) => {
-    if (!searchType.value) return true; 
+    if (!searchType.value) return true;
 
     switch (searchType.value.id) {
       case "article":

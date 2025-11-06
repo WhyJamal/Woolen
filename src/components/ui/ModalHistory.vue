@@ -338,6 +338,18 @@
             />
           </div>
 
+          <div v-if="userStore.user.stage_code === '017'" class="col-span-1 flex flex-col">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Лот</label
+            >
+            <input
+              v-model="newRow.lot"
+              type="text"
+              placeholder=""
+              class="input"
+            />
+          </div>
+
           <div class="col-span-2 flex justify-end space-x-3 mt-3">
             <button
               type="button"
@@ -438,6 +450,7 @@ const newRow = ref({
   machine: { name: props.data.machine.name, code: props.data.machine.code },
   mode: "",
   comment: "",
+  lot: "",
   sort: { name: "", code: "" },
   author: { name: userStore.user.name, GUID: userStore.user.GUID },
 });
@@ -500,13 +513,18 @@ const validateFields = () => {
       warningMessage.value = "Введите нетто!";
       showWarning.value = true;
       return false;
+    
+    case userStore.user.stage_code === "017" && !newRow.value.lot:
+      warningMessage.value = "Введите Лот!";
+      showWarning.value = true;
+      return false;
 
     case !newRow.value.machine?.name:
       warningMessage.value = "Заполните ткательную машину!";
       showWarning.value = true;
       return false;
 
-    case userStore.user.stage_code === "011" && !newRow.value.sort?.name:
+    case userStore.user.stage_code === "017" && !newRow.value.sort?.name:
       warningMessage.value = "Заполните сорт!";
       showWarning.value = true;
       return false;
@@ -612,6 +630,7 @@ const netto = ref(0);
 const machine = ref(null);
 const mode = ref(null);
 const comment = ref(null);
+const lot = ref(null);
 const sort = ref(null);
 const author = ref(null);
 
@@ -629,6 +648,7 @@ function saveData(newData) {
     machine: newData.machine,
     mode: newData.mode,
     comment: newData.comment,
+    lot: newData.lot,
     sort: newData.sort,
     author: newData.author,
   });
