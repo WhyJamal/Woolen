@@ -408,11 +408,11 @@ const isLoading = ref(false);
 const rows = ref([]);
 const warningMassage = ref("");
 const isControlStage = computed(() =>
-  ["005", "008", "011"].includes(userStore.user.stage_code) 
-); // 005: Контроль 1, 008: Контроль 2, 011: Контроль 3
+  ["005", "013", "017"].includes(userStore.user.stage_code) 
+); // 005: Контроль 1, 013: Контроль 2, 017: Контроль 3
 const isRejectionStage = computed(() =>
-  ["006", "009"].includes(userStore.user.stage_code)
-); // 006: Браковка, 009: Браковка 2
+  ["006", "014"].includes(userStore.user.stage_code)
+); // 006: Браковка, 014: Браковка 2
 
 const today = new Date();
 const formatDate = (d) =>

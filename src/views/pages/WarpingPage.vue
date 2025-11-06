@@ -294,6 +294,7 @@
                         v-for="stage in stages"
                         :key="stage.id"
                         :value="stage"
+                        :disabled="visibleStages" 
                         class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm"
                       >
                         {{ stage.name }}
@@ -435,7 +436,7 @@
                     />
                   </div>
 
-                  <div>
+                  <!-- <div>
                     <p class="text-sm text-gray-500 font-semibold">
                       Комплектация
                     </p>
@@ -444,7 +445,7 @@
                     >
                       {{ model[0].equipment }}
                     </div>
-                  </div>
+                  </div> -->
                 </div>
 
                 <div
@@ -599,7 +600,10 @@ const searchTypes = ref([
 ]);
 const searchType = ref(null);
 const isControlStage = computed(() =>
-  ["005", "008", "011"].includes(userStore.user.stage_code)
+  ["005", "013", "017"].includes(userStore.user.stage_code)
+);
+const visibleStages = computed(() =>
+  ["001", "002", "004"].includes(userStore.user.stage_code)
 );
 
 //-Story-details-----------------------//

@@ -552,7 +552,7 @@
                     />
                   </div>
 
-                  <div>
+                  <!-- <div>
                     <p class="text-sm text-gray-500 font-semibold">
                       Комплектация
                     </p>
@@ -561,7 +561,7 @@
                     >
                       {{ model[0].equipment }}
                     </div>
-                  </div>
+                  </div> -->
                 </div>
 
                 <div

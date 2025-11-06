@@ -307,6 +307,7 @@
                         v-for="stage in stages"
                         :key="stage.id"
                         :value="stage"
+                        :disabled="visibleStages" 
                         class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm transition"
                       >
                         {{ stage.name }}
@@ -443,7 +444,7 @@
                     />
                   </div>
 
-                  <div>
+                  <!-- <div>
                     <p class="text-sm text-gray-500 font-semibold">
                       Комплектация
                     </p>
@@ -463,7 +464,7 @@
                     >
                       {{ model[0].accessories }}
                     </div>
-                  </div>
+                  </div> -->
                 </div>
 
                 <div
@@ -639,6 +640,9 @@ const searchTypes = ref([
   { id: "tape_number", name: "Лента" },
 ]);
 const searchType = ref(null);
+const visibleStages = computed(() =>
+  ["001", "002", "004"].includes(userStore.user.stage_code)
+);
 
 //-Story-details-----------------------//
 const storyDetails = reactive([]);
@@ -863,11 +867,11 @@ const toggle = async () => {
     );
 
     if (
-      (userStore.user.stage_code === "011" ||
-        userStore.user.stage_code === "008") &&
+      (userStore.user.stage_code === "013" ||
+        userStore.user.stage_code === "017") &&
       (!detail.width || detail.width === 0)
     ) {
-      showWarning.value = true; // 008: Контроль 2, 011: Контроль 3
+      showWarning.value = true; // 013: Контроль 2, 017: Контроль 3
       return;
     }
 
