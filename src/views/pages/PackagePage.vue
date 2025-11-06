@@ -226,6 +226,12 @@ const form = ref({
   comment: "",
   owner: "",
 });
+let currentDate = "";
+
+async function loadDate() {
+  const module = await import("@/utils/getISODate");
+  currentDate = module.getISODate();
+}
 
 //-Print-label---------------------------//
 const openPrintWindow = async (task) => {
@@ -321,7 +327,7 @@ function toggleHistory() {
 const toggleStart = async (task) => {
   if (task.status === "Ожидает") {
     task.status = "Активний";
-    task.startDate = new Date().toISOString();
+    task.startDate = currentDate;
     clickSound.play();
     return;
   } else {
@@ -369,7 +375,7 @@ const toggleStart = async (task) => {
       netto: task.netto,
       brutto: task.brutto,
       startDate: task.startDate,
-      endDate: new Date().toISOString(),
+      endDate: currentDate,
 
       defects: foundDefects.length ? foundDefects : [],
       storyDetails: task.storyDetails || {},

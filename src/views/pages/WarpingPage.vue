@@ -608,6 +608,12 @@ const isControlStage = computed(() =>
 const visibleStages = computed(() =>
   ["001", "002", "004"].includes(userStore.user.stage_code)
 );
+let currentDate = "";
+
+async function loadDate() {
+  const module = await import("@/utils/getISODate");
+  currentDate = module.getISODate();
+}
 
 //-Story-details-----------------------//
 const storyDetails = reactive([]);
@@ -786,7 +792,7 @@ const toggle = async () => {
     );
     if (idx !== -1) {
       tasks.value[idx].status = "Активный";
-      model.value[0].startDate = new Date().toISOString();
+      model.value[0].startDate = currentDate;
     }
 
     if (bigBtn.value) {
@@ -857,7 +863,7 @@ const toggle = async () => {
       comment: "1",
       owner: userStore.user.GUID,
       startDate: model.value[0].startDate,
-      endDate: new Date().toISOString(),
+      endDate: currentDate,
       // Story details
       // date: detail.date || "",
       // width: detail.width || 0,

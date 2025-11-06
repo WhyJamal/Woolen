@@ -265,7 +265,7 @@
           </div>
 
           <div
-            v-if="userStore.user.stage_code === '011'"
+            v-if="userStore.user.stage_code === '017'"
             class="col-span-1 relative flex flex-col"
           >
             <label class="block text-sm font-medium text-gray-700 mb-1"
