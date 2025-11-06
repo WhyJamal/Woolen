@@ -209,10 +209,19 @@
     background-color: rgba(100, 100, 100, 0.5);
   }
   
-  /* Firefox */
-  .scroll-soft {
+  /* Defult */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+  }
+  
+  /* For Firefox (modern) */
+  * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(100, 100, 100, 0.3) transparent;
+    scrollbar-color: #888 transparent;
   }
   
   /* loader Загрузить */
