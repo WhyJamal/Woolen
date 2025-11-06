@@ -520,6 +520,9 @@
         date_productionplan: model[0].date_productionplan,
         tape_number: model[0].tape_number,
         quantity: model[0].quantity,
+        netto: model[0].netto || 0,
+        brutto: model[0].brutto || 0,
+        machine: model[0].machine,
         arrayStory: storyDetails,
       }"
       @save="handleSave"
