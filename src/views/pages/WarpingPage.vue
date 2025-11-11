@@ -542,6 +542,12 @@
       }"
       @close="openDefects = false"
     />
+    <OperatorModal
+      :isOpen="isModalOpen"
+      :quantity="model?.[0]?.quantity || 0"
+      @update:isOpen="isModalOpen = $event"
+      @save="handleSaveOperators"
+    />
   </Layout>
 </template>
 
@@ -634,7 +640,33 @@ const DataStore = reactive({
   author: null,
 });
 
+const OperatorModal = defineAsyncComponent(() =>
+  import("@/views/components/EmployeePercentModal.vue")
+);
+
+const isModalOpen = ref(false);
+const employeesData = ref([]);
+
+function openModal() {
+  isModalOpen.value = true;
+
+  return new Promise((resolve) => {
+    const unwatch = watch(isModalOpen, (val) => {
+      if (!val) {
+        unwatch();
+        resolve(employeesData.value);
+      }
+    });
+  });
+}
+
+function handleSaveOperators(data) {
+  employeesData.value = data;
+  isModalOpen.value = false;
+}
+
 function handleSave(data) {
+  employeesData.value = data;
   Object.assign(DataStore, data);
   saveOrUpdateRow(DataStore);
   //openHistory.value = false;
@@ -847,6 +879,11 @@ const toggle = async () => {
     ) {
       showWarning.value = true; // 005: Контроль 1
       return;
+    } 
+    
+    if (userStore.user.stage_code === "005") {
+      const selected = await openModal(); 
+      employeesData.value = selected;
     }
 
     const foundDefects = defectStore.rows.filter(
@@ -877,9 +914,10 @@ const toggle = async () => {
       // Story details
       netto: detail.netto || model.value[0].netto || 0,
       brutto: detail.brutto || model.value[0].brutto || 0,
-      
+
       defects: foundDefects.length ? foundDefects : [],
       storyDetails: detail || {},
+      employees: employeesData.value || [],
     };
 
     const response = await api.post("/v1/create_document", payload);
