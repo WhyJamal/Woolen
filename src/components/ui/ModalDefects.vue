@@ -40,7 +40,7 @@
         <div class="overflow-x-auto bg-gray-100 p-4 rounded-xl">
           <div class="max-w-6xl mx-auto space-y-2">
             <div
-              class="grid grid-cols-9 bg-gray-50 rounded-lg shadow text-sm font-semibold text-gray-700"
+              class="grid grid-cols-8 bg-gray-50 rounded-lg shadow text-sm font-semibold text-gray-700"
             >
               <div class="p-3 text-center">Дефект</div>
               <div class="p-3 text-center">Категория дефекта</div>
@@ -50,13 +50,17 @@
               <div class="p-3 text-center">Метр исправлено</div>
               <div class="p-3 text-center">Остаток брака</div>
               <div class="p-3 text-center">Оператор</div>
-              <div class="p-3 text-center">Исправлено</div>
+              <!-- <div class="p-3 text-center">Исправлено</div> -->
             </div>
 
             <div
-              v-for="row in rows"
+              v-for="(row, index) in rows"
               :key="row.id"
-              class="grid grid-cols-9 bg-white rounded-lg shadow text-sm hover:bg-blue-50 transition"
+              @click="isRejectionStage ? editRow(row, index) : null"
+              :class="[
+                'grid grid-cols-8 bg-white rounded-lg shadow text-sm transition',
+                isRejectionStage ? 'hover:bg-blue-100 cursor-pointer' : 'hover:bg-blue-50'
+              ]"
             >
               <div class="p-3 text-center">{{ row.defect?.name || "" }}</div>
               <div class="p-3 text-center">{{ row.category?.name || "" }}</div>
@@ -66,7 +70,7 @@
               <div class="p-3 text-center">{{ row.correctedMeter || "" }}</div>
               <div class="p-3 text-center">{{ row.defectBalance || "" }}</div>
               <div class="p-3 text-center">{{ row.operator.name || "" }}</div>
-              <div class="p-3 flex justify-center items-center">
+              <!-- <div class="p-3 flex justify-center items-center">
                 <input
                   id="default-checkbox"
                   type="checkbox"
@@ -80,7 +84,7 @@
                       : 'bg-gray-200 opacity-40 cursor-not-allowed',
                   ]"
                 />
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -109,10 +113,10 @@
       @click.self="closeForm"
     >
       <div class="bg-white p-6 rounded-xl w-[600px] shadow-xl">
-        <h2 class="text-lg font-bold mb-4">Новая запись</h2>
+        <h2 class="text-lg font-bold mb-4">{{ editingIndex !== null ? 'Редактировать запись' : 'Новая запись' }}</h2>
 
-        <form @submit.prevent="addRow" class="grid grid-cols-2 gap-4">
-          <div>
+        <form @submit.prevent="editingIndex !== null ? updateRow() : addRow()" class="grid grid-cols-2 gap-4">
+          <div v-if="editingIndex === null">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Дефект</label
             >
@@ -168,7 +172,7 @@
             </Listbox>
           </div>
 
-          <div>
+          <div v-if="editingIndex === null">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Категория</label
             >
@@ -224,7 +228,7 @@
             </Listbox>
           </div>
 
-          <div>
+          <div v-if="editingIndex === null">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Местоположения</label
             >
@@ -238,7 +242,7 @@
             />
           </div>
 
-          <div>
+          <div v-if="editingIndex === null">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Протяженность</label
             >
@@ -253,7 +257,7 @@
             />
           </div>
 
-          <div class="col-span-2">
+          <div v-if="editingIndex === null" class="col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Примечание</label
             >
@@ -265,7 +269,7 @@
             />
           </div>
 
-          <div>
+          <div v-if="editingIndex === null">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Исправлено (м)</label
             >
@@ -280,7 +284,7 @@
             />
           </div>
 
-          <div>
+          <div v-if="editingIndex === null">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Остаток брака (м)</label
             >
@@ -295,7 +299,7 @@
             />
           </div>
 
-          <div class="col-span-2">
+          <div v-if="userStore.user.stage_code !== '005'" class="col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Оператор</label
             >
@@ -402,6 +406,7 @@ const props = defineProps({
 
 const show = ref(true);
 const showForm = ref(false);
+const editingIndex = ref(null);
 const userStore = useUserStore();
 const datepickerInput = ref(null);
 const isLoading = ref(false);
@@ -447,11 +452,50 @@ const close = () => {
 };
 
 const openForm = async () => {
+  editingIndex.value = null;
   showForm.value = true;
 };
 
 const closeForm = () => {
+  editingIndex.value = null;
   showForm.value = false;
+};
+
+const originalRow = ref(null);
+
+const editRow = (row, index) => {
+  if (!isRejectionStage.value) return;
+  
+  editingIndex.value = index;
+  originalRow.value = { ...row };
+  newRow.value = { ...row };
+  showForm.value = true;
+};
+
+const updateRow = () => {
+  if (editingIndex.value === null || !originalRow.value) return;
+  
+  rows.value[editingIndex.value] = { ...newRow.value };
+  
+  const defectIndex = defectStore.rows.findIndex(
+    (r) =>
+      r.article === originalRow.value.article &&
+      r.productionplan === originalRow.value.productionplan &&
+      r.tape_number === originalRow.value.tape_number &&
+      r.color === originalRow.value.color &&
+      r.defect?.code === originalRow.value.defect?.code &&
+      r.category?.code === originalRow.value.category?.code &&
+      r.locations === originalRow.value.locations &&
+      r.length === originalRow.value.length &&
+      r.note === originalRow.value.note
+  );
+  
+  if (defectIndex !== -1) {
+    defectStore.rows[defectIndex] = { ...newRow.value };
+  }
+  
+  originalRow.value = null;
+  closeForm();
 };
 
 const showWarning = ref(false);
@@ -484,7 +528,7 @@ const validateFields = () => {
       showWarning.value = true;
       return false;
 
-    case !newRow.value.operator || !newRow.value.operator.name:
+    case  userStore.user.stage_code !== "005" && (!newRow.value.operator || !newRow.value.operator.name):
       warningMessage.value = "Введите оператор!";
       showWarning.value = true;
       return false;
