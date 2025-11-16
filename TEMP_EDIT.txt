@@ -1,0 +1,9 @@
+Find and replace in ModalDefects.vue:
+
+OLD: isRejectionStage
+NEW: userStore.user.stage_code === '006'
+
+All occurrences in these contexts:
+1. @click directive
+2. :class binding  
+3. editRow function check

@@ -137,6 +137,11 @@
         </button>
       </div>
     </div>
+    <WarningModal
+      v-if="showWarning"
+      :message="warningMessage"
+      @close="showWarning = false"
+    />
   </div>
 </template>
 
@@ -150,6 +155,7 @@ import {
   ListboxOptions,
   ListboxOption,
 } from "@headlessui/vue";
+import WarningModal from "@/components/ui/WarningModal.vue";
 
 const userStore = useUserStore();
 
@@ -158,7 +164,7 @@ const props = defineProps({
   quantity: { type: Number, default: 0 }, 
 });
 
-const emit = defineEmits(["update:isOpen", "save"]);
+const emit = defineEmits(["update:isOpen", "save", "cancel"]);
 
 const rowData = ref({ name: "", GUID: "" });
 const rowName = ref("");
@@ -167,6 +173,9 @@ const localQuantity = ref(props.quantity);
 const availableEmployees = ref([]);
 
 const employees = ref([]);
+
+const showWarning = ref(false);
+const warningMessage = ref("");
 
 const updateEmployee = (index, selectedEmployee) => {
   employees.value[index] = {
@@ -225,9 +234,7 @@ const cancelRows = () => {
 };
 
 const closeModal = () => {
-  employees.value.forEach(emp => {
-    emp.percent = 0;
-  });
+  emit("cancel");
   emit("update:isOpen", false);
 };
 
@@ -236,6 +243,14 @@ const saveChanges = () => {
 
   if (filteredEmployees.length === 0) {
     return; 
+  }
+
+  const totalPercent = filteredEmployees.reduce((sum, emp) => sum + (emp.percent || 0), 0);
+  
+  if (totalPercent > props.quantity) {
+    warningMessage.value = `Общий количество (${totalPercent}) превышает необходимое количество (${props.quantity})!`;
+    showWarning.value = true;
+    return;
   }
 
   emit("save", filteredEmployees);

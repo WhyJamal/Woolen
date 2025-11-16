@@ -542,11 +542,12 @@
       }"
       @close="openDefects = false"
     />
-    <OperatorModal
+    <EmployeePercentModal
       :isOpen="isModalOpen"
       :quantity="model?.[0]?.quantity || 0"
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"
+      @cancel="handleCancel"
     />
   </Layout>
 </template>
@@ -640,21 +641,27 @@ const DataStore = reactive({
   author: null,
 });
 
-const OperatorModal = defineAsyncComponent(() =>
+const EmployeePercentModal = defineAsyncComponent(() =>
   import("@/views/components/EmployeePercentModal.vue")
 );
 
 const isModalOpen = ref(false);
 const employeesData = ref([]);
+const modalCancelled = ref(false);
 
 function openModal() {
   isModalOpen.value = true;
+  modalCancelled.value = false;
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const unwatch = watch(isModalOpen, (val) => {
       if (!val) {
         unwatch();
-        resolve(employeesData.value);
+        if (modalCancelled.value) {
+          reject(new Error("Modal cancelled"));
+        } else {
+          resolve(employeesData.value);
+        }
       }
     });
   });
@@ -666,10 +673,15 @@ function handleSaveOperators(data) {
 }
 
 function handleSave(data) {
+  modalCancelled.value = false;
   employeesData.value = data;
   Object.assign(DataStore, data);
   saveOrUpdateRow(DataStore);
   //openHistory.value = false;
+}
+
+function handleCancel() {
+  modalCancelled.value = true;
 }
 function saveOrUpdateRow(newData) {
   const index = storyDetails.findIndex(
@@ -882,8 +894,14 @@ const toggle = async () => {
     } 
     
     if (userStore.user.stage_code === "005") {
-      const selected = await openModal(); 
-      employeesData.value = selected;
+      try {
+        const selected = await openModal(); 
+        employeesData.value = selected;
+      } catch (error) {2
+        // Modal cancelled
+        isSubmitting.value = false;
+        return;
+      }
     }
 
     const foundDefects = defectStore.rows.filter(
