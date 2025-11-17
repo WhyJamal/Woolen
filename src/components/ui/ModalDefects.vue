@@ -269,7 +269,7 @@
             />
           </div>
 
-          <div v-if="editingIndex === null">
+          <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Исправлено (м)</label
             >
