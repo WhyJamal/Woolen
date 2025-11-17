@@ -659,12 +659,17 @@ function onLengthChange(row) {
 }
 
 function onCorrectedMeterChange(row) {
-  if(row.correctedMeter === 0) {
+  if (row.correctedMeter > row.length) {
+    row.correctedMeter = row.length;
+  }
+
+  if (row.correctedMeter === 0) {
     row.defectBalance = row.length;
-  }else {
-    row.defectBalance = row.defectBalance - row.correctedMeter;   
+  } else {
+    row.defectBalance = row.length - row.correctedMeter;
   }
 }
+
 
 </script>
 
