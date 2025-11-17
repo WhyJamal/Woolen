@@ -269,7 +269,7 @@
             />
           </div>
 
-          <div>
+          <div v-if="userStore.user.stage_code !== '005'">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Исправлено (м)</label
             >
