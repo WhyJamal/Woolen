@@ -544,6 +544,18 @@ const addRow = () => {
   closeForm();
 };
 
+function fillLastRowFields() {
+  if (!rows.value.length) return;
+
+  const lastRow = rows.value[rows.value.length - 1];
+
+  Object.assign(newRow.value, {
+    mass: lastRow.mass,
+    mode: lastRow.mode,
+    machine: lastRow.machine,
+  });
+}
+
 onMounted(async () => {
   isLoading.value = true;
 
@@ -572,6 +584,7 @@ onMounted(async () => {
       const detail = props.data.arrayStory[index];
       rows.value.push({ ...detail });
     }
+    fillLastRowFields();
   } catch (error) {
   } finally {
     isLoading.value = false;
