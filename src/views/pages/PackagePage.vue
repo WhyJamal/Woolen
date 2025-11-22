@@ -187,7 +187,13 @@
       </div>
     </div>
 
-    <ModalHistory v-if="openHistory" />
+    <WeightModal
+      :show="showModal"
+      @update:show="showModal = $event"
+      @submit="handleWeights"
+    />
+
+    <!-- <ModalHistory v-if="openHistory" /> -->
   </Layout>
 </template>
 
@@ -195,11 +201,15 @@
 import Layout from "@/components/Layout.vue";
 import ModalHistory from "@/components/ui/ModalHistory.vue";
 import PrintLabel from "@/views/pages/PrintLabel.vue";
-import { onMounted, ref, computed, defineAsyncComponent } from "vue";
+import { onMounted, ref, computed, defineAsyncComponent, createApp } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
 import { useDefectStore } from "@/stores/defects";
+
+const EmptyState = defineAsyncComponent(() =>
+  import("@/components/ui/EmptyState.vue")
+);
 
 const defectStore = useDefectStore();
 const pressed = ref(false);
@@ -226,6 +236,9 @@ const form = ref({
   comment: "",
   owner: "",
 });
+const showModal = ref(false);
+const net = ref("");
+const gross = ref("");
 
 function loadDate() {
   return (async () => {
@@ -325,6 +338,24 @@ function toggleHistory() {
   openHistory.value = !openHistory.value;
 }
 
+const openWeightModalAsync = async () => {
+  const modalModule = await import("@/views/components/WeightModal.vue")
+  const modal = modalModule.default
+
+  return new Promise((resolve) => {
+    const container = document.createElement("div")
+    container.id = 'weight-modal-container'
+    document.body.appendChild(container)
+
+    const app = createApp(modal)
+    app.config.globalProperties.$resolve = resolve
+    container.__vue_app__ = app
+
+    app.mount(container)
+  })
+}
+
+
 const toggleStart = async (task) => {
   if (task.status === "Ожидает") {
     task.status = "Активний";
@@ -343,6 +374,12 @@ const toggleStart = async (task) => {
   isSubmitting.value = true;
 
   try {
+    const weightData = await openWeightModalAsync();
+    if (!weightData) return; 
+
+    task.netto = weightData.netWeight;
+    task.brutto = weightData.grossWeight;
+
     const target = {
       article: task.nomenclature.article,
       tape_number: task.tape_number,
@@ -487,10 +524,6 @@ const toogleRefund = async (task) => {
   }
   endclickSound.play();
 };
-
-const EmptyState = defineAsyncComponent(() =>
-  import("@/components/ui/EmptyState.vue")
-);
 </script>
 
 <style>
