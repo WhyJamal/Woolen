@@ -40,7 +40,7 @@
         <div class="overflow-x-auto bg-gray-100 p-4 rounded-xl">
           <div class="max-w-6xl mx-auto space-y-2">
             <div
-              class="grid grid-cols-8 bg-gray-50 rounded-lg shadow text-sm font-semibold text-gray-700"
+              class="grid grid-cols-9 bg-gray-50 rounded-lg shadow text-sm font-semibold text-gray-700"
             >
               <div class="p-3 text-center">Дефект</div>
               <div class="p-3 text-center">Категория дефекта</div>
@@ -50,7 +50,7 @@
               <div class="p-3 text-center">Метр исправлено</div>
               <div class="p-3 text-center">Остаток брака</div>
               <div class="p-3 text-center">Оператор</div>
-              <!-- <div class="p-3 text-center">Исправлено</div> -->
+              <div class="p-3 text-center">Исправлено</div> 
             </div>
 
             <div
@@ -58,7 +58,7 @@
               :key="row.id"
               @click="isRejectionStage ? editRow(row, index) : null"
               :class="[
-                'grid grid-cols-8 bg-white rounded-lg shadow text-sm transition',
+                'grid grid-cols-9 bg-white rounded-lg shadow text-sm transition',
                 isRejectionStage ? 'hover:bg-blue-100 cursor-pointer' : 'hover:bg-blue-50'
               ]"
             >
@@ -70,21 +70,21 @@
               <div class="p-3 text-center">{{ row.correctedMeter || "" }}</div>
               <div class="p-3 text-center">{{ row.defectBalance || "" }}</div>
               <div class="p-3 text-center">{{ row.operator.name || "" }}</div>
-              <!-- <div class="p-3 flex justify-center items-center">
+              <div class="p-3 flex justify-center items-center">
                 <input
                   id="default-checkbox"
                   type="checkbox"
                   v-model="row.fixed"
                   @change="onFixedChange(row)"
-                  :disabled="!isControlStage"
+                  :disabled="!isRejectionStage"
                   :class="[
                     'w-4 h-4 rounded-sm border-gray-300 focus:ring-blue-500 transition',
-                    isControlStage
+                    isRejectionStage
                       ? 'bg-gray-100 text-blue-600 cursor-pointer hover:opacity-90'
                       : 'bg-gray-200 opacity-40 cursor-not-allowed',
                   ]"
                 />
-              </div> -->
+              </div>
             </div>
           </div>
         </div>
