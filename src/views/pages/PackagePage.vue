@@ -377,8 +377,8 @@ const toggleStart = async (task) => {
     const weightData = await openWeightModalAsync();
     if (!weightData) return; 
 
-    task.netto = weightData.netWeight;
-    task.brutto = weightData.grossWeight;
+    const netWeight = weightData.netWeight;
+    const grossWeight = weightData.grossWeight;
 
     const target = {
       article: task.nomenclature.article,
@@ -412,6 +412,8 @@ const toggleStart = async (task) => {
       owner: userStore.user.GUID,
       netto: task.netto,
       brutto: task.brutto,
+      grossWeight: grossWeight,
+      netWeight: netWeight, 
       startDate: task.startDate,
       endDate: await loadDate(),
 
