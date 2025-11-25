@@ -544,7 +544,7 @@
     />
     <EmployeePercentModal
       :isOpen="isModalOpen"
-      :quantity="model?.[0]?.quantity || 0"
+      :quantity="storyNetto || 0"
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"
       @cancel="handleCancel"
@@ -594,6 +594,7 @@ const selectedTask = ref(null);
 const photo = ref(null);
 const clickSound = new Audio("/sounds/click.wav");
 const endclickSound = new Audio("/sounds/end-click.wav");
+const storyNetto = ref(0);
 const form = ref({
   stage: "",
   productionOrder: "",
@@ -874,6 +875,7 @@ const toggle = async () => {
     );
 
     const detail = storyDetails[index] || {};
+    storyNetto.value = detail.netto;
 
     const idx = tasks.value.findIndex(
       (t) =>
@@ -891,13 +893,14 @@ const toggle = async () => {
     ) {
       showWarning.value = true; // 005: Контроль 1
       return;
-    } 
-    
+    }
+
     if (userStore.user.stage_code === "005") {
       try {
-        const selected = await openModal(); 
+        const selected = await openModal();
         employeesData.value = selected;
-      } catch (error) {2
+      } catch (error) {
+        2;
         // Modal cancelled
         isSubmitting.value = false;
         return;
