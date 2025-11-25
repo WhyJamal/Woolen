@@ -45,21 +45,29 @@
               <div class="p-3 text-center">Дефект</div>
               <div class="p-3 text-center">Категория дефекта</div>
               <div class="p-3 text-center">Примечание</div>
-              <div class="p-3 text-center">Местопол.</div><!-- Местоположения -->
-              <div class="p-3 text-center">Протояженн.</div> <!-- Протояженность -->
+              <div class="p-3 text-center">Местопол.</div>
+              <!-- Местоположения -->
+              <div class="p-3 text-center">Протояженн.</div>
+              <!-- Протояженность -->
               <div class="p-3 text-center">Метр исправлено</div>
               <div class="p-3 text-center">Остаток брака</div>
               <div class="p-3 text-center">Оператор</div>
-              <div class="p-3 text-center">Исправлено</div> 
+              <div class="p-3 text-center">Исправлено</div>
             </div>
 
             <div
               v-for="(row, index) in rows"
               :key="row.id"
-              @click="isRejectionStage ? editRow(row, index) : null"
+              @click="
+                isRejectionStage || userStore.user.stage_code === '017'
+                  ? editRow(row, index)
+                  : null
+              "
               :class="[
                 'grid grid-cols-9 bg-white rounded-lg shadow text-sm transition',
-                isRejectionStage ? 'hover:bg-blue-100 cursor-pointer' : 'hover:bg-blue-50'
+                isRejectionStage
+                  ? 'hover:bg-blue-100 cursor-pointer'
+                  : 'hover:bg-blue-50',
               ]"
             >
               <div class="p-3 text-center">{{ row.defect?.name || "" }}</div>
@@ -72,14 +80,18 @@
               <div class="p-3 text-center">{{ row.operator.name || "" }}</div>
               <div class="p-3 flex justify-center items-center">
                 <input
-                  id="default-checkbox"
                   type="checkbox"
                   v-model="row.fixed"
-                  @change="onFixedChange(row)"
-                  :disabled="!isRejectionStage"
+                  @change="
+                    userStore.user.stage_code === '017'
+                      ? onFixedChange(row)
+                      : null
+                  "
+                  @click.stop
+                  :disabled="userStore.user.stage_code !== '017'"
                   :class="[
                     'w-4 h-4 rounded-sm border-gray-300 focus:ring-blue-500 transition',
-                    isRejectionStage
+                    userStore.user.stage_code === '017'
                       ? 'bg-gray-100 text-blue-600 cursor-pointer hover:opacity-90'
                       : 'bg-gray-200 opacity-40 cursor-not-allowed',
                   ]"
@@ -113,20 +125,31 @@
       @click.self="closeForm"
     >
       <div class="bg-white p-6 rounded-xl w-[600px] shadow-xl">
-        <h2 class="text-lg font-bold mb-4">{{ editingIndex !== null ? 'Редактировать запись' : 'Новая запись' }}</h2>
+        <h2 class="text-lg font-bold mb-4">
+          {{ editingIndex !== null ? "Редактировать запись" : "Новая запись" }}
+        </h2>
 
-        <form @submit.prevent="editingIndex !== null ? updateRow() : addRow()" class="grid grid-cols-2 gap-4">
-          <div v-if="editingIndex === null">
+        <form
+          @submit.prevent="editingIndex !== null ? updateRow() : addRow()"
+          class="grid grid-cols-2 gap-4"
+        >
+          <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Дефект</label
             >
             <Listbox v-model="newRow.defect">
               <div class="relative">
                 <ListboxButton
+                  :disabled="isRejectionStage"
                   @click="fetchDefects"
                   class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
-                  <span class="hover:text-gray-800">
+                  <span
+                    class="hover:text-gray-800"
+                    :class="
+                      isRejectionStage ? 'text-gray-400' : 'text-gray-800'
+                    "
+                  >
                     {{ newRow.defect?.name || "Выберите Дефект..." }}
                   </span>
                   <svg
@@ -172,17 +195,22 @@
             </Listbox>
           </div>
 
-          <div v-if="editingIndex === null">
+          <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Категория</label
             >
             <Listbox v-model="newRow.category">
               <div class="relative">
                 <ListboxButton
+                  :disabled="isRejectionStage"
                   @click="fetchDefectCategoryes"
                   class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
-                  <span class="text-gray-800">
+                  <span
+                    :class="
+                      isRejectionStage ? 'text-gray-400' : 'text-gray-800'
+                    "
+                  >
                     {{ newRow.category?.name || "Выберите категорию..." }}
                   </span>
                   <svg
@@ -228,43 +256,49 @@
             </Listbox>
           </div>
 
-          <div v-if="editingIndex === null">
+          <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Местоположения</label
             >
             <input
+              :disabled="isRejectionStage"
               v-model="newRow.locations"
               type="number"
               inputmode="decimal"
               step="any"
               placeholder=""
               class="input"
+              :class="isRejectionStage ? 'text-gray-400' : ''"
             />
           </div>
 
-          <div v-if="editingIndex === null">
+          <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Протяженность</label
             >
             <input
+              :disabled="isRejectionStage"
               v-model="newRow.length"
               type="number"
               inputmode="decimal"
               step="any"
               placeholder=""
               class="input"
+              :class="isRejectionStage ? 'text-gray-400' : ''"
               @change="onLengthChange(newRow)"
             />
           </div>
 
-          <div v-if="editingIndex === null" class="col-span-2">
+          <div class="col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Примечание</label
             >
             <input
+              :disabled="isRejectionStage"
               v-model="newRow.note"
               type="text"
               placeholder=""
+              :class="isRejectionStage ? 'text-gray-400' : ''"
               class="input w-full"
             />
           </div>
@@ -284,7 +318,7 @@
             />
           </div>
 
-          <div v-if="editingIndex === null">
+          <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Остаток брака (м)</label
             >
@@ -295,6 +329,7 @@
               step="any"
               placeholder=""
               class="input"
+              :class="isRejectionStage ? 'text-gray-400' : ''"
               readonly
             />
           </div>
@@ -413,7 +448,7 @@ const isLoading = ref(false);
 const rows = ref([]);
 const warningMassage = ref("");
 const isControlStage = computed(() =>
-  ["005", "013", "017"].includes(userStore.user.stage_code) 
+  ["005", "013", "017"].includes(userStore.user.stage_code)
 ); // 005: Контроль 1, 013: Контроль 2, 017: Контроль 3
 const isRejectionStage = computed(() =>
   ["006", "014"].includes(userStore.user.stage_code)
@@ -453,6 +488,24 @@ const close = () => {
 
 const openForm = async () => {
   editingIndex.value = null;
+
+  newRow.value = {
+    defect: { name: "", code: "" },
+    category: { name: "", code: "" },
+    note: "",
+    locations: "",
+    length: "",
+    operator: { name: "", GUID: "" },
+    correctedMeter: "",
+    defectBalance: "",
+    fixed: false,
+    article: props.data.article,
+    productionplan: props.data.productionplan,
+    date_productionplan: props.data.date_productionplan,
+    tape_number: props.data.tape_number,
+    color: props.data.color,
+  };
+
   showForm.value = true;
 };
 
@@ -464,19 +517,21 @@ const closeForm = () => {
 const originalRow = ref(null);
 
 const editRow = (row, index) => {
-  if (!isRejectionStage.value) return;
-  
+  // Allow edit for rejection stages (isRejectionStage) and stage '017'
+  if (!isRejectionStage.value && userStore.user.stage_code !== "017") return;
+
   editingIndex.value = index;
-  originalRow.value = { ...row };
-  newRow.value = { ...row };
+  // DEEP CLONE originalRow as requested
+  originalRow.value = JSON.parse(JSON.stringify(row));
+  newRow.value = JSON.parse(JSON.stringify(row));
   showForm.value = true;
 };
 
 const updateRow = () => {
   if (editingIndex.value === null || !originalRow.value) return;
-  
+
   rows.value[editingIndex.value] = { ...newRow.value };
-  
+
   const defectIndex = defectStore.rows.findIndex(
     (r) =>
       r.article === originalRow.value.article &&
@@ -489,11 +544,11 @@ const updateRow = () => {
       r.length === originalRow.value.length &&
       r.note === originalRow.value.note
   );
-  
+
   if (defectIndex !== -1) {
     defectStore.rows[defectIndex] = { ...newRow.value };
   }
-  
+
   originalRow.value = null;
   closeForm();
 };
@@ -528,10 +583,10 @@ const validateFields = () => {
       showWarning.value = true;
       return false;
 
-    case  userStore.user.stage_code !== "005" && (!newRow.value.operator || !newRow.value.operator.name):
-      warningMessage.value = "Введите оператор!";
-      showWarning.value = true;
-      return false;
+    // case  userStore.user.stage_code !== "005" && (!newRow.value.operator || !newRow.value.operator.name):
+    //   warningMessage.value = "Введите оператор!";
+    //   showWarning.value = true;
+    //   return false;
 
     default:
       return true;
@@ -627,7 +682,9 @@ async function fetchOperators() {
   if (isLoadingOperators.value) return;
   isLoadingOperators.value = true;
   try {
-    const response = await api.get("/v1/operators/list", { params: { stage: userStore.user.stage_code } });
+    const response = await api.get("/v1/operators/list", {
+      params: { stage: userStore.user.stage_code },
+    });
     operators.value = response.data;
   } catch (error) {
   } finally {
@@ -650,12 +707,14 @@ function onFixedChange(row) {
       r.color === (props.data.color || "") &&
       r.tape_number === (props.data.tape_number || "")
   );
-  defectStore.rows[foundDefects].fixed = !!row.fixed;
+  if (foundDefects !== -1) {
+    defectStore.rows[foundDefects].fixed = !!row.fixed;
+  }
   // defectStore.rows[foundDefects].operator = userStore.user.name;
 }
 
 function onLengthChange(row) {
-  row.defectBalance = row.length;   
+  row.defectBalance = row.length;
 }
 
 function onCorrectedMeterChange(row) {
@@ -669,8 +728,6 @@ function onCorrectedMeterChange(row) {
     row.defectBalance = row.length - row.correctedMeter;
   }
 }
-
-
 </script>
 
 <style scoped>

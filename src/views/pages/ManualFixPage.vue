@@ -588,7 +588,7 @@
       }"
       @close="openDefects = false"
     />
-  </Layout>
+  </Layout>{{defectStore}}
 </template>
 
 <script setup>
@@ -739,19 +739,28 @@ async function toggleModel(
 
     const defectsArray = model.value[0].arrayDefects;
 
-    defectsArray.forEach((row) => {
-      const exists = defectStore.rows.some(
-        (r) =>
-          r.defect?.code === row.defect?.code &&
-          r.category?.code === row.category?.code &&
-          r.note === row.note &&
-          r.locations === row.locations &&
-          r.length === row.length &&
-          r.operator?.GUID === row.operator?.GUID &&
-          r.article === (model.value[0].nomenclature?.article || "") &&
-          r.productionplan === (model.value[0].productionplan || "") &&
-          r.color === (model.value[0].color?.code || "") &&
-          r.tape_number === (model.value[0].tape_number || "")
+    // defectsArray.forEach((row) => {
+    //   const exists = defectStore.rows.some(
+    //     (r) =>
+    //       r.article === (model.value[0].nomenclature?.article || "") &&
+    //       r.productionplan === (model.value[0].productionplan || "") &&
+    //       r.color === (model.value[0].color?.code || "") &&
+    //       r.tape_number === (model.value[0].tape_number || "")
+    //   );
+
+      defectsArray.forEach((row) => {
+        const exists = defectStore.rows.some(
+          (r) =>
+            r.defect?.code === row.defect?.code &&
+            r.category?.code === row.category?.code &&
+            // r.note === row.note &&
+            r.locations === row.locations &&
+            r.length === row.length &&
+            // r.operator?.GUID === row.operator?.GUID &&
+            r.article === (model.value[0].nomenclature?.article || "") &&
+            r.productionplan === (model.value[0].productionplan || "") &&
+            r.color === (model.value[0].color?.code || "") &&
+            r.tape_number === (model.value[0].tape_number || "")
       );
 
       if (!exists) {
