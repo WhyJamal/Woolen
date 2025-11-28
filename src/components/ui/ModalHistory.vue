@@ -70,8 +70,16 @@
                 {{ row.machine.name }}
               </div>
               <div class="p-3 text-center">{{ row.mode }}</div>
-              <div class="p-3 truncate">{{ row.comment }}</div>
-              <div class="p-3 text-right font-medium text-blue-600 truncate">
+              <div 
+                class="p-3 text-left truncate max-w-[150px]"
+                :title="row.comment"
+                >
+                {{ row.comment }}
+              </div>
+              <div 
+                class="p-3 text-left font-medium text-blue-600 truncate max-w-[150px] mx-auto"
+                :title="row.author.name"
+                >
                 {{ row.author.name }}
               </div>
             </div>
