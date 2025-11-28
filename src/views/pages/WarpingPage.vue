@@ -364,7 +364,7 @@
                         >
                       </div>
 
-                      <button
+                      <!-- <button
                         @click="toggleChangeQuantity(model[0].quantity)"
                         class="p-2 rounded-lg text-gray-600 hover:text-blue-600 transition"
                       >
@@ -381,7 +381,7 @@
                             d="M889.7 163.4c-22.9-22.9-53-34.4-83.1-34.4s-60.1 11.5-83.1 34.4L312 574.9c-16.9 16.9-27.9 38.8-31.2 62.5l-19 132.8c-1.6 11.4 7.3 21.3 18.4 21.3 0.9 0 1.8-0.1 2.7-0.2l132.8-19c23.7-3.4 45.6-14.3 62.5-31.2l411.5-411.5c45.9-45.9 45.9-120.3 0-166.2z"
                           />
                         </svg>
-                      </button>
+                      </button> -->
                     </div>
 
                     <div class="flex justify-end gap-3">
