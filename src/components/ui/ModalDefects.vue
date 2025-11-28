@@ -70,8 +70,18 @@
                   : 'hover:bg-blue-50',
               ]"
             >
-              <div class="p-3 text-center">{{ row.defect?.name || "" }}</div>
-              <div class="p-3 text-center">{{ row.category?.name || "" }}</div>
+              <div 
+                class="p-3 text-center truncate max-w-[135px] mx-auto"
+                :title="row.defect?.name || ''"
+                >
+                {{  row.defect?.name || "" }}
+              </div>
+              <div 
+                class="p-3 text-center truncate max-w-[150px] mx-auto"
+                :title="row.category?.name || ''"
+                >
+                {{  row.category?.name || "" }}
+              </div>
               <div class="p-3 text-center">{{ row.note || "" }}</div>
               <div class="p-3 text-center">{{ row.locations || "" }}</div>
               <div class="p-3 text-center">{{ row.length || "" }}</div>
@@ -81,7 +91,7 @@
                 class="p-3 text-center truncate max-w-[150px] mx-auto"
                 :title="row.operator.name || ''"
                 >
-                {{ row.operator.name || ""}}
+                {{ row.operator.name || "" }}
               </div>
               <div class="p-3 flex justify-center items-center">
                 <input
@@ -475,7 +485,7 @@ const newRow = ref({
   operator: { name: "", GUID: "" },
   correctedMeter: "",
   defectBalance: "",
-  fixed: false,
+  fixed: false, 
   article: props.data.article,
   productionplan: props.data.productionplan,
   date_productionplan: props.data.date_productionplan,
@@ -522,11 +532,16 @@ const closeForm = () => {
 const originalRow = ref(null);
 
 const editRow = (row, index) => {
-  // Allow edit for rejection stages (isRejectionStage) and stage '017'
+  if (row.saved && userStore.user.stage_code !== "017") {
+    warningMessage.value = "Эта строка сохранена и не может быть изменена.";
+    showWarning.value = true;
+    showForm.value = false;
+    return;
+  }
+
   if (!isRejectionStage.value && userStore.user.stage_code !== "017") return;
 
   editingIndex.value = index;
-  // DEEP CLONE originalRow as requested
   originalRow.value = JSON.parse(JSON.stringify(row));
   newRow.value = JSON.parse(JSON.stringify(row));
   showForm.value = true;
@@ -646,8 +661,13 @@ onMounted(async () => {
         row.color === props.data.color
     );
 
-    rows.value.push(...foundDefects);
-  } catch (error) {
+    const mapped = foundDefects.map((r) => ({
+      ...r,
+      saved: !!(r.operator?.GUID),
+    }));
+
+    rows.value.push(...mapped);  
+    } catch (error) {
   } finally {
     isLoading.value = false;
   }
