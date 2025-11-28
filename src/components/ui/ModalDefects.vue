@@ -111,7 +111,7 @@
             'text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-colors',
             isControlStage
               ? 'bg-indigo-600 hover:opacity-90 cursor-pointer'
-              : 'bg-gray-200 opacity-50 cursor-not-allowed',
+              : 'bg-gray-400 cursor-not-allowed opacity-60'
           ]"
         >
           Добавить

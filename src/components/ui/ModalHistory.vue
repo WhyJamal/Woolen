@@ -78,7 +78,13 @@
         <button
           v-if="!isLoading"
           @click="openForm"
-          class="bg-indigo-600 hover:opacity-90 text-white font-semibold py-2 px-5 rounded-xl shadow-lg"
+          :disabled="!isControlStage"
+          :class="[
+            'text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition',
+            isControlStage
+              ? 'bg-indigo-600 hover:opacity-90 cursor-pointer'
+              : 'bg-gray-400 cursor-not-allowed opacity-60'
+          ]"
         >
           Добавить
         </button>
@@ -377,7 +383,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted } from "vue";
+import { ref, nextTick, onMounted, computed } from "vue";
 import { Datepicker } from "flowbite-datepicker";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -403,6 +409,9 @@ const datepickerInput = ref(null);
 const isLoading = ref(false);
 const rows = ref([]);
 const warningMassage = ref("");
+const isControlStage = computed(() =>
+  ["005", "013", "017"].includes(userStore.user.stage_code)
+); // 005: Контроль 1, 013: Контроль 2, 017: Контроль 3
 
 const today = new Date();
 const formatDate = (d) =>
