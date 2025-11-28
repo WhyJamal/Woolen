@@ -63,7 +63,12 @@
               <div class="p-3 text-center">{{ row.mass }}</div>
               <div class="p-3 text-center">{{ row.brutto }}</div>
               <div class="p-3 text-center">{{ row.netto }}</div>
-              <div class="p-3 text-center">{{ row.machine.name }}</div>
+              <div 
+                class="p-3 text-center truncate max-w-[150px] mx-auto"
+                :title="row.machine.name"
+                >
+                {{ row.machine.name }}
+              </div>
               <div class="p-3 text-center">{{ row.mode }}</div>
               <div class="p-3 truncate">{{ row.comment }}</div>
               <div class="p-3 text-right font-medium text-blue-600 truncate">

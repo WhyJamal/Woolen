@@ -77,7 +77,12 @@
               <div class="p-3 text-center">{{ row.length || "" }}</div>
               <div class="p-3 text-center">{{ row.correctedMeter || "" }}</div>
               <div class="p-3 text-center">{{ row.defectBalance || "" }}</div>
-              <div class="p-3 text-center">{{ row.operator.name || "" }}</div>
+              <div 
+                class="p-3 text-center truncate max-w-[150px] mx-auto"
+                :title="row.operator.name || ''"
+                >
+                {{ row.operator.name || ""}}
+              </div>
               <div class="p-3 flex justify-center items-center">
                 <input
                   type="checkbox"
