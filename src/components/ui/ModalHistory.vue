@@ -144,7 +144,7 @@
                 v-model="newRow.date"
                 type="text"
                 placeholder="Выберите дату"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                class="bg-gray-50 border border-gray-300 text-gray-600 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
               />
             </div>
           </div>
@@ -225,9 +225,9 @@
               <div class="relative">
                 <ListboxButton
                   @click="fetchMachines"
-                  class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                  class="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
-                  <span>
+                  <span class="text-gray-600">
                     {{
                       newRow.machine
                         ? newRow.machine.name
@@ -302,7 +302,7 @@
                   @click="fetchFabricGrade"
                   class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
-                  <span>
+                  <span class="text-gray-600">
                     {{
                       newRow.sort?.name ? newRow.sort.name : "Выберите сорт..."
                     }}
@@ -701,6 +701,6 @@ function saveData(newData) {
 
 <style scoped>
 .input {
-  @apply border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400;
+  @apply border border-gray-300 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400;
 }
 </style>

@@ -163,12 +163,11 @@
                 <ListboxButton
                   :disabled="isRejectionStage"
                   @click="fetchDefects"
-                  class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                  class="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
                   <span
-                    class="hover:text-gray-800"
                     :class="
-                      isRejectionStage ? 'text-gray-400' : 'text-gray-700'
+                      isRejectionStage ? 'text-gray-400' : 'text-gray-600'
                     "
                   >
                     {{ newRow.defect?.name || "Выберите Дефект..." }}
@@ -224,10 +223,10 @@
               <div class="relative">
                 <ListboxButton
                   @click="fetchDefectCategoryes"
-                  class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                  class="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
                   <span
-                    class="text-gray-700"
+                    class="text-gray-600"
                   >
                     {{ newRow.category?.name || "Выберите категорию..." }}
                   </span>
@@ -286,7 +285,7 @@
               step="any"
               placeholder=""
               class="input"
-              :class="isRejectionStage ? 'text-gray-400' : ''"
+              :class="isRejectionStage ? 'text-gray-400' : 'text-gray-600'"
             />
           </div>
 
@@ -302,7 +301,7 @@
               step="any"
               placeholder=""
               class="input"
-              :class="isRejectionStage ? 'text-gray-400' : ''"
+              :class="isRejectionStage ? 'text-gray-400' : 'text-gray-600'"
               @change="onLengthChange(newRow)"
             />
           </div>
@@ -316,7 +315,7 @@
               v-model="newRow.note"
               type="text"
               placeholder=""
-              :class="isRejectionStage ? 'text-gray-400' : ''"
+              :class="isRejectionStage ? 'text-gray-400' : 'text-gray-600'"
               class="input w-full"
             />
           </div>
@@ -360,9 +359,9 @@
               <div class="relative">
                 <ListboxButton
                   @click="fetchOperators"
-                  class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                  class="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
-                  <span class="text-gray-800">
+                  <span class="text-gray-600">
                     {{ newRow.operator?.name || "Выберите оператора..." }}
                   </span>
                   <svg
@@ -760,6 +759,6 @@ function onCorrectedMeterChange(row) {
 
 <style scoped>
 .input {
-  @apply border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400;
+  @apply border border-gray-300 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400;
 }
 </style>
