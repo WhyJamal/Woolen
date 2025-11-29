@@ -117,7 +117,13 @@
         </div>
       </div>
 
-      <div class="flex justify-end mt-5">
+      <div class="flex justify-end mt-5 gap-4">
+        <button
+          @click="close"
+          class="text-gray-500 py-2 px-5 rounded-xl shadow-lg hover:text-gray-700 hover:bg-gray-200 transition"
+        >
+          Закрыть
+        </button>
         <button
           v-if="!isLoading"
           :disabled="!isControlStage"

@@ -63,23 +63,23 @@
               <div class="p-3 text-center">{{ row.mass }}</div>
               <div class="p-3 text-center">{{ row.brutto }}</div>
               <div class="p-3 text-center">{{ row.netto }}</div>
-              <div 
+              <div
                 class="p-3 text-center truncate max-w-[150px] mx-auto"
                 :title="row.machine.name"
-                >
+              >
                 {{ row.machine.name }}
               </div>
               <div class="p-3 text-center">{{ row.mode }}</div>
-              <div 
+              <div
                 class="p-3 text-left truncate max-w-[150px]"
                 :title="row.comment"
-                >
+              >
                 {{ row.comment }}
               </div>
-              <div 
+              <div
                 class="p-3 text-left font-medium text-blue-600 truncate max-w-[150px] mx-auto"
                 :title="row.author.name"
-                >
+              >
                 {{ row.author.name }}
               </div>
             </div>
@@ -87,7 +87,13 @@
         </div>
       </div>
 
-      <div class="flex justify-end mt-5">
+      <div class="flex justify-end mt-5 gap-4">
+        <button
+          @click="close"
+          class="text-gray-500 py-2 px-5 rounded-xl shadow-lg hover:text-gray-700 hover:bg-gray-200 transition"
+        >
+          Закрыть
+        </button>
         <button
           v-if="!isLoading"
           @click="openForm"
@@ -96,7 +102,7 @@
             'text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition',
             isControlStage
               ? 'bg-indigo-600 hover:opacity-90 cursor-pointer'
-              : 'bg-gray-400 cursor-not-allowed opacity-60'
+              : 'bg-gray-400 cursor-not-allowed opacity-60',
           ]"
         >
           Добавить
@@ -344,7 +350,6 @@
             </Listbox>
           </div>
 
-
           <div class="flex flex-col">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Оператор</label
@@ -352,7 +357,11 @@
             <Listbox v-model="newRow.author.name">
               <div class="relative">
                 <ListboxButton
-                  :class="[userStore.user.stage_code === '017' ? 'col-span-1' : 'col-span-2']"
+                  :class="[
+                    userStore.user.stage_code === '017'
+                      ? 'col-span-1'
+                      : 'col-span-2',
+                  ]"
                   class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
                   <span class="text-gray-800">
@@ -377,9 +386,7 @@
                 <ListboxOptions
                   class="absolute bottom-full mb-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
                 >
-                  <ListboxOption
-                    class="flex items-center justify-center py-4"
-                  >
+                  <ListboxOption class="flex items-center justify-center py-4">
                     <div class="loader w-10 h-10"></div>
                   </ListboxOption>
                 </ListboxOptions>
@@ -400,7 +407,10 @@
             />
           </div> -->
 
-          <div v-if="userStore.user.stage_code === '017'" class="col-span-1 flex flex-col">
+          <div
+            v-if="userStore.user.stage_code === '017'"
+            class="col-span-1 flex flex-col"
+          >
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Лот</label
             >
@@ -578,7 +588,7 @@ const validateFields = () => {
       warningMessage.value = "Введите нетто!";
       showWarning.value = true;
       return false;
-    
+
     case userStore.user.stage_code === "017" && !newRow.value.lot:
       warningMessage.value = "Введите Лот!";
       showWarning.value = true;
