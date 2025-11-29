@@ -247,7 +247,7 @@ const saveChanges = () => {
 
   const totalPercent = filteredEmployees.reduce((sum, emp) => sum + (emp.percent || 0), 0);
   
-  if (totalPercent > props.quantity) {
+  if (totalPercent !== props.quantity) {
     warningMessage.value = `Общий количество (${totalPercent}) превышает необходимое количество (${props.quantity})!`;
     showWarning.value = true;
     return;
