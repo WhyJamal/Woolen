@@ -588,7 +588,7 @@
       }"
       @close="openDefects = false"
     />
-  </Layout>
+  </Layout>{{ defectStore }}
 </template>
 
 <script setup>
@@ -752,7 +752,7 @@ async function toggleModel(
         const exists = defectStore.rows.some(
           (r) =>
             r.defect?.code === row.defect?.code &&
-            r.category?.code === row.category?.code &&
+            // r.category?.code === row.category?.code &&
             // r.note === row.note &&
             r.locations === row.locations &&
             r.length === row.length &&

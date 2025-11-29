@@ -747,7 +747,7 @@ async function toggleModel(
           r.note === row.note &&
           r.locations === row.locations &&
           r.length === row.length &&
-          r.operator?.GUID === row.operator?.GUID &&
+          r.operator?.GUID === (row.operator?.GUID || "") &&
           r.article === (model.value[0].nomenclature?.article || "") &&
           r.productionplan === (model.value[0].productionplan || "") &&
           r.color === (model.value[0].color?.code || "") &&

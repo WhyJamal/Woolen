@@ -162,7 +162,7 @@
                   <span
                     class="hover:text-gray-800"
                     :class="
-                      isRejectionStage ? 'text-gray-400' : 'text-gray-800'
+                      isRejectionStage ? 'text-gray-400' : 'text-gray-700'
                     "
                   >
                     {{ newRow.defect?.name || "Выберите Дефект..." }}
@@ -217,14 +217,11 @@
             <Listbox v-model="newRow.category">
               <div class="relative">
                 <ListboxButton
-                  :disabled="isRejectionStage"
                   @click="fetchDefectCategoryes"
                   class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
                   <span
-                    :class="
-                      isRejectionStage ? 'text-gray-400' : 'text-gray-800'
-                    "
+                    class="text-gray-700"
                   >
                     {{ newRow.category?.name || "Выберите категорию..." }}
                   </span>
@@ -583,7 +580,7 @@ const validateFields = () => {
       showWarning.value = true;
       return false;
 
-    case !newRow.value.category || !newRow.value.category.name:
+    case !isControlStage && (!newRow.value.category || !newRow.value.category.name):
       warningMessage.value = "Введите категорию дефекта!";
       showWarning.value = true;
       return false;
