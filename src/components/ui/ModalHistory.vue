@@ -344,7 +344,50 @@
             </Listbox>
           </div>
 
+
           <div class="flex flex-col">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Оператор</label
+            >
+            <Listbox v-model="newRow.author.name">
+              <div class="relative">
+                <ListboxButton
+                  :class="[userStore.user.stage_code === '017' ? 'col-span-1' : 'col-span-2']"
+                  class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                >
+                  <span class="text-gray-800">
+                    {{ newRow.author.name || "Выберите оператора..." }}
+                  </span>
+                  <svg
+                    class="w-5 h-5 ml-2 text-gray-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </ListboxButton>
+
+                <ListboxOptions
+                  class="absolute bottom-full mb-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
+                >
+                  <ListboxOption
+                    class="flex items-center justify-center py-4"
+                  >
+                    <div class="loader w-10 h-10"></div>
+                  </ListboxOption>
+                </ListboxOptions>
+              </div>
+            </Listbox>
+          </div>
+
+          <!-- <div class="flex flex-col">
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Автор</label
             >
@@ -355,7 +398,7 @@
               :class="[userStore.user.stage_code === '017' ? 'col-span-1' : 'col-span-2']"
               disabled
             />
-          </div>
+          </div> -->
 
           <div v-if="userStore.user.stage_code === '017'" class="col-span-1 flex flex-col">
             <label class="block text-sm font-medium text-gray-700 mb-1"
