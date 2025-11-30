@@ -544,7 +544,7 @@
     />
     <EmployeePercentModal
       :isOpen="isModalOpen"
-      :quantity="storyNetto || 0"
+      :quantity="storyNetto || model[0]?.quantity || 0"
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"
       @cancel="handleCancel"
@@ -895,7 +895,6 @@ const toggle = async () => {
       return;
     }
 
-    if (userStore.user.stage_code === "005") {
       try {
         const selected = await openModal();
         employeesData.value = selected;
@@ -905,7 +904,6 @@ const toggle = async () => {
         isSubmitting.value = false;
         return;
       }
-    }
 
     const foundDefects = defectStore.rows.filter(
       (row) =>
