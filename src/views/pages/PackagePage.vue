@@ -163,7 +163,12 @@
                 </div>
 
                 <div class="cell center">
-                  <button class="icon-btn" title="История" aria-label="История">
+                  <button
+                    @click="toggleHistory(task)"
+                    class="icon-btn"
+                    title="История"
+                    aria-label="История"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       class="h-4 w-4"
@@ -193,15 +198,47 @@
       @submit="handleWeights"
     />
 
-    <!-- <ModalHistory v-if="openHistory" /> -->
+    <EmployeePercentModal
+      :isOpen="isModalOpen"
+      :quantity="
+        tasks?.[selectedTask]?.netto || tasks?.[selectedTask]?.quantity || 0
+      "
+      @update:isOpen="isModalOpen = $event"
+      @save="handleSaveOperators"
+      @cancel="handleCancel"
+    />
+
+    <ModalHistory
+      v-if="openHistory"
+      :data="{
+        article: tasks?.[selectedTask]?.nomenclature.article,
+        productionplan: tasks?.[selectedTask]?.productionplan,
+        color: tasks?.[selectedTask]?.color.code,
+        date_productionplan: tasks?.[selectedTask]?.date_productionplan,
+        tape_number: tasks?.[selectedTask]?.tape_number,
+        quantity: 0,
+        netto: 0,
+        brutto: 0,
+        machine: {},
+        arrayStory: [],
+      }"
+      @save="handleSave"
+      @close="openHistory = false"
+    />
   </Layout>
 </template>
 
 <script setup>
 import Layout from "@/components/Layout.vue";
-import ModalHistory from "@/components/ui/ModalHistory.vue";
 import PrintLabel from "@/views/pages/PrintLabel.vue";
-import { onMounted, ref, computed, defineAsyncComponent, createApp } from "vue";
+import {
+  onMounted,
+  ref,
+  computed,
+  defineAsyncComponent,
+  createApp,
+  watch,
+} from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
@@ -334,27 +371,77 @@ function exit() {
   router.push("/");
 }
 
-function toggleHistory() {
+const ModalHistory = defineAsyncComponent(() =>
+  import("@/components/ui/ModalHistory.vue")
+);
+
+function toggleHistory(target) {
+  const idx = tasks.value.findIndex(
+    (t) =>
+      t.productionplan === target.productionplan &&
+      t.tape_number === target.tape_number &&
+      t.nomenclature.article === target.nomenclature.article &&
+      t.color.code === target.color.code
+  );
+  selectedTask.value = idx;
+
   openHistory.value = !openHistory.value;
 }
 
 const openWeightModalAsync = async () => {
-  const modalModule = await import("@/views/components/WeightModal.vue")
-  const modal = modalModule.default
+  const modalModule = await import("@/views/components/WeightModal.vue");
+  const modal = modalModule.default;
 
   return new Promise((resolve) => {
-    const container = document.createElement("div")
-    container.id = 'weight-modal-container'
-    document.body.appendChild(container)
+    const container = document.createElement("div");
+    container.id = "weight-modal-container";
+    document.body.appendChild(container);
 
-    const app = createApp(modal)
-    app.config.globalProperties.$resolve = resolve
-    container.__vue_app__ = app
+    const app = createApp(modal);
+    app.config.globalProperties.$resolve = resolve;
+    container.__vue_app__ = app;
 
-    app.mount(container)
-  })
+    app.mount(container);
+  });
+};
+
+// EmployeePercentModal
+const EmployeePercentModal = defineAsyncComponent(() =>
+  import("@/views/components/EmployeePercentModal.vue")
+);
+
+const isModalOpen = ref(false);
+const employeesData = ref([]);
+const modalCancelled = ref(false);
+const storyNetto = ref(0);
+
+function openModal() {
+  isModalOpen.value = true;
+  modalCancelled.value = false;
+
+  return new Promise((resolve, reject) => {
+    const unwatch = watch(isModalOpen, (val) => {
+      if (!val) {
+        unwatch();
+        if (modalCancelled.value) {
+          reject(new Error("Modal cancelled"));
+        } else {
+          resolve(employeesData.value);
+        }
+      }
+    });
+  });
 }
 
+function handleSaveOperators(data) {
+  employeesData.value = data;
+  isModalOpen.value = false;
+}
+
+function handleCancel() {
+  modalCancelled.value = true;
+  isModalOpen.value = false;
+}
 
 const toggleStart = async (task) => {
   if (task.status === "Ожидает") {
@@ -375,7 +462,7 @@ const toggleStart = async (task) => {
 
   try {
     const weightData = await openWeightModalAsync();
-    if (!weightData) return; 
+    if (!weightData) return;
 
     const netWeight = weightData.netWeight;
     const grossWeight = weightData.grossWeight;
@@ -395,6 +482,25 @@ const toggleStart = async (task) => {
         row.color === target.color
     );
 
+    const idx = tasks.value.findIndex(
+      (t) =>
+        t.productionplan === target.productionplan &&
+        t.tape_number === target.tape_number &&
+        t.nomenclature.article === target.article &&
+        t.color.code === target.color
+    );
+
+    try {
+      selectedTask.value = idx;
+      const selected = await openModal();
+      employeesData.value = selected;
+    } catch (error) {
+      2;
+      // Modal cancelled
+      isSubmitting.value = false;
+      return;
+    }
+
     const payload = {
       stage: task.next_stage.code, //task.stage.code,userStore.user.stage_code
       productionplan: task.productionplan,
@@ -413,26 +519,21 @@ const toggleStart = async (task) => {
       netto: task.netto,
       brutto: task.brutto,
       grossWeight: grossWeight,
-      netWeight: netWeight, 
+      netWeight: netWeight,
       startDate: task.startDate,
       endDate: await loadDate(),
 
       defects: foundDefects.length ? foundDefects : [],
       storyDetails: task.storyDetails || {},
+      employees: employeesData.value || [],
     };
 
     const response = await api.post("/v1/create_document", payload);
 
-    const idx = tasks.value.findIndex(
-      (t) =>
-        t.productionplan === task.productionplan &&
-        t.tape_number === task.tape_number &&
-        t.nomenclature.article === task.nomenclature.article &&
-        t.color.name === task.color.name
-    );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);
       showModel.value = false;
+      selectedTask.value = null;
     }
 
     foundDefects.forEach((def) => {
@@ -500,7 +601,7 @@ const toogleRefund = async (task) => {
         t.productionplan === task.productionplan &&
         t.tape_number === task.tape_number &&
         t.nomenclature.article === task.nomenclature.article &&
-        t.color.name === task.color.name
+        t.color.code === task.color.code
     );
     if (idx !== -1) {
       tasks.value.splice(idx, 1);
