@@ -588,6 +588,13 @@
       }"
       @close="openDefects = false"
     />
+    <EmployeePercentModal
+      :isOpen="isModalOpen"
+      :quantity="storyNetto || model[0]?.netto || model[0]?.quantity || 0"
+      @update:isOpen="isModalOpen = $event"
+      @save="handleSaveOperators"
+      @cancel="handleCancel"
+    />
   </Layout>
 </template>
 
@@ -676,6 +683,38 @@ const DataStore = reactive({
   author: null,
 });
 
+const EmployeePercentModal = defineAsyncComponent(() =>
+  import("@/views/components/EmployeePercentModal.vue")
+);
+
+const isModalOpen = ref(false);
+const employeesData = ref([]);
+const modalCancelled = ref(false);
+const storyNetto = ref(0);
+
+function openModal() {
+  isModalOpen.value = true;
+  modalCancelled.value = false;
+
+  return new Promise((resolve, reject) => {
+    const unwatch = watch(isModalOpen, (val) => {
+      if (!val) {
+        unwatch();
+        if (modalCancelled.value) {
+          reject(new Error("Modal cancelled"));
+        } else {
+          resolve(employeesData.value);
+        }
+      }
+    });
+  });
+}
+
+function handleSaveOperators(data) {
+  employeesData.value = data;
+  isModalOpen.value = false;
+}
+
 function handleSave(data) {
   Object.assign(DataStore, data);
   saveOrUpdateRow(DataStore);
@@ -739,28 +778,19 @@ async function toggleModel(
 
     const defectsArray = model.value[0].arrayDefects;
 
-    // defectsArray.forEach((row) => {
-    //   const exists = defectStore.rows.some(
-    //     (r) =>
-    //       r.article === (model.value[0].nomenclature?.article || "") &&
-    //       r.productionplan === (model.value[0].productionplan || "") &&
-    //       r.color === (model.value[0].color?.code || "") &&
-    //       r.tape_number === (model.value[0].tape_number || "")
-    //   );
-
-      defectsArray.forEach((row) => {
-        const exists = defectStore.rows.some(
-          (r) =>
-            r.defect?.code === row.defect?.code &&
-            // r.category?.code === row.category?.code &&
-            // r.note === row.note &&
-            r.locations === row.locations &&
-            r.length === row.length &&
-            // r.operator?.GUID === row.operator?.GUID &&
-            r.article === (model.value[0].nomenclature?.article || "") &&
-            r.productionplan === (model.value[0].productionplan || "") &&
-            r.color === (model.value[0].color?.code || "") &&
-            r.tape_number === (model.value[0].tape_number || "")
+    defectsArray.forEach((row) => {
+      const exists = defectStore.rows.some(
+        (r) =>
+          r.defect?.code === row.defect?.code &&
+          // r.category?.code === row.category?.code &&
+          // r.note === row.note &&
+          r.locations === row.locations &&
+          r.length === row.length &&
+          // r.operator?.GUID === row.operator?.GUID &&
+          r.article === (model.value[0].nomenclature?.article || "") &&
+          r.productionplan === (model.value[0].productionplan || "") &&
+          r.color === (model.value[0].color?.code || "") &&
+          r.tape_number === (model.value[0].tape_number || "")
       );
 
       if (!exists) {
@@ -884,6 +914,7 @@ const toggle = async () => {
     );
 
     const detail = storyDetails[index] || {};
+    storyNetto.value = detail.netto;
 
     const foundDefects = defectStore.rows.filter(
       (row) =>
@@ -912,6 +943,16 @@ const toggle = async () => {
       return;
     }
 
+    try {
+      const selected = await openModal();
+      employeesData.value = selected;
+    } catch (error) {
+      2;
+      // Modal cancelled
+      isSubmitting.value = false;
+      return;
+    }
+
     const payload = {
       stage: model.value[0].next_stage.code, //userStore.user.stage_code,
       productionplan: model.value[0].productionplan,
@@ -935,6 +976,7 @@ const toggle = async () => {
 
       storyDetails: detail || {},
       defects: foundDefects.length ? foundDefects : [],
+      employees: employeesData.value || [],
     };
 
     const response = await api.post("/v1/create_document", payload);

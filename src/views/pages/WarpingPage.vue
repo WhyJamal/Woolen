@@ -594,7 +594,6 @@ const selectedTask = ref(null);
 const photo = ref(null);
 const clickSound = new Audio("/sounds/click.wav");
 const endclickSound = new Audio("/sounds/end-click.wav");
-const storyNetto = ref(0);
 const form = ref({
   stage: "",
   productionOrder: "",
@@ -649,6 +648,7 @@ const EmployeePercentModal = defineAsyncComponent(() =>
 const isModalOpen = ref(false);
 const employeesData = ref([]);
 const modalCancelled = ref(false);
+const storyNetto = ref(0);
 
 function openModal() {
   isModalOpen.value = true;
