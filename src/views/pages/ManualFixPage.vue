@@ -216,7 +216,7 @@
                     <span
                       class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
                     >
-                      № {{ task.productionplan }}
+                      № {{ task.party }}
                     </span>
 
                     <span
@@ -590,7 +590,7 @@
     />
     <EmployeePercentModal
       :isOpen="isModalOpen"
-      :quantity="storyNetto || model[0]?.netto || model[0]?.quantity || 0"
+      :quantity="storyNetto || model?.[0]?.netto || model?.[0]?.quantity || 0"
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"
       @cancel="handleCancel"

@@ -196,7 +196,7 @@
                     <span
                       class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
                     >
-                      № {{ task.productionplan }}
+                      № {{ task.party }}
                     </span>
 
                     <span
