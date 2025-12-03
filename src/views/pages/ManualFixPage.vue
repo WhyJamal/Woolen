@@ -720,6 +720,11 @@ function handleSave(data) {
   saveOrUpdateRow(DataStore);
   //openHistory.value = false;
 }
+
+function handleCancel() {
+  modalCancelled.value = true;
+}
+
 function saveOrUpdateRow(newData) {
   const index = storyDetails.findIndex(
     (row) =>
