@@ -3,7 +3,6 @@
     v-if="show"
     class="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
   >
-    <!-- @click.self="close" -->
     <div
       class="bg-white w-[90%] max-w-6xl max-h-[85vh] p-6 rounded-2xl relative flex flex-col shadow-2xl"
     >
@@ -39,33 +38,30 @@
       >
         <div class="overflow-x-auto bg-gray-100 p-4 rounded-xl">
           <div class="max-w-6xl mx-auto space-y-2">
+            <!-- Table Headers -->
             <div
-              class="grid grid-cols-9 bg-gray-50 rounded-lg shadow text-sm font-semibold text-gray-700"
+              class="grid grid-cols-10 bg-gray-50 rounded-lg shadow text-sm font-semibold text-gray-700"
             >
               <div class="p-3 text-center">Дефект</div>
               <div class="p-3 text-center">Категория дефекта</div>
               <div class="p-3 text-center">Примечание</div>
               <div class="p-3 text-center">Местопол.</div>
-              <!-- Местоположения -->
               <div class="p-3 text-center">Протояженн.</div>
-              <!-- Протояженность -->
               <div class="p-3 text-center">Метр исправлено</div>
               <div class="p-3 text-center">Остаток брака</div>
               <div class="p-3 text-center">Оператор</div>
               <div class="p-3 text-center">Исправлено</div>
+              <div class="p-3 text-center">Действия</div>
             </div>
 
+            <!-- Table Rows -->
             <div
               v-for="(row, index) in rows"
-              :key="row.id"
-              @click="
-                isRejectionStage || userStore.user.stage_code === '017'
-                  ? editRow(row, index)
-                  : null
-              "
+              :key="row.uuid || row.id"
+              @click="handleRowClick(row)"
               :class="[
-                'grid grid-cols-9 bg-white rounded-lg shadow text-sm transition',
-                isRejectionStage
+                'grid grid-cols-10 bg-white rounded-lg shadow text-sm transition',
+                canEdit
                   ? 'hover:bg-blue-100 cursor-pointer'
                   : 'hover:bg-blue-50',
               ]"
@@ -73,14 +69,14 @@
               <div 
                 class="p-3 text-center truncate max-w-[135px] mx-auto"
                 :title="row.defect?.name || ''"
-                >
-                {{  row.defect?.name || "" }}
+              >
+                {{ row.defect?.name || "" }}
               </div>
               <div 
                 class="p-3 text-center truncate max-w-[150px] mx-auto"
                 :title="row.category?.name || ''"
-                >
-                {{  row.category?.name || "" }}
+              >
+                {{ row.category?.name || "" }}
               </div>
               <div class="p-3 text-center">{{ row.note || "" }}</div>
               <div class="p-3 text-center">{{ row.locations || "" }}</div>
@@ -89,19 +85,15 @@
               <div class="p-3 text-center">{{ row.defectBalance || "" }}</div>
               <div 
                 class="p-3 text-center truncate max-w-[150px] mx-auto"
-                :title="row.operator.name || ''"
-                >
-                {{ row.operator.name || "" }}
+                :title="row.operator?.name || ''"
+              >
+                {{ row.operator?.name || "" }}
               </div>
               <div class="p-3 flex justify-center items-center">
                 <input
                   type="checkbox"
                   v-model="row.fixed"
-                  @change="
-                    userStore.user.stage_code === '017'
-                      ? onFixedChange(row)
-                      : null
-                  "
+                  @change="onFixedChange(row)"
                   @click.stop
                   :disabled="userStore.user.stage_code !== '017'"
                   :class="[
@@ -112,11 +104,24 @@
                   ]"
                 />
               </div>
+              <div class="p-3 flex justify-center items-center">
+                <button
+                  v-if="canDelete(row)"
+                  @click.stop="confirmDelete(row.uuid)"
+                  class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition"
+                  title="Удалить"
+                >
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM19 4H15.5L14.5 3H9.5L8.5 4H5V6H19V4Z" fill="currentColor"/>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Footer Buttons -->
       <div class="flex justify-end mt-5 gap-4">
         <button
           @click="close"
@@ -126,11 +131,11 @@
         </button>
         <button
           v-if="!isLoading"
-          :disabled="!isControlStage"
+          :disabled="!canEdit"
           @click="openForm"
           :class="[
             'text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition-colors',
-            isControlStage
+            canEdit
               ? 'bg-indigo-600 hover:opacity-90 cursor-pointer'
               : 'bg-gray-400 cursor-not-allowed opacity-60'
           ]"
@@ -140,6 +145,7 @@
       </div>
     </div>
 
+    <!-- Form Modal -->
     <div
       v-if="showForm"
       class="fixed inset-0 bg-black/40 flex justify-center items-center z-60"
@@ -154,6 +160,7 @@
           @submit.prevent="editingIndex !== null ? updateRow() : addRow()"
           class="grid grid-cols-2 gap-4"
         >
+          <!-- Form Fields -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1"
               >Дефект</label
@@ -161,15 +168,10 @@
             <Listbox v-model="newRow.defect">
               <div class="relative">
                 <ListboxButton
-                  :disabled="isRejectionStage"
                   @click="fetchDefects"
                   class="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
-                  <span
-                    :class="
-                      isRejectionStage ? 'text-gray-400' : 'text-gray-600'
-                    "
-                  >
+                  <span class="text-gray-600">
                     {{ newRow.defect?.name || "Выберите Дефект..." }}
                   </span>
                   <svg
@@ -225,9 +227,7 @@
                   @click="fetchDefectCategoryes"
                   class="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
                 >
-                  <span
-                    class="text-gray-600"
-                  >
+                  <span class="text-gray-600">
                     {{ newRow.category?.name || "Выберите категорию..." }}
                   </span>
                   <svg
@@ -278,14 +278,12 @@
               >Местоположения</label
             >
             <input
-              :disabled="isRejectionStage"
               v-model="newRow.locations"
               type="number"
               inputmode="decimal"
               step="any"
               placeholder=""
               class="input"
-              :class="isRejectionStage ? 'text-gray-400' : 'text-gray-600'"
             />
           </div>
 
@@ -294,14 +292,12 @@
               >Протяженность</label
             >
             <input
-              :disabled="isRejectionStage"
               v-model="newRow.length"
               type="number"
               inputmode="decimal"
               step="any"
               placeholder=""
               class="input"
-              :class="isRejectionStage ? 'text-gray-400' : 'text-gray-600'"
               @change="onLengthChange(newRow)"
             />
           </div>
@@ -311,11 +307,9 @@
               >Примечание</label
             >
             <input
-              :disabled="isRejectionStage"
               v-model="newRow.note"
               type="text"
               placeholder=""
-              :class="isRejectionStage ? 'text-gray-400' : 'text-gray-600'"
               class="input w-full"
             />
           </div>
@@ -346,7 +340,6 @@
               step="any"
               placeholder=""
               class="input"
-              :class="isRejectionStage ? 'text-gray-400' : ''"
               readonly
             />
           </div>
@@ -424,17 +417,24 @@
         </form>
       </div>
     </div>
+
     <WarningModal
       v-if="showWarning"
       :message="warningMessage"
       @close="showWarning = false"
     />
+
+    <DeleteConfirmationModal
+      v-if="showDeleteConfirm"
+      :show="showDeleteConfirm"
+      @close="showDeleteConfirm = false"
+      @confirm="deleteRow"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, computed } from "vue";
-import { Datepicker } from "flowbite-datepicker";
+import { ref, computed, onMounted, defineAsyncComponent } from "vue";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
 import {
@@ -445,6 +445,15 @@ import {
 } from "@headlessui/vue";
 import WarningModal from "@/components/ui/WarningModal.vue";
 import { useDefectStore } from "@/stores/defects";
+
+const DeleteConfirmationModal = defineAsyncComponent(() =>
+  import('@/views/components/DeleteConfirmationModal.vue')
+);
+
+async function getUuid() {
+  const { uuid } = await import("@/utils/uuid");
+  return uuid();
+}
 
 const defectStore = useDefectStore();
 const emit = defineEmits(["close"]);
@@ -458,55 +467,26 @@ const props = defineProps({
 
 const show = ref(true);
 const showForm = ref(false);
+const showDeleteConfirm = ref(false);
 const editingIndex = ref(null);
 const userStore = useUserStore();
-const datepickerInput = ref(null);
 const isLoading = ref(false);
 const rows = ref([]);
-const warningMassage = ref("");
+
 const isControlStage = computed(() =>
   ["005", "013", "017"].includes(userStore.user.stage_code)
-); // 005: Контроль 1, 013: Контроль 2, 017: Контроль 3
+);
+
 const isRejectionStage = computed(() =>
   ["006", "014"].includes(userStore.user.stage_code)
-); // 006: Браковка, 014: Браковка 2
+);
 
-const today = new Date();
-const formatDate = (d) =>
-  `${String(d.getDate()).padStart(2, "0")}.${String(d.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}.${d.getFullYear()}`;
+const canEdit = computed(() => isControlStage.value || isRejectionStage.value);
 
-const newRow = ref({
-  defect: { name: "", code: "" },
-  category: { name: "", code: "" },
-  note: "",
-  locations: "",
-  length: "",
-  operator: { name: "", GUID: "" },
-  correctedMeter: "",
-  defectBalance: "",
-  fixed: false, 
-  article: props.data.article,
-  productionplan: props.data.productionplan,
-  date_productionplan: props.data.date_productionplan,
-  tape_number: props.data.tape_number,
-  color: props.data.color,
-});
+const newRow = ref(createNewRow());
 
-const defects = ref([]);
-const defectCategoryes = ref([]);
-const operators = ref([]);
-
-const close = () => {
-  emit("close");
-};
-
-const openForm = async () => {
-  editingIndex.value = null;
-
-  newRow.value = {
+function createNewRow() {
+  return {
     defect: { name: "", code: "" },
     category: { name: "", code: "" },
     note: "",
@@ -516,13 +496,33 @@ const openForm = async () => {
     correctedMeter: "",
     defectBalance: "",
     fixed: false,
+    uuid: "",
     article: props.data.article,
     productionplan: props.data.productionplan,
     date_productionplan: props.data.date_productionplan,
     tape_number: props.data.tape_number,
     color: props.data.color,
   };
+}
 
+const defects = ref([]);
+const defectCategoryes = ref([]);
+const operators = ref([]);
+const isLoadingDefects = ref(false);
+const isLoadingCategoryes = ref(false);
+const isLoadingOperators = ref(false);
+const showWarning = ref(false);
+const warningMessage = ref("");
+const deleteUuid = ref(null);
+
+const close = () => {
+  emit("close");
+};
+
+const openForm = async () => {
+  editingIndex.value = null;
+  newRow.value = createNewRow();
+  newRow.value.uuid = await getUuid();
   showForm.value = true;
 };
 
@@ -531,88 +531,66 @@ const closeForm = () => {
   showForm.value = false;
 };
 
-const originalRow = ref(null);
-
-const editRow = (row, index) => {
-  if (row.saved && userStore.user.stage_code !== "017") {
-    warningMessage.value = "Эта строка сохранена и не может быть изменена.";
-    showWarning.value = true;
-    showForm.value = false;
-    return;
+const handleRowClick = (row) => {
+  if (canEdit.value) {
+    editRow(row);
   }
+};
 
-  if (!isRejectionStage.value && userStore.user.stage_code !== "017") return;
-
-  editingIndex.value = index;
-  originalRow.value = JSON.parse(JSON.stringify(row));
+const editRow = (row) => {
+  editingIndex.value = rows.value.findIndex(r => r.uuid === row.uuid);
   newRow.value = JSON.parse(JSON.stringify(row));
   showForm.value = true;
 };
 
 const updateRow = () => {
-  if (editingIndex.value === null || !originalRow.value) return;
+  if (editingIndex.value === null) return;
 
   rows.value[editingIndex.value] = { ...newRow.value };
-
+  
   const defectIndex = defectStore.rows.findIndex(
-    (r) =>
-      r.article === originalRow.value.article &&
-      r.productionplan === originalRow.value.productionplan &&
-      r.tape_number === originalRow.value.tape_number &&
-      r.color === originalRow.value.color &&
-      r.defect?.code === originalRow.value.defect?.code &&
-      r.category?.code === originalRow.value.category?.code &&
-      r.locations === originalRow.value.locations &&
-      r.length === originalRow.value.length &&
-      r.note === originalRow.value.note
+    r => r.uuid === newRow.value.uuid
   );
-
+  
   if (defectIndex !== -1) {
     defectStore.rows[defectIndex] = { ...newRow.value };
   }
-
-  originalRow.value = null;
+  
   closeForm();
 };
 
-const showWarning = ref(false);
-const warningMessage = ref("");
-
 const validateFields = () => {
-  switch (true) {
-    case !newRow.value.defect || !newRow.value.defect.name:
-      warningMessage.value = "Введите дефект!";
-      showWarning.value = true;
-      return false;
-
-    case !isControlStage && (!newRow.value.category || !newRow.value.category.name):
-      warningMessage.value = "Введите категорию дефекта!";
-      showWarning.value = true;
-      return false;
-
-    case !newRow.value.locations:
-      warningMessage.value = "Введите Местоположения!";
-      showWarning.value = true;
-      return false;
-
-    case !newRow.value.length:
-      warningMessage.value = "Введите Протояженность!";
-      showWarning.value = true;
-      return false;
-
-    case !newRow.value.note:
-      warningMessage.value = "Введите Примечание!";
-      showWarning.value = true;
-      return false;
-
-    // case  userStore.user.stage_code !== "005" && (!newRow.value.operator || !newRow.value.operator.name):
-    //   warningMessage.value = "Введите оператор!";
-    //   showWarning.value = true;
-    //   return false;
-
-    default:
-      return true;
+  if (!newRow.value.defect || !newRow.value.defect.name) {
+    warningMessage.value = "Введите дефект!";
+    showWarning.value = true;
+    return false;
   }
+
+  if (!newRow.value.category || !newRow.value.category.name) {
+    warningMessage.value = "Введите категорию дефекта!";
+    showWarning.value = true;
+    return false;
+  }
+
+  if (!newRow.value.locations) {
+    warningMessage.value = "Введите Местоположения!";
+    showWarning.value = true;
+    return false;
+  }
+
+  if (!newRow.value.length) {
+    warningMessage.value = "Введите Протояженность!";
+    showWarning.value = true;
+    return false;
+  }
+
+  if (!newRow.value.note) {
+    warningMessage.value = "Введите Примечание!";
+    showWarning.value = true;
+    return false;
+  }
+
+  return true;
 };
 
 const addRow = () => {
@@ -620,62 +598,56 @@ const addRow = () => {
 
   defectStore.addRow(newRow.value);
   rows.value.push({ ...newRow.value });
-
-  newRow.value = {
-    defect: { name: "", code: "" },
-    category: { name: "", code: "" },
-    note: "",
-    locations: "",
-    length: "",
-    operator: { name: "", GUID: "" },
-    fixed: false,
-    article: props.data.article,
-    productionplan: props.data.productionplan,
-    date_productionplan: props.data.date_productionplan,
-    tape_number: props.data.tape_number,
-    color: props.data.color,
-  };
-
   closeForm();
+};
+
+const canDelete = (row) => {
+  return canEdit.value; 
+};
+
+const confirmDelete = (uuid) => {
+  deleteUuid.value = uuid;
+  showDeleteConfirm.value = true;
+};
+
+const deleteRow = () => {
+  if (!deleteUuid.value) return;
+
+  const rowIndex = rows.value.findIndex(r => r.uuid === deleteUuid.value);
+  if (rowIndex !== -1) {
+    rows.value.splice(rowIndex, 1);
+  }
+
+  const defectIndex = defectStore.rows.findIndex(
+    r => r.uuid === deleteUuid.value
+  );
+  
+  if (defectIndex !== -1) {
+    defectStore.rows.splice(defectIndex, 1);
+  }
+
+  showDeleteConfirm.value = false;
+  deleteUuid.value = null;
 };
 
 onMounted(async () => {
   isLoading.value = true;
 
-  try {
-    // const response = await api.get("/v1/model/defects", {
-    //   params: {
-    //     article: props.data.article,
-    //     productionplan: props.data.productionplan,
-    //     date_productionplan: props.data.date_productionplan,
-    //     tape_number: props.data.tape_number,
-    //     color: props.data.color,
-    //   },
-    // });
+  const foundDefects = defectStore.rows.filter(
+    (row) =>
+      row.article === props.data.article &&
+      row.productionplan === props.data.productionplan &&
+      row.tape_number === props.data.tape_number &&
+      row.color === props.data.color
+  );
 
-    // rows.value = response.data;
+  rows.value = foundDefects.map((r) => ({
+    ...r,
+    saved: !!(r.operator?.GUID),
+  }));
 
-    const foundDefects = defectStore.rows.filter(
-      (row) =>
-        row.article === props.data.article &&
-        row.productionplan === props.data.productionplan &&
-        row.tape_number === props.data.tape_number &&
-        row.color === props.data.color
-    );
-
-    const mapped = foundDefects.map((r) => ({
-      ...r,
-      saved: !!(r.operator?.GUID),
-    }));
-
-    rows.value.push(...mapped);  
-    } catch (error) {
-  } finally {
-    isLoading.value = false;
-  }
+  isLoading.value = false;
 });
-
-const isLoadingDefects = ref(false);
 
 async function fetchDefects() {
   if (isLoadingDefects.value) return;
@@ -684,12 +656,11 @@ async function fetchDefects() {
     const response = await api.get("/v1/defects");
     defects.value = response.data;
   } catch (error) {
+    console.error("Error fetching defects:", error);
   } finally {
     isLoadingDefects.value = false;
   }
 }
-
-const isLoadingCategoryes = ref(false);
 
 async function fetchDefectCategoryes() {
   if (isLoadingCategoryes.value) return;
@@ -698,12 +669,11 @@ async function fetchDefectCategoryes() {
     const response = await api.get("/v1/defects/category");
     defectCategoryes.value = response.data;
   } catch (error) {
+    console.error("Error fetching defect categories:", error);
   } finally {
     isLoadingCategoryes.value = false;
   }
 }
-
-const isLoadingOperators = ref(false);
 
 async function fetchOperators() {
   if (isLoadingOperators.value) return;
@@ -714,51 +684,43 @@ async function fetchOperators() {
     });
     operators.value = response.data;
   } catch (error) {
+    console.error("Error fetching operators:", error);
   } finally {
     isLoadingOperators.value = false;
   }
 }
 
-const fixedFalse = ref(true);
-
 function onFixedChange(row) {
-  const foundDefects = defectStore.rows.findIndex(
-    (r) =>
-      r.defect?.code === row.defect?.code &&
-      r.category?.code === row.category?.code &&
-      r.note === row.note &&
-      r.locations === row.locations &&
-      r.length === row.length &&
-      r.article === (props.data.article || "") &&
-      r.productionplan === (props.data.productionplan || "") &&
-      r.color === (props.data.color || "") &&
-      r.tape_number === (props.data.tape_number || "")
+  const foundIndex = defectStore.rows.findIndex(
+    (r) => r.uuid === row.uuid
   );
-  if (foundDefects !== -1) {
-    defectStore.rows[foundDefects].fixed = !!row.fixed;
+  
+  if (foundIndex !== -1) {
+    defectStore.rows[foundIndex].fixed = row.fixed;
   }
-  // defectStore.rows[foundDefects].operator = userStore.user.name;
 }
 
 function onLengthChange(row) {
   row.defectBalance = row.length;
+  if (row.correctedMeter) {
+    onCorrectedMeterChange(row);
+  }
 }
 
 function onCorrectedMeterChange(row) {
   if (row.correctedMeter > row.length) {
     row.correctedMeter = row.length;
   }
-
-  if (row.correctedMeter === 0) {
-    row.defectBalance = row.length;
-  } else {
-    row.defectBalance = row.length - row.correctedMeter;
-  }
+  row.defectBalance = Math.max(0, row.length - (row.correctedMeter || 0));
 }
 </script>
 
 <style scoped>
 .input {
   @apply border border-gray-300 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400;
+}
+
+.loader {
+  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600;
 }
 </style>
