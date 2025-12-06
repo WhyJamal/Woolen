@@ -235,7 +235,8 @@
                     {{ model[0].nomenclature.name }}
                   </div>
                   <div class="p-3 text-center"></div>
-                  <div class="p-3 text-right">{{ model[0].quantity }}</div>
+                  <div v-if="model[0].netto !== 0" class="p-3 text-right">{{ model[0].netto }}</div>
+                  <div v-else class="p-3 text-right">{{ model[0].quantity }}</div>
                 </div>
               </div>
             </div>
@@ -345,7 +346,10 @@
                   <div class="border-b pb-4 mb-4">
                     <div class="flex items-center gap-3 mb-3">
                       <template v-if="!quantityChange">
-                        <h3 class="text-lg font-extrabold tracking-tight">
+                        <h3 v-if="model[0].netto !== 0" class="text-lg font-extrabold tracking-tight">
+                          {{ userStore.user.stage }} | {{ model[0].netto}} M
+                        </h3>
+                        <h3 v-else class="text-lg font-extrabold tracking-tight">
                           {{ userStore.user.stage }} | {{ model[0].quantity }} M
                         </h3>
                       </template>
@@ -544,7 +548,7 @@
     />
     <EmployeePercentModal
       :isOpen="isModalOpen"
-      :quantity="storyNetto || model?.[0]?.quantity || 0"
+      :quantity="storyNetto || model?.[0]?.netto || model?.[0]?.quantity || 0"
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"
       @cancel="handleCancel"

@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   >
     <div
-      class="bg-white rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] flex flex-col"
+      class="bg-white rounded-lg shadow-xl w-full max-w-5xl mx-4 max-h-[90vh] flex flex-col"
     >
       <div
         class="flex justify-between items-center px-6 rounded-md py-4 border-b bg-white"
@@ -53,6 +53,11 @@
                 class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider"
               >
                 Этап
+              </th>
+              <th
+                class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider"
+              >
+                Сложность
               </th>
               <th
                 class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider"
@@ -181,9 +186,10 @@
                 />
               </td>
               <td class="px-3 py-2.5">
-                <span class="w-full px-2 py-1.5">{{
-                  employee.stage.name
-                }}</span>
+                <span class="w-full px-2 py-1.5 truncate block">{{ employee.stage.name }}</span>
+              </td>
+              <td class="px-3 py-2.5">
+                <span class="w-full px-2 py-1.5 truncate block">{{ employee.level?.name }}</span>
               </td>
               <td class="px-3 py-2.5 text-center">
                 <span class="w-36 text-blue-600 focus:ring-blue-500">
@@ -323,15 +329,15 @@ const saveChanges = () => {
   let listToCalculate = employees.value;
 
   if (userStore.user.stage_code === "005") {
-    const nonPWDTotal = employees.value
-      .filter((emp) => emp.action?.code !== "PWD")
-      .reduce((sum, emp) => sum + (emp.percent || 0), 0);
+    // const nonPWDTotal = employees.value
+    //   .filter((emp) => emp.action?.code !== "PWD")
+    //   .reduce((sum, emp) => sum + (emp.percent || 0), 0);
 
-    if (nonPWDTotal > props.quantity) {
-      warningMessage.value = `Для этапа Контроль указано слишком большое количество. Необходимо проверить количество (${props.quantity}).`;
-      showWarning.value = true;
-      return;
-    }
+    // if (nonPWDTotal > props.quantity) {
+    //   warningMessage.value = `Для этапа Контроль указано слишком большое количество. Необходимо проверить количество (${props.quantity}).`;
+    //   showWarning.value = true;
+    //   return;
+    // }
 
     listToCalculate = employees.value.filter(
       (emp) => emp.action?.code === "PWD"
@@ -349,11 +355,11 @@ const saveChanges = () => {
     0
   );
 
-  if (totalPercent !== props.quantity) {
-    warningMessage.value = `Общий количество (${totalPercent}) превышает необходимое количество (${props.quantity})!`;
-    showWarning.value = true;
-    return;
-  }
+  // if (totalPercent !== props.quantity) {
+  //   warningMessage.value = `Общий количество (${totalPercent}) превышает необходимое количество (${props.quantity})!`;
+  //   showWarning.value = true;
+  //   return;
+  // }
 
   if (userStore.user.stage_code === "005") {
     const nonPWDFiltered = employees.value.filter(

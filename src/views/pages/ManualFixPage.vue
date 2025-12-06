@@ -362,6 +362,14 @@
                       <div class="flex items-center gap-2 flex-wrap">
                         <template v-if="!quantityChange">
                           <h3
+                            v-if="model[0].netto !== 0"
+                            class="text-lg font-extrabold tracking-tight whitespace-nowrap"
+                          >
+                            {{ model[0].nomenclature.article }}
+                            {{ userStore.user.stage }} | {{ model[0].netto }} M
+                          </h3>
+                          <h3
+                            v-else
                             class="text-lg font-extrabold tracking-tight whitespace-nowrap"
                           >
                             {{ model[0].nomenclature.article }}
@@ -944,8 +952,15 @@ const toggle = async () => {
     }
 
     try {
-      const selected = await openModal();
-      employeesData.value = selected;
+      if (
+        userStore.user.stage_code === "006" ||
+        userStore.user.stage_code === "014"
+      ) {
+        employeesData.value = [];
+      } else {
+        const selected = await openModal();
+        employeesData.value = selected;
+      }
     } catch (error) {
       2;
       // Modal cancelled
