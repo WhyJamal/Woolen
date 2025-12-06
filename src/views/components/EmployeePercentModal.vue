@@ -181,15 +181,13 @@
                 />
               </td>
               <td class="px-3 py-2.5">
-                <span
-                  class="w-full px-2 py-1.5"
-                >{{ employee.stage.name }}</span>
-              </td> 
+                <span class="w-full px-2 py-1.5">{{
+                  employee.stage.name
+                }}</span>
+              </td>
               <td class="px-3 py-2.5 text-center">
-                <span
-                  class="w-36 text-blue-600 focus:ring-blue-500"
-                >
-                {{ employee.shift }}
+                <span class="w-36 text-blue-600 focus:ring-blue-500">
+                  {{ employee.shift }}
                 </span>
               </td>
             </tr>
@@ -322,7 +320,25 @@ const closeModal = () => {
 };
 
 const saveChanges = () => {
-  const filteredEmployees = employees.value.filter((emp) => emp.percent > 0);
+  let listToCalculate = employees.value;
+
+  if (userStore.user.stage_code === "005") {
+    const nonPWDTotal = employees.value
+      .filter((emp) => emp.action?.code !== "PWD")
+      .reduce((sum, emp) => sum + (emp.percent || 0), 0);
+
+    if (nonPWDTotal > props.quantity) {
+      warningMessage.value = `Для этапа Контроль указано слишком большое количество. Необходимо проверить количество (${props.quantity}).`;
+      showWarning.value = true;
+      return;
+    }
+
+    listToCalculate = employees.value.filter(
+      (emp) => emp.action?.code === "PWD"
+    );
+  }
+
+  let filteredEmployees = listToCalculate.filter((emp) => emp.percent > 0);
 
   if (filteredEmployees.length === 0) {
     return;
@@ -337,6 +353,14 @@ const saveChanges = () => {
     warningMessage.value = `Общий количество (${totalPercent}) превышает необходимое количество (${props.quantity})!`;
     showWarning.value = true;
     return;
+  }
+
+  if (userStore.user.stage_code === "005") {
+    const nonPWDFiltered = employees.value.filter(
+      (emp) => emp.action?.code !== "PWD" && emp.percent > 0
+    );
+
+    filteredEmployees = [...filteredEmployees, ...nonPWDFiltered];
   }
 
   emit("save", filteredEmployees);
