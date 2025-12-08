@@ -90,7 +90,7 @@
       <div class="flex justify-end mt-5 gap-4">
         <button
           @click="close"
-          class="text-gray-500 py-2 px-5 rounded-xl shadow-lg hover:text-gray-700 hover:bg-gray-200 transition"
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
         >
           Закрыть
         </button>
@@ -99,9 +99,9 @@
           @click="openForm"
           :disabled="!isControlStage"
           :class="[
-            'text-white font-semibold py-2 px-5 rounded-xl shadow-lg transition',
+            'px-4 py-2 text-sm font-medium text-white rounded-sm',
             isControlStage
-              ? 'bg-indigo-600 hover:opacity-90 cursor-pointer'
+              ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
               : 'bg-gray-400 cursor-not-allowed opacity-60',
           ]"
         >

@@ -4,7 +4,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   >
     <div
-      class="bg-white rounded-lg shadow-xl w-full max-w-5xl mx-4 max-h-[90vh] flex flex-col"
+      class="bg-white rounded-lg shadow-xl w-full h-full max-w-5xl mx-4 max-h-[90vh] flex flex-col"
     >
       <div
         class="flex justify-between items-center px-6 rounded-md py-4 border-b bg-white"
@@ -80,7 +80,7 @@
                     as="div"
                     class="flex-1"
                   >
-                    <div class="relative">
+                    <div class="relative overflow-visible">
                       <ListboxButton
                         class="relative w-full bg-gray-50 text-gray-700 text-sm rounded px-2 py-1.5 h-9 overflow-hidden text-left focus:outline-none focus:ring-1 focus:ring-blue-400 pr-8"
                       >
@@ -121,27 +121,19 @@
                             class="cursor-pointer"
                           >
                             <div
-                              :class="[
-                                active
-                                  ? 'bg-blue-100 text-blue-900'
-                                  : 'text-gray-900',
-                                'relative cursor-pointer select-none py-2 pl-3 pr-9',
+                              :class="[ 
+                                active ? 'bg-blue-100 text-blue-900' : 'text-gray-900',
+                                'relative cursor-pointer select-none py-2 pl-3 pr-9'
                               ]"
                             >
                               <span
-                                :class="[
-                                  selected ? 'font-semibold' : 'font-normal',
-                                  'block truncate',
-                                ]"
+                                :class="[ selected ? 'font-semibold' : 'font-normal', 'block truncate' ]"
                               >
                                 {{ emp.name }}
                               </span>
                               <span
                                 v-if="selected"
-                                :class="[
-                                  active ? 'text-blue-600' : 'text-blue-600',
-                                  'absolute inset-y-0 right-0 flex items-center pr-4',
-                                ]"
+                                :class="[ active ? 'text-blue-600' : 'text-blue-600', 'absolute inset-y-0 right-0 flex items-center pr-4' ]"
                               >
                                 <svg
                                   class="h-5 w-5"
@@ -172,7 +164,7 @@
               </td>
               <td class="px-3 py-2.5">
                 <span class="text-sm text-gray-600">{{
-                  employee.action.name
+                  employee.action?.name
                 }}</span>
               </td>
               <td class="px-3 py-2.5">
@@ -186,10 +178,10 @@
                 />
               </td>
               <td class="px-3 py-2.5">
-                <span class="w-full px-2 py-1.5 truncate block">{{ employee.stage.name }}</span>
+                <span class="w-full px-2 py-1.5 truncate block">{{ employee.stage?.name }}</span>
               </td>
               <td class="px-3 py-2.5">
-                <span class="w-full px-2 py-1.5 truncate block">{{ props.level?.name }}</span>
+                <span class="w-full px-2 py-1.5 truncate block">{{ employee.level?.name || props.level?.name }}</span>
               </td>
               <td class="px-3 py-2.5 text-center">
                 <span class="w-36 text-blue-600 focus:ring-blue-500">
@@ -204,13 +196,21 @@
       <div class="flex justify-end p-4 border-t space-x-2">
         <button
           @click="cancelRows"
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
         >
           Аннулировать
         </button>
+
+        <button
+          @click="addRow"
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-green-100 hover:bg-green-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          Добавить
+        </button>
+
         <button
           @click="saveChanges"
-          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Сохранить
         </button>
@@ -241,7 +241,7 @@ const userStore = useUserStore();
 const props = defineProps({
   isOpen: { type: Boolean, required: true },
   quantity: { type: Number, default: 0 },
-  level: { type: Object, default: {} },
+  level: { type: Object, default: () => ({}) },
 });
 
 const emit = defineEmits(["update:isOpen", "save", "cancel"]);
@@ -257,10 +257,31 @@ const employees = ref([]);
 const showWarning = ref(false);
 const warningMessage = ref("");
 
+const addRow = () => {
+  employees.value.push({
+    name: "",
+    GUID: "",
+    action: { name: "", code: "" },
+    percent: 0,
+    stage: { name: userStore.user.stage, code: userStore.user.stage_code },
+    shift: "",
+    level: props.level || {},
+  });
+};
+
 const updateEmployee = (index, selectedEmployee) => {
+  if (!selectedEmployee) return;
+
+  const existingPercent = employees.value[index]?.percent || 0;
+
   employees.value[index] = {
-    ...selectedEmployee,
-    percent: employees.value[index].percent || 0,
+    name: selectedEmployee.name || "",
+    GUID: selectedEmployee.GUID || "",
+    action: selectedEmployee.action || { name: selectedEmployee.action?.name || "", code: selectedEmployee.action?.code || "" },
+    percent: existingPercent,
+    stage: selectedEmployee.stage || { name: userStore.user.stage, code: userStore.user.stage_code },
+    shift: selectedEmployee.shift || "",
+    level: props.level || selectedEmployee.level || {},
   };
 };
 
@@ -275,7 +296,7 @@ const fetchRowData = async () => {
       params: { stage: userStore.user.stage_code },
     });
 
-    const data = response.data.map((item) => ({
+    const data = (response.data || []).map((item) => ({
       ...item,
       stage: {
         name: userStore.user.stage,
@@ -285,14 +306,6 @@ const fetchRowData = async () => {
 
     if (Array.isArray(data)) {
       availableEmployees.value = data;
-      employees.value = data.map((emp) => ({
-        name: emp.name || "",
-        GUID: emp.GUID || "",
-        action: emp.action || {},
-        percent: emp.percent || 0,
-        stage: emp.stage || {},
-        shift: emp.shift || "",
-      }));
     }
   } catch (error) {
     console.error("Error fetching operators:", error);
@@ -309,6 +322,7 @@ watch(
   () => props.isOpen,
   (newVal) => {
     if (newVal) {
+      employees.value = [];
       fetchRowData();
       localQuantity.value = props.quantity;
     }
@@ -330,16 +344,6 @@ const saveChanges = () => {
   let listToCalculate = employees.value;
 
   if (userStore.user.stage_code === "005") {
-    // const nonPWDTotal = employees.value
-    //   .filter((emp) => emp.action?.code !== "PWD")
-    //   .reduce((sum, emp) => sum + (emp.percent || 0), 0);
-
-    // if (nonPWDTotal > props.quantity) {
-    //   warningMessage.value = `Для этапа Контроль указано слишком большое количество. Необходимо проверить количество (${props.quantity}).`;
-    //   showWarning.value = true;
-    //   return;
-    // }
-
     listToCalculate = employees.value.filter(
       (emp) => emp.action?.code === "PWD"
     );
@@ -355,12 +359,6 @@ const saveChanges = () => {
     (sum, emp) => sum + (emp.percent || 0),
     0
   );
-
-  // if (totalPercent !== props.quantity) {
-  //   warningMessage.value = `Общий количество (${totalPercent}) превышает необходимое количество (${props.quantity})!`;
-  //   showWarning.value = true;
-  //   return;
-  // }
 
   if (userStore.user.stage_code === "005") {
     const nonPWDFiltered = employees.value.filter(
