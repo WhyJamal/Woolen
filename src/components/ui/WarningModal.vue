@@ -1,4 +1,6 @@
 <script setup>
+import Button from "@/components/ui/Button.vue";
+
 const emit = defineEmits(['close'])
 
 const props = defineProps({
@@ -36,12 +38,11 @@ const props = defineProps({
 
       <h3 class="text-lg font-semibold text-gray-800 mb-5">{{ message }}</h3>
 
-      <button
+      <Button
         @click="emit('close')"
-        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         Понятно
-      </button>
+      </Button>
     </div>
   </div>
 </template>

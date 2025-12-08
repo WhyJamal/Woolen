@@ -194,26 +194,25 @@
       </div>
 
       <div class="flex justify-end p-4 border-t space-x-2">
-        <button
+        <Button
+          variant="secondary"
           @click="cancelRows"
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
         >
           Аннулировать
-        </button>
+        </Button>
 
-        <button
+        <Button
+          variant="secondary"
           @click="addRow"
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-green-100 hover:bg-green-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           Добавить
-        </button>
+        </Button>
 
-        <button
+        <Button
           @click="saveChanges"
-          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Сохранить
-        </button>
+        </Button>
       </div>
     </div>
     <WarningModal
@@ -235,6 +234,7 @@ import {
   ListboxOption,
 } from "@headlessui/vue";
 import WarningModal from "@/components/ui/WarningModal.vue";
+import Button from "@/components/ui/Button.vue";
 
 const userStore = useUserStore();
 

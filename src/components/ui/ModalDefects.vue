@@ -123,25 +123,23 @@
 
       <!-- Footer Buttons -->
       <div class="flex justify-end mt-5 gap-4">
-        <button
+        <Button
+          variant="secondary"
           @click="close"
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
         >
           Закрыть
-        </button>
-        <button
+        </Button>
+        <Button
           v-if="!isLoading"
           :disabled="!canEdit"
           @click="openForm"
-          :class="[
-            'px-4 py-2 text-sm font-medium text-white rounded-sm',
-            canEdit
-              ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
-              : 'bg-gray-400 cursor-not-allowed opacity-60'
+          :class="[!canEdit
+              ? 'bg-gray-400 cursor-not-allowed opacity-60 hover:bg-gray-500'
+              : ''
           ]"
         >
           Добавить
-        </button>
+        </Button>
       </div>
     </div>
 
@@ -400,19 +398,15 @@
           </div>
 
           <div class="col-span-2 flex justify-end space-x-3 mt-3">
-            <button
-              type="button"
+            <Button
+              variant="secondary"
               @click="closeForm"
-              class="bg-gray-200 text-gray-800 hover:bg-gray-300 font-semibold py-2 px-5 rounded-xl shadow"
             >
               Отмена
-            </button>
-            <button
-              type="submit"
-              class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-xl shadow"
-            >
+            </Button>
+            <Button>
               Сохранить
-            </button>
+            </Button>
           </div>
         </form>
       </div>
@@ -445,6 +439,7 @@ import {
 } from "@headlessui/vue";
 import WarningModal from "@/components/ui/WarningModal.vue";
 import { useDefectStore } from "@/stores/defects";
+import Button from "@/components/ui/Button.vue";
 
 const DeleteConfirmationModal = defineAsyncComponent(() =>
   import('@/views/components/DeleteConfirmationModal.vue')

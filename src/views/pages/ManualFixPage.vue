@@ -417,18 +417,20 @@
                     </div>
 
                     <div class="flex justify-end gap-3 mt-3">
-                      <button
+                      <Button
+                        variant="secondary"                        
                         @click="toggleHistory"
-                        class="px-4 py-1.5 rounded-full bg-white border font-semibold text-sm hover:bg-blue-300 transition"
+                        class="px-4 py-1.5 font-semibold"
                       >
                         История
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        variant="secondary"
                         @click="toggleDefects"
-                        class="px-4 py-1.5 rounded-full bg-gray-200 border font-semibold text-sm hover:bg-gray-400 transition"
+                        class="px-4 py-1.5 font-semibold"
                       >
                         Дефекты
-                      </button>
+                      </Button>
                     </div>
                   </div>
 
@@ -628,6 +630,7 @@ import {
   ListboxOptions,
   ListboxOption,
 } from "@headlessui/vue";
+import Button from "@/components/ui/Button.vue";
 
 const defectStore = useDefectStore();
 const modelStore = useModelStore();

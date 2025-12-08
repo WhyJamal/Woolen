@@ -389,34 +389,36 @@
                     </div>
 
                     <div class="flex justify-end gap-3">
-                      <button
+                      <Button
+                        variant="secondary"
                         v-if="userStore.user.stage_code === '005'"
                         :disabled="!(userStore.user.stage_code === '005')"
                         @click="toggleHistory"
-                        class="px-4 py-1.5 rounded-full border font-semibold text-sm transition"
+                        class="px-4 py-1.5 font-semibold"
                         :class="
                           userStore.user.stage_code === '005'
-                            ? 'bg-white hover:bg-blue-300 cursor-pointer'
+                            ? ''
                             : 'bg-gray-100 opacity-60 cursor-not-allowed'
                         "
                       >
                         История
-                      </button>
+                      </Button>
                       <!-- 005: Колнтрол 1 -->
 
-                      <button
+                      <Button
+                        variant="secondary"                        
                         v-if="isControlStage"
                         :disabled="!isControlStage"
                         @click="toggleDefects"
-                        class="px-4 py-1.5 rounded-full border font-semibold text-sm transition"
+                        class="px-4 py-1.5 font-semibold"
                         :class="
                           isControlStage
-                            ? 'bg-gray-200 hover:bg-gray-400 cursor-pointer'
+                            ? ''
                             : 'bg-gray-100 opacity-60 cursor-not-allowed'
                         "
                       >
                         Дефекты
-                      </button>
+                      </Button>
                     </div>
                   </div>
 
@@ -578,6 +580,7 @@ import {
   ListboxOption,
 } from "@headlessui/vue";
 import { useDefectStore } from "@/stores/defects";
+import Button from "@/components/ui/Button.vue";
 
 const defectStore = useDefectStore();
 const modelStore = useModelStore();

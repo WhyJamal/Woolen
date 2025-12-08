@@ -32,12 +32,12 @@
           </div>
 
           <div class="flex justify-end gap-3">
-            <button @click="cancel" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-gray-500">
+            <Button variant="secondary" @click="cancel">
               Отмена
-            </button>
-            <button @click="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </Button>
+            <Button @click="submit">
               Подтверждение
-            </button>
+            </Button>
           </div>
 
           <button @click="cancel" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-xl font-bold transition">
@@ -51,6 +51,7 @@
 
 <script setup>
 import { ref, getCurrentInstance } from 'vue'
+import Button from "@/components/ui/Button.vue";
 
 const netWeight = ref('')
 const grossWeight = ref('')

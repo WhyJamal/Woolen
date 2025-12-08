@@ -98,8 +98,9 @@
                 </div>
                 <div class="cell center border-r border-gray-300">
                   <button
+                    title="Возврат"
                     @click="toogleRefund(task)"
-                    class="px-3 py-1 rounded-md bg-gradient-to-r from-red-500 to-pink-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+                    class="px-3 py-1 rounded-sm bg-gradient-to-r from-red-500 to-pink-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:bg-red-800"
                   >
                     Возврат
                   </button>
@@ -128,10 +129,10 @@
                   <button
                     @click="toggleStart(task)"
                     :class="[
-                      'px-3 py-1 rounded-md text-white text-sm font-bold shadow-md transition-all duration-200',
+                      'px-3 py-1 rounded-sm text-white text-sm font-bold shadow-md transition-all duration-200',
                       task.status === 'Активний'
-                        ? 'bg-indigo-600 hover:shadow-lg hover:scale-105'
-                        : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg hover:scale-105',
+                        ? 'bg-indigo-600 hover:shadow-lg'
+                        : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg',
                     ]"
                   >
                     {{ task.status === "Активний" ? "Сдать" : "Начать" }}
@@ -244,6 +245,7 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
 import { useDefectStore } from "@/stores/defects";
+import Button from "@/components/ui/Button.vue";
 
 const EmptyState = defineAsyncComponent(() =>
   import("@/components/ui/EmptyState.vue")

@@ -43,25 +43,26 @@
       </div>
 
       <div class="flex justify-center gap-5">
-        <button
-          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
+        <Button
+          variant="secondary"
           @click="$emit('cancel')"
         >
           Отмена
-        </button>
+        </Button>
 
-        <button
-          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <Button
           @click="$emit('confirm')"
         >
           Подтвердить
-        </button>
+        </Button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import Button from "@/components/ui/Button.vue";
+
 const props = defineProps({
   title: { type: String, default: "" },
 });
