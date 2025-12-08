@@ -189,7 +189,7 @@
                 <span class="w-full px-2 py-1.5 truncate block">{{ employee.stage.name }}</span>
               </td>
               <td class="px-3 py-2.5">
-                <span class="w-full px-2 py-1.5 truncate block">{{ employee.level?.name }}</span>
+                <span class="w-full px-2 py-1.5 truncate block">{{ props.level?.name }}</span>
               </td>
               <td class="px-3 py-2.5 text-center">
                 <span class="w-36 text-blue-600 focus:ring-blue-500">
@@ -241,6 +241,7 @@ const userStore = useUserStore();
 const props = defineProps({
   isOpen: { type: Boolean, required: true },
   quantity: { type: Number, default: 0 },
+  level: { type: Object, default: {} },
 });
 
 const emit = defineEmits(["update:isOpen", "save", "cancel"]);

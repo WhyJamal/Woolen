@@ -904,6 +904,7 @@ const sendForm = async () => {
         party: model.value[0].party,
         equipment: model.value[0].equipment,
         owner: userStore.user.GUID,
+        level: model.value[0].level
       };
 
       await api.post("/v1/weaving", payload);

@@ -549,6 +549,7 @@
     <EmployeePercentModal
       :isOpen="isModalOpen"
       :quantity="storyNetto || model?.[0]?.netto || model?.[0]?.quantity || 0"
+      :level="model?.[0]?.level || {}"
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"
       @cancel="handleCancel"
@@ -927,6 +928,7 @@ const toggle = async () => {
       sort: model.value[0].sort || "",
       comment: "1",
       owner: userStore.user.GUID,
+      level: model.value[0].level,
       startDate: currentTask.startDate,
       endDate: await loadDate(),
       // Story details

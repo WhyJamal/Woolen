@@ -203,6 +203,7 @@
       :quantity="
         tasks?.[selectedTask]?.netto || tasks?.[selectedTask]?.quantity || 0
       "
+      :level="tasks?.[selectedTask]?.level || {}"
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"
       @cancel="handleCancel"
@@ -518,6 +519,7 @@ const toggleStart = async (task) => {
       owner: userStore.user.GUID,
       netto: task.netto,
       brutto: task.brutto,
+      level: task.level,
       grossWeight: grossWeight,
       netWeight: netWeight,
       startDate: task.startDate,
@@ -588,6 +590,7 @@ const toogleRefund = async (task) => {
       accessories: task.accessories || "",
       sort: task.sort || "",
       comment: "Возврат",
+      level: task.level,
       owner: userStore.user.GUID,
 
       defects: foundDefects.length ? foundDefects : [],
