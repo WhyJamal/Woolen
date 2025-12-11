@@ -181,6 +181,7 @@
             >
             <input
               v-model="newRow.brutto"
+              @input="newRow.netto = newRow.brutto"
               type="number"
               inputmode="decimal"
               step="any"

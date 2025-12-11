@@ -66,13 +66,13 @@
                   : 'hover:bg-blue-50',
               ]"
             >
-              <div 
+              <div
                 class="p-3 text-center truncate max-w-[135px] mx-auto"
                 :title="row.defect?.name || ''"
               >
                 {{ row.defect?.name || "" }}
               </div>
-              <div 
+              <div
                 class="p-3 text-center truncate max-w-[150px] mx-auto"
                 :title="row.category?.name || ''"
               >
@@ -83,7 +83,7 @@
               <div class="p-3 text-center">{{ row.length || "" }}</div>
               <div class="p-3 text-center">{{ row.correctedMeter || "" }}</div>
               <div class="p-3 text-center">{{ row.defectBalance || "" }}</div>
-              <div 
+              <div
                 class="p-3 text-center truncate max-w-[150px] mx-auto"
                 :title="row.operator?.name || ''"
               >
@@ -111,8 +111,16 @@
                   class="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-full transition"
                   title="Удалить"
                 >
-                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM19 4H15.5L14.5 3H9.5L8.5 4H5V6H19V4Z" fill="currentColor"/>
+                  <svg
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6 19C6 20.1 6.9 21 8 21H16C17.1 21 18 20.1 18 19V7H6V19ZM19 4H15.5L14.5 3H9.5L8.5 4H5V6H19V4Z"
+                      fill="currentColor"
+                    />
                   </svg>
                 </button>
               </div>
@@ -123,19 +131,15 @@
 
       <!-- Footer Buttons -->
       <div class="flex justify-end mt-5 gap-4">
-        <Button
-          variant="secondary"
-          @click="close"
-        >
-          Закрыть
-        </Button>
+        <Button variant="secondary" @click="close"> Закрыть </Button>
         <Button
           v-if="!isLoading"
           :disabled="!canEdit"
           @click="openForm"
-          :class="[!canEdit
+          :class="[
+            !canEdit
               ? 'bg-gray-400 cursor-not-allowed opacity-60 hover:bg-gray-500'
-              : ''
+              : '',
           ]"
         >
           Добавить
@@ -398,15 +402,8 @@
           </div>
 
           <div class="col-span-2 flex justify-end space-x-3 mt-3">
-            <Button
-              variant="secondary"
-              @click="closeForm"
-            >
-              Отмена
-            </Button>
-            <Button>
-              Сохранить
-            </Button>
+            <Button variant="secondary" @click="closeForm"> Отмена </Button>
+            <Button> Сохранить </Button>
           </div>
         </form>
       </div>
@@ -442,7 +439,7 @@ import { useDefectStore } from "@/stores/defects";
 import Button from "@/components/ui/Button.vue";
 
 const DeleteConfirmationModal = defineAsyncComponent(() =>
-  import('@/views/components/DeleteConfirmationModal.vue')
+  import("@/views/components/DeleteConfirmationModal.vue")
 );
 
 async function getUuid() {
@@ -533,7 +530,7 @@ const handleRowClick = (row) => {
 };
 
 const editRow = (row) => {
-  editingIndex.value = rows.value.findIndex(r => r.uuid === row.uuid);
+  editingIndex.value = rows.value.findIndex((r) => r.uuid === row.uuid);
   newRow.value = JSON.parse(JSON.stringify(row));
   showForm.value = true;
 };
@@ -542,15 +539,15 @@ const updateRow = () => {
   if (editingIndex.value === null) return;
 
   rows.value[editingIndex.value] = { ...newRow.value };
-  
+
   const defectIndex = defectStore.rows.findIndex(
-    r => r.uuid === newRow.value.uuid
+    (r) => r.uuid === newRow.value.uuid
   );
-  
+
   if (defectIndex !== -1) {
     defectStore.rows[defectIndex] = { ...newRow.value };
   }
-  
+
   closeForm();
 };
 
@@ -561,7 +558,10 @@ const validateFields = () => {
     return false;
   }
 
-  if (!newRow.value.category || !newRow.value.category.name) {
+  if (
+    !isControlStage &&
+    (!newRow.value.category || !newRow.value.category.name)
+  ) {
     warningMessage.value = "Введите категорию дефекта!";
     showWarning.value = true;
     return false;
@@ -579,7 +579,7 @@ const validateFields = () => {
     return false;
   }
 
-  if (!newRow.value.note) {
+  if (!isControlStage && !newRow.value.note) {
     warningMessage.value = "Введите Примечание!";
     showWarning.value = true;
     return false;
@@ -597,7 +597,7 @@ const addRow = () => {
 };
 
 const canDelete = (row) => {
-  return canEdit.value; 
+  return canEdit.value;
 };
 
 const confirmDelete = (uuid) => {
@@ -608,15 +608,15 @@ const confirmDelete = (uuid) => {
 const deleteRow = () => {
   if (!deleteUuid.value) return;
 
-  const rowIndex = rows.value.findIndex(r => r.uuid === deleteUuid.value);
+  const rowIndex = rows.value.findIndex((r) => r.uuid === deleteUuid.value);
   if (rowIndex !== -1) {
     rows.value.splice(rowIndex, 1);
   }
 
   const defectIndex = defectStore.rows.findIndex(
-    r => r.uuid === deleteUuid.value
+    (r) => r.uuid === deleteUuid.value
   );
-  
+
   if (defectIndex !== -1) {
     defectStore.rows.splice(defectIndex, 1);
   }
@@ -638,7 +638,7 @@ onMounted(async () => {
 
   rows.value = foundDefects.map((r) => ({
     ...r,
-    saved: !!(r.operator?.GUID),
+    saved: !!r.operator?.GUID,
   }));
 
   isLoading.value = false;
@@ -686,10 +686,8 @@ async function fetchOperators() {
 }
 
 function onFixedChange(row) {
-  const foundIndex = defectStore.rows.findIndex(
-    (r) => r.uuid === row.uuid
-  );
-  
+  const foundIndex = defectStore.rows.findIndex((r) => r.uuid === row.uuid);
+
   if (foundIndex !== -1) {
     defectStore.rows[foundIndex].fixed = row.fixed;
   }

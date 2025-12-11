@@ -235,8 +235,12 @@
                     {{ model[0].nomenclature.name }}
                   </div>
                   <div class="p-3 text-center"></div>
-                  <div v-if="model[0].netto !== 0" class="p-3 text-right">{{ model[0].netto }}</div>
-                  <div v-else class="p-3 text-right">{{ model[0].quantity }}</div>
+                  <div v-if="model[0].netto !== 0" class="p-3 text-right">
+                    {{ model[0].netto }}
+                  </div>
+                  <div v-else class="p-3 text-right">
+                    {{ model[0].quantity }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -346,10 +350,16 @@
                   <div class="border-b pb-4 mb-4">
                     <div class="flex items-center gap-3 mb-3">
                       <template v-if="!quantityChange">
-                        <h3 v-if="model[0].netto !== 0" class="text-lg font-extrabold tracking-tight">
-                          {{ userStore.user.stage }} | {{ model[0].netto}} M
+                        <h3
+                          v-if="model[0].netto !== 0"
+                          class="text-lg font-extrabold tracking-tight"
+                        >
+                          {{ userStore.user.stage }} | {{ model[0].netto }} M
                         </h3>
-                        <h3 v-else class="text-lg font-extrabold tracking-tight">
+                        <h3
+                          v-else
+                          class="text-lg font-extrabold tracking-tight"
+                        >
                           {{ userStore.user.stage }} | {{ model[0].quantity }} M
                         </h3>
                       </template>
@@ -406,7 +416,7 @@
                       <!-- 005: Колнтрол 1 -->
 
                       <Button
-                        variant="secondary"                        
+                        variant="secondary"
                         v-if="isControlStage"
                         :disabled="!isControlStage"
                         @click="toggleDefects"
@@ -898,15 +908,21 @@ const toggle = async () => {
       return;
     }
 
-      try {
+    try {
+      if (
+        userStore.user.stage_code === "004"
+      ) {
+        employeesData.value = [];
+      } else {
         const selected = await openModal();
         employeesData.value = selected;
-      } catch (error) {
-        2;
-        // Modal cancelled
-        isSubmitting.value = false;
-        return;
       }
+    } catch (error) {
+      2;
+      // Modal cancelled
+      isSubmitting.value = false;
+      return;
+    }
 
     const foundDefects = defectStore.rows.filter(
       (row) =>
