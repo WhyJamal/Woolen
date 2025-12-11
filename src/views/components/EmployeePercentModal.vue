@@ -209,9 +209,61 @@
                 </span>
               </td>
 
-              <td class="px-3 py-2.5 align-middle min-w-0 text-center">
+              <td
+                v-if="['005', '013', '017'].includes(employee.stage.code)"
+                class="px-3 py-2.5 align-middle min-w-0 text-center"
+              >
+                <Listbox v-model="employee.level">
+                  <div class="relative">
+                    <ListboxButton
+                      class="relative w-full cursor-pointer bg-gray-50 text-gray-700 text-sm rounded px-2 py-1.5 h-9 text-left"
+                    >
+                      <span class="block truncate">
+                        {{ employee.level?.name || "Выберите уровень" }}
+                      </span>
+
+                      <span
+                        class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
+                      >
+                        <span
+                          class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
+                        >
+                          <svg
+                            class="h-5 w-5 text-gray-400"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="1.5"
+                              d="M6 8l4 4 4-4"
+                            />
+                          </svg>
+                        </span>
+                      </span>
+                    </ListboxButton>
+
+                    <ListboxOptions
+                      class="absolute z-10 mt-1 min-w-[10rem] max-w-[90vw] left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded py-1 max-h-60 overflow-auto"
+                    >
+                      <ListboxOption
+                        v-for="level in employee.levels"
+                        :key="level.id"
+                        :value="level"
+                        class="cursor-pointer select-none px-2 py-1 hover:bg-blue-100"
+                      >
+                        {{ level.name }}
+                      </ListboxOption>
+                    </ListboxOptions>
+                  </div>
+                </Listbox>
+              </td>
+
+              <td v-else class="px-3 py-2.5 align-middle min-w-0 text-center">
                 <span class="block truncate text-sm min-w-0">
-                  {{ employee.level?.name || props.level?.name }}
+                  {{ props.level?.name || employee.level?.name }}
                 </span>
               </td>
 
@@ -242,7 +294,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import api from "@/utils/axios";
 import { useUserStore } from "@/stores/user";
 import {
@@ -305,7 +357,9 @@ const updateEmployee = (index, selectedEmployee) => {
       code: selectedEmployee.stage.code,
     },
     shift: selectedEmployee.shift || "",
-    level: props.level || {},
+    levels: selectedEmployee.levels || [],
+
+    level: employees.value[index]?.level || props.level || null,
   };
 };
 
