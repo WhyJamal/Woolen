@@ -996,9 +996,26 @@ const toggle = async () => {
       return;
     }
 
-    const hasEmptyFields =
-      foundDefects.length > 0 &&
-      foundDefects.some((defect) => !defect.correctedMeter || !defect.operator);
+    let hasEmptyFields = false;
+
+    if (
+      userStore.user.stage_code === "006" ||
+      userStore.user.stage_code === "014"
+    ) {
+      hasEmptyFields =
+        foundDefects.length > 0 &&
+        foundDefects.some(
+          (defect) => !defect.correctedMeter || !defect.operator
+        );
+    } else if (userStore.user.stage_code === "017") {
+      hasEmptyFields =
+        foundDefects.length > 0 &&
+        foundDefects.some(
+          (defect) =>
+            defect.defectBalance === 0 ||
+            defect.fixed === false
+        );
+    }
 
     try {
       if (
@@ -1019,6 +1036,18 @@ const toggle = async () => {
         employeesData.value = [];
       } else {
         if (userStore.user.piecework) {
+          if (hasEmptyFields) {
+            const confirmed = await opeNotifecationModal(
+              "Пустые поля!",
+              "У некоторых данных нет значения. Вы уверены, что хотите продолжить?"
+            );
+
+            if (!confirmed) {
+              isSubmitting.value = false;
+              return;
+            }
+          }
+
           const selected = await openModal();
           employeesData.value = selected;
         }
