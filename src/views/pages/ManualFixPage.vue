@@ -1,6 +1,11 @@
 <template>
   <Layout>
     <NotificationModal v-if="showWarning" @close="closeNotification" />
+    <NotifeConfirmationModal
+      :show="showNotife"
+      @onConfirm="notifModalEvents.onConfirm"
+      @onCancel="notifModalEvents.onCancel"
+    />
 
     <template #exit-button>
       <button
@@ -418,7 +423,7 @@
 
                     <div class="flex justify-end gap-3 mt-3">
                       <Button
-                        variant="secondary"                        
+                        variant="secondary"
                         @click="toggleHistory"
                         class="px-4 py-1.5 font-semibold"
                       >
@@ -652,6 +657,7 @@ const photo = ref(null);
 const clickSound = new Audio("/sounds/click.wav");
 const endclickSound = new Audio("/sounds/end-click.wav");
 const showWarning = ref(false);
+const showNotife = ref(false);
 const form = ref({
   stage: "",
   productionOrder: "",
@@ -736,6 +742,29 @@ function handleSave(data) {
 function handleCancel() {
   modalCancelled.value = true;
 }
+
+const notifModalEvents = ref({
+  onConfirm: () => {},
+  onCancel: () => {},
+});
+
+const opeNotifecationModal = () => {
+  return new Promise((resolve) => {
+    showNotife.value = true;
+
+    const onConfirm = () => {
+      showNotife.value = false;
+      resolve(true);
+    };
+
+    const onCancel = () => {
+      showNotife.value = false;
+      resolve(false);
+    };
+
+    notifModalEvents.value = { onConfirm, onCancel };
+  });
+};
 
 function saveOrUpdateRow(newData) {
   const index = storyDetails.findIndex(
@@ -955,11 +984,23 @@ const toggle = async () => {
       return;
     }
 
+    const hasEmptyFields =
+      foundDefects.length > 0 &&
+      foundDefects.some((defect) => !defect.correctedMeter || !defect.operator);
+
     try {
       if (
         userStore.user.stage_code === "006" ||
         userStore.user.stage_code === "014"
       ) {
+        if (hasEmptyFields) {
+          const confirmed = await opeNotifecationModal();
+
+          if (!confirmed) {
+            isSubmitting.value = false;
+            return;
+          }
+        }
         employeesData.value = [];
       } else {
         const selected = await openModal();
@@ -1191,6 +1232,14 @@ const NotificationModal = defineAsyncComponent(() =>
 
 function closeNotification() {
   showWarning.value = false;
+}
+
+const NotifeConfirmationModal = defineAsyncComponent(() =>
+  import("@/views/components/NotifeConfirmationModal.vue")
+);
+
+function closeNotife() {
+  showNotife.value = false;
 }
 
 const EmptyState = defineAsyncComponent(() =>
