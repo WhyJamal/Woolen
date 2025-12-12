@@ -1,4 +1,10 @@
 <template>
+  <WarningModal
+    v-if="showWarning"
+    :message="warningMessage"
+    @close="showWarning = false"
+  />
+
   <div
     v-if="isOpen"
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -294,7 +300,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, watch, onMounted, computed, defineAsyncComponent } from "vue";
 import api from "@/utils/axios";
 import { useUserStore } from "@/stores/user";
 import {
@@ -440,6 +446,17 @@ const saveChanges = () => {
   );
 
   if (userStore.user.stage_code === "005") {
+    const stageControlCount = employees.value.filter(
+      (emp) => emp.stage?.code === "005"
+    ).length;
+
+    if (stageControlCount < 2) {
+      warningMessage.value =
+        "В списке сотрудников должно быть минимум два проверяющих.";
+      showWarning.value = true;
+      return;
+    }
+
     const nonPWDFiltered = employees.value.filter(
       (emp) => emp.action?.code !== "PWD" && emp.percent > 0
     );
