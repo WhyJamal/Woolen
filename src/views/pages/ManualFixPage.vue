@@ -3,6 +3,8 @@
     <NotificationModal v-if="showWarning" @close="closeNotification" />
     <NotifeConfirmationModal
       :show="showNotife"
+      :title="notifModalData.title"
+      :message="notifModalData.message"
       @onConfirm="notifModalEvents.onConfirm"
       @onCancel="notifModalEvents.onCancel"
     />
@@ -748,8 +750,18 @@ const notifModalEvents = ref({
   onCancel: () => {},
 });
 
-const opeNotifecationModal = () => {
+const NotifeConfirmationModal = defineAsyncComponent(() =>
+  import("@/views/components/NotifeConfirmationModal.vue")
+);
+
+const notifModalData = ref({
+  title: "",
+  message: "",
+});
+
+const opeNotifecationModal = (title, message) => {
   return new Promise((resolve) => {
+    notifModalData.value = { title, message };
     showNotife.value = true;
 
     const onConfirm = () => {
@@ -994,7 +1006,10 @@ const toggle = async () => {
         userStore.user.stage_code === "014"
       ) {
         if (hasEmptyFields) {
-          const confirmed = await opeNotifecationModal();
+          const confirmed = await opeNotifecationModal(
+            "Пустые поля!",
+            "У некоторых данных нет значения. Вы уверены, что хотите продолжить?"
+          );
 
           if (!confirmed) {
             isSubmitting.value = false;
@@ -1234,14 +1249,6 @@ const NotificationModal = defineAsyncComponent(() =>
 
 function closeNotification() {
   showWarning.value = false;
-}
-
-const NotifeConfirmationModal = defineAsyncComponent(() =>
-  import("@/views/components/NotifeConfirmationModal.vue")
-);
-
-function closeNotife() {
-  showNotife.value = false;
 }
 
 const EmptyState = defineAsyncComponent(() =>
