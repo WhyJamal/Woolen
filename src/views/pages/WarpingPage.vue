@@ -566,7 +566,7 @@
       @save="handleSaveOperators"
       @cancel="handleCancel"
     /> </Layout
-  >{{ userStore.user.piecework }}
+  >
 </template>
 
 <script setup>
