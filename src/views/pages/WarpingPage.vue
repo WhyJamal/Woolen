@@ -565,8 +565,8 @@
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"
       @cancel="handleCancel"
-    />
-  </Layout>
+    /> </Layout
+  >{{ userStore.user.piecework }}
 </template>
 
 <script setup>
@@ -574,6 +574,7 @@ import Layout from "@/components/Layout.vue";
 import {
   onMounted,
   ref,
+  unref,
   reactive,
   watch,
   computed,
@@ -908,20 +909,20 @@ const toggle = async () => {
       return;
     }
 
-    if (userStore.user.piecework) {
-      try {
-        if (userStore.user.stage_code === "004") {
-          employeesData.value = [];
-        } else {
+    try {
+      if (userStore.user.stage_code === "004") {
+        employeesData.value = [];
+      } else {
+        if (userStore.user.piecework) {
           const selected = await openModal();
           employeesData.value = selected;
         }
-      } catch (error) {
-        2;
-        // Modal cancelled
-        isSubmitting.value = false;
-        return;
       }
+    } catch (error) {
+      2;
+      // Modal cancelled
+      isSubmitting.value = false;
+      return;
     }
 
     const foundDefects = defectStore.rows.filter(
