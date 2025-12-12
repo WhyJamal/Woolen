@@ -493,7 +493,7 @@ const toggleStart = async (task) => {
         t.color.code === target.color
     );
 
-    if (!userStore.user.piecework) {
+    if (userStore.user.piecework) {
       try {
         selectedTask.value = idx;
         const selected = await openModal();

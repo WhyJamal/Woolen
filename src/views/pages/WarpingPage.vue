@@ -908,7 +908,7 @@ const toggle = async () => {
       return;
     }
 
-    if (!userStore.user.piecework) {
+    if (userStore.user.piecework) {
       try {
         if (userStore.user.stage_code === "004") {
           employeesData.value = [];
