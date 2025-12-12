@@ -493,15 +493,17 @@ const toggleStart = async (task) => {
         t.color.code === target.color
     );
 
-    try {
-      selectedTask.value = idx;
-      const selected = await openModal();
-      employeesData.value = selected;
-    } catch (error) {
-      2;
-      // Modal cancelled
-      isSubmitting.value = false;
-      return;
+    if (!userStore.user.piecework) {
+      try {
+        selectedTask.value = idx;
+        const selected = await openModal();
+        employeesData.value = selected;
+      } catch (error) {
+        2;
+        // Modal cancelled
+        isSubmitting.value = false;
+        return;
+      }
     }
 
     const payload = {

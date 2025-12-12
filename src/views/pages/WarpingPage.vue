@@ -908,20 +908,20 @@ const toggle = async () => {
       return;
     }
 
-    try {
-      if (
-        userStore.user.stage_code === "004"
-      ) {
-        employeesData.value = [];
-      } else {
-        const selected = await openModal();
-        employeesData.value = selected;
+    if (!userStore.user.piecework) {
+      try {
+        if (userStore.user.stage_code === "004") {
+          employeesData.value = [];
+        } else {
+          const selected = await openModal();
+          employeesData.value = selected;
+        }
+      } catch (error) {
+        2;
+        // Modal cancelled
+        isSubmitting.value = false;
+        return;
       }
-    } catch (error) {
-      2;
-      // Modal cancelled
-      isSubmitting.value = false;
-      return;
     }
 
     const foundDefects = defectStore.rows.filter(

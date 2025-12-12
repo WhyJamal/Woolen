@@ -1003,8 +1003,10 @@ const toggle = async () => {
         }
         employeesData.value = [];
       } else {
-        const selected = await openModal();
-        employeesData.value = selected;
+        if (!userStore.user.piecework) {
+          const selected = await openModal();
+          employeesData.value = selected;
+        }
       }
     } catch (error) {
       2;
