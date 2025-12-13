@@ -1024,8 +1024,8 @@ const toggle = async () => {
       ) {
         if (hasEmptyFields) {
           const confirmed = await opeNotifecationModal(
-            "Пустые поля!",
-            "У некоторых данных нет значения. Вы уверены, что хотите продолжить?"
+            "Предупреждающие!",
+            "Вы уверены, что хотите закрыть без исправления?"
           );
 
           if (!confirmed) {
@@ -1038,8 +1038,8 @@ const toggle = async () => {
         if (userStore.user.piecework) {
           if (hasEmptyFields) {
             const confirmed = await opeNotifecationModal(
-              "Пустые поля!",
-              "У некоторых данных нет значения. Вы уверены, что хотите продолжить?"
+              "Предупреждающие!",
+              "Вы уверены, что хотите закрыть без исправления?"
             );
 
             if (!confirmed) {

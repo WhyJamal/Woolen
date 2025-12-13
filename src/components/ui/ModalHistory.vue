@@ -473,7 +473,7 @@ const newRow = ref({
   date: formatDate(today),
   width: "150",
   mass: "",
-  brutto: props.data.brutto || 100,
+  brutto: props.data.brutto || props.data.quantity || 0,
   netto: props.data.netto,
   machine: { name: props.data.machine.name, code: props.data.machine.code },
   mode: "",
