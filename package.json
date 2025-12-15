@@ -2,7 +2,7 @@
   "name": "vue-tailwind-app",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite --port 3001",
+    "dev": "vite",
     "build": "vite build",
     "serve": "vite preview"
   },
