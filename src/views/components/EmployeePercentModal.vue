@@ -214,9 +214,9 @@
                   {{ employee.stage.name }}
                 </span>
               </td>
-
+              <!-- v-if="['005', '013', '017'].includes(employee.stage.code)" -->
               <td
-                v-if="['005', '013', '017'].includes(employee.stage.code)"
+                v-if="employee.levels?.length > 0"
                 class="px-3 py-2.5 align-middle min-w-0 text-center"
               >
                 <Listbox v-model="employee.level">
