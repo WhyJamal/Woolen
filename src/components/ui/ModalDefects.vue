@@ -466,7 +466,7 @@ const isLoading = ref(false);
 const rows = ref([]);
 
 const isControlStage = computed(() =>
-  ["005", "013", "017"].includes(userStore.user.stage_code)
+  ["025", "026", "027"].includes(userStore.user.stage_code)
 );
 
 const isRejectionStage = computed(() =>

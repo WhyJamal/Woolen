@@ -233,7 +233,7 @@
       :message="warningMessage"
       @close="showWarning = false"
     /> </Layout
-  >{{ scalesStore }}
+  >
 </template>
 
 <script setup>
