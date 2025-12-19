@@ -10,7 +10,7 @@
     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   >
     <div
-      class="bg-white rounded-lg shadow-xl w-full h-full max-w-5xl mx-4 max-h-[90vh] flex flex-col"
+      class="bg-white rounded-lg shadow-xl w-full h-full max-w-7xl mx-4 max-h-[90vh] flex flex-col"
     >
       <div
         class="flex justify-between items-center px-6 rounded-md py-4 border-b bg-white"
@@ -51,7 +51,7 @@
           <thead>
             <tr class="bg-gray-100 border-b border-gray-300">
               <th
-                class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider min-w-0 sm:w-48 md:w-92 lg:w-80 xl:w-96"
+                class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider min-w-0 sm:w-36 md:w-80 lg:w-72 xl:w-80"
               >
                 Сотрудник
               </th>
@@ -74,6 +74,11 @@
                 class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider"
               >
                 Сложность
+              </th>
+              <th
+                class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider min-w-0 sm:w-20 md:w-40 lg:w-32 xl:w-40"
+              >
+                Дата работы
               </th>
               <th
                 class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider"
@@ -274,6 +279,33 @@
               </td>
 
               <td class="px-3 py-2.5 align-middle min-w-0 text-center">
+                <div class="relative">
+                  <div
+                    class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
+                  >
+                    <svg
+                      class="w-4 h-4 text-gray-500"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
+                      />
+                    </svg>
+                  </div>
+                  <input
+                    ref="datepickerInput"
+                    v-model="employee.date"
+                    type="text"
+                    placeholder="Выберите дату"
+                    class="bg-gray-50 border border-gray-300 text-gray-600 text-sm placeholder:text-[11px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
+                  />
+                </div>
+              </td>
+
+              <td class="px-3 py-2.5 align-middle min-w-0 text-center">
                 <span class="text-sm text-blue-600 block truncate min-w-0">
                   {{ employee.shift }}
                 </span>
@@ -300,8 +332,16 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed, defineAsyncComponent } from "vue";
+import {
+  ref,
+  watch,
+  nextTick,
+  onMounted,
+  computed,
+  defineAsyncComponent,
+} from "vue";
 import api from "@/utils/axios";
+import { Datepicker } from "flowbite-datepicker";
 import { useUserStore } from "@/stores/user";
 import {
   Listbox,
@@ -326,12 +366,23 @@ const rowData = ref({ name: "", GUID: "" });
 const rowName = ref("");
 const localQuantity = ref(props.quantity);
 
-const availableEmployees = ref([]);
+// 👉 MUHIM: har bir qator uchun ref array
+const datepickerInput = ref([]);
 
+const availableEmployees = ref([]);
 const employees = ref([]);
 
 const showWarning = ref(false);
 const warningMessage = ref("");
+
+const formatFromApi = (value) => {
+  if (!value) return "";
+  const d = new Date(value);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}.${month}.${year}`;
+};
 
 const addRow = () => {
   employees.value.push({
@@ -341,8 +392,11 @@ const addRow = () => {
     percent: 0,
     stage: { name: "", code: "" },
     shift: "",
+    date: null,
     level: props.level || {},
   });
+
+  nextTick(initDatepickers);
 };
 
 const updateEmployee = (index, selectedEmployee) => {
@@ -363,10 +417,12 @@ const updateEmployee = (index, selectedEmployee) => {
       code: selectedEmployee.stage.code,
     },
     shift: selectedEmployee.shift || "",
+    date: selectedEmployee.date ? formatFromApi(selectedEmployee.date) : null,
     levels: selectedEmployee.levels || [],
-
     level: employees.value[index]?.level || props.level || null,
   };
+
+  nextTick(initDatepickers);
 };
 
 const clearEmployee = (index) => {
@@ -377,6 +433,7 @@ const clearEmployee = (index) => {
     percent: 0,
     stage: { name: "", code: "" },
     shift: "",
+    date: null,
     level: props.level || {},
   };
 };
@@ -384,7 +441,7 @@ const clearEmployee = (index) => {
 const fetchRowData = async () => {
   try {
     const response = await api.get("/v1/operators/list", {
-      params: { 
+      params: {
         stage: userStore.user.stage_code,
       },
     });
@@ -399,19 +456,37 @@ const fetchRowData = async () => {
   }
 };
 
+const initDatepickers = () => {
+  datepickerInput.value.forEach((el, index) => {
+    if (!el || el._datepicker) return;
+
+    const picker = new Datepicker(el, {
+      autohide: true,
+      format: "dd.mm.yyyy",
+    });
+
+    el._datepicker = picker;
+
+    el.addEventListener("changeDate", (e) => {
+      employees.value[index].date = e.target.value;
+    });
+  });
+};
+
 onMounted(async () => {
-  try {
-    await fetchRowData();
-  } catch (error) {}
+  await nextTick();
+  await fetchRowData();
 });
 
 watch(
   () => props.isOpen,
-  (newVal) => {
+  async (newVal) => {
     if (newVal) {
       employees.value = [];
-      fetchRowData();
+      await fetchRowData();
       localQuantity.value = props.quantity;
+      await nextTick();
+      initDatepickers();
     }
   }
 );

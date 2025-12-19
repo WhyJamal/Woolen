@@ -109,7 +109,7 @@
                 />
               </div>
 
-              <span class="mx-2 text-gray-500">to</span>
+              <span class="mx-2 text-gray-500">по</span>
 
               <div class="relative">
                 <div
@@ -134,7 +134,7 @@
                   name="end"
                   type="text"
                   class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-40 sm:w-36 ps-10 py-1.5"
-                  placeholder="по"
+                  placeholder="период окончания"
                 />
               </div>
             </div>
