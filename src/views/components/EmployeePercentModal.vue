@@ -450,7 +450,7 @@ const saveChanges = () => {
       (emp) => emp.stage?.code === "005"
     ).length;
 
-    if (stageControlCount < 2) {
+    if (stageControlCount < 1) {
       warningMessage.value =
         "В списке сотрудников должно быть минимум два проверяющих.";
       showWarning.value = true;
