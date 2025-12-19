@@ -529,7 +529,7 @@ const saveChanges = () => {
 
     if (stageControlCount < 1) {
       warningMessage.value =
-        "В списке сотрудников должно быть минимум два проверяющих.";
+        "В списке сотрудников должно быть минимум один проверяющих.";
       showWarning.value = true;
       return;
     }
