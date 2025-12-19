@@ -318,6 +318,7 @@ const props = defineProps({
   isOpen: { type: Boolean, required: true },
   quantity: { type: Number, default: 0 },
   level: { type: Object, default: () => ({}) },
+  date: { type: Date, default: null },
 });
 
 const emit = defineEmits(["update:isOpen", "save", "cancel"]);
@@ -384,7 +385,10 @@ const clearEmployee = (index) => {
 const fetchRowData = async () => {
   try {
     const response = await api.get("/v1/operators/list", {
-      params: { stage: userStore.user.stage_code },
+      params: { 
+        stage: userStore.user.stage_code,
+        date: rops.datep
+      },
     });
 
     const data = response.data;

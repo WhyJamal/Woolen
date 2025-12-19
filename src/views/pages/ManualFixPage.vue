@@ -609,6 +609,7 @@
       :isOpen="isModalOpen"
       :quantity="storyNetto || model?.[0]?.netto || model?.[0]?.quantity || 0"
       :level="model?.[0]?.level || {}"
+      :date="model?.[0]?.date || null"
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"
       @cancel="handleCancel"
