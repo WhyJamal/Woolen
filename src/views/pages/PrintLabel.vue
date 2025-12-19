@@ -57,7 +57,7 @@ onMounted(() => {
         { label: "Order number:", value: order.order || "" },
         { label: "Article name:", value: order.nomenclature || "" },
         { label: "Article number:", value: order.article || "" },
-        { label: "Colour:", value: order.colour || "" },
+        { label: "Color:", value: order.color || "" },
         { label: "Batch №:", value: order.batch || "" },
         { label: "Number of piece:", value: order.tape_number || "" },
         { label: "Width:", value: order.width || "" },

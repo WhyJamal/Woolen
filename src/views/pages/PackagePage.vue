@@ -57,7 +57,7 @@
               <div class="cell">Палитра</div>
               <div class="cell">Приоритет</div>
               <div class="cell"></div>
-              <div class="cell">Баркод</div>
+              <div class="cell">Печать</div>
               <div class="cell">История</div>
             </div>
             <div
@@ -227,7 +227,13 @@
       @save="handleSave"
       @close="openHistory = false"
     />
-  </Layout>
+
+    <WarningModal
+      v-if="showWarning"
+      :message="warningMessage"
+      @close="showWarning = false"
+    /> </Layout
+  >{{ scalesStore }}
 </template>
 
 <script setup>
@@ -245,13 +251,16 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import api from "@/utils/axios";
 import { useDefectStore } from "@/stores/defects";
+import { useScalesStore } from "@/stores/scales";
 import Button from "@/components/ui/Button.vue";
+import WarningModal from "@/components/ui/WarningModal.vue";
 
 const EmptyState = defineAsyncComponent(() =>
   import("@/components/ui/EmptyState.vue")
 );
 
 const defectStore = useDefectStore();
+const scalesStore = useScalesStore();
 const pressed = ref(false);
 const tasks = ref(null);
 const router = useRouter();
@@ -279,6 +288,8 @@ const form = ref({
 const showModal = ref(false);
 const net = ref("");
 const gross = ref("");
+const showWarning = ref(false);
+const warningMessage = ref("");
 
 function loadDate() {
   return (async () => {
@@ -290,6 +301,35 @@ function loadDate() {
 //-Print-label---------------------------//
 const openPrintWindow = async (task) => {
   try {
+    let netWeightValue = null;
+
+    const existingRow = scalesStore.rows.find(
+      (row) =>
+        row.article === task.nomenclature.article &&
+        row.tape_number === task.tape_number &&
+        row.color === task.color.code &&
+        row.productionplan === task.productionplan
+    );
+
+    if (existingRow) {
+      netWeightValue = existingRow.netWeight;
+    } else {
+      const weightData = await openWeightModalAsync();
+      if (!weightData) return;
+
+      netWeightValue = weightData.netWeight;
+      const grossWeight = weightData.grossWeight;
+
+      scalesStore.addRow({
+        netWeight: netWeightValue,
+        grossWeight,
+        article: task.nomenclature.article,
+        tape_number: task.tape_number,
+        color: task.color.code,
+        productionplan: task.productionplan,
+      });
+    }
+
     const params = {
       article: task.nomenclature.article,
       productionplan: task.productionplan,
@@ -297,7 +337,27 @@ const openPrintWindow = async (task) => {
       tape_number: task.tape_number,
     };
 
-    const { data: labelData } = await api.get("/v1/print/data", { params });
+    const { data: labelDataFromApi } = await api.get("/v1/print/data", {
+      params,
+    });
+
+    const labelData = {
+      order: labelDataFromApi[0].order,
+      nomenclature: labelDataFromApi[0].nomenclature,
+      article: labelDataFromApi[0].article,
+      color: labelDataFromApi[0].color,
+      batch: labelDataFromApi[0].batch,
+      tape_number: labelDataFromApi[0].tape_number,
+      width: labelDataFromApi[0].width,
+      brutto: labelDataFromApi[0].brutto,
+      netto: labelDataFromApi[0].netto,
+      finish: labelDataFromApi[0].finish,
+      sort: labelDataFromApi[0].sort,
+      composition: labelDataFromApi[0].composition,
+      machine_id: labelDataFromApi[0].machine_id,
+      author: labelDataFromApi[0].author,
+      mass: netWeightValue ?? 0,
+    };
 
     const encoded = encodeURIComponent(JSON.stringify(labelData));
     window.open(`/print-label?data=${encoded}`, "_blank");
@@ -464,18 +524,31 @@ const toggleStart = async (task) => {
   isSubmitting.value = true;
 
   try {
-    const weightData = await openWeightModalAsync();
-    if (!weightData) return;
-
-    const netWeight = weightData.netWeight;
-    const grossWeight = weightData.grossWeight;
-
     const target = {
       article: task.nomenclature.article,
       tape_number: task.tape_number,
       productionplan: task.productionplan,
       color: task.color.code,
     };
+
+    const existingRow = scalesStore.rows.find(
+      (row) =>
+        row.article === target.article &&
+        row.tape_number === target.tape_number &&
+        row.color === target.color &&
+        row.productionplan === target.productionplan
+    );
+
+    let netWeight, grossWeight;
+
+    if (existingRow) {
+      netWeight = existingRow.netWeight;
+      grossWeight = existingRow.grossWeight;
+    } else {
+      warningMessage.value = "Вы не указали 'Вес нетто' и 'Вес брутто'!";
+      showWarning.value = true;
+      return;
+    }
 
     const foundDefects = defectStore.rows.filter(
       (row) =>
@@ -541,6 +614,17 @@ const toggleStart = async (task) => {
       tasks.value.splice(idx, 1);
       showModel.value = false;
       selectedTask.value = null;
+    }
+
+    const existingRowIndex = scalesStore.rows.findIndex(
+      (row) =>
+        row.article === target.article &&
+        row.tape_number === target.tape_number &&
+        row.color === target.color &&
+        row.productionplan === target.productionplan
+    );
+    if (existingRowIndex !== -1) {
+      scalesStore.removeRow(existingRowIndex);
     }
 
     foundDefects.forEach((def) => {
