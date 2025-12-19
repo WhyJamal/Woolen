@@ -387,7 +387,7 @@ const fetchRowData = async () => {
     const response = await api.get("/v1/operators/list", {
       params: { 
         stage: userStore.user.stage_code,
-        date: rops.datep
+        date: props.date
       },
     });
 
