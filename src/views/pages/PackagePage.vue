@@ -204,7 +204,6 @@
       :quantity="
         tasks?.[selectedTask]?.netto || tasks?.[selectedTask]?.quantity || 0
       "
-      :date="tasks?.[selectedTask]?.date || null"
       :level="tasks?.[selectedTask]?.level || {}"
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"

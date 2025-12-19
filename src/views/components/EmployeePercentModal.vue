@@ -318,7 +318,6 @@ const props = defineProps({
   isOpen: { type: Boolean, required: true },
   quantity: { type: Number, default: 0 },
   level: { type: Object, default: () => ({}) },
-  date: { type: Date, default: null },
 });
 
 const emit = defineEmits(["update:isOpen", "save", "cancel"]);
@@ -387,7 +386,6 @@ const fetchRowData = async () => {
     const response = await api.get("/v1/operators/list", {
       params: { 
         stage: userStore.user.stage_code,
-        date: props.date
       },
     });
 
