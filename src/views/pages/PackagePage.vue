@@ -76,15 +76,16 @@
 
                 <div class="cell border-r border-gray-300">
                   Упаковать
-                  <span class="font-medium">{{ task.quantity }} M</span>
+                  <span class="font-medium">{{ task.netto || task.quantity }} M</span>
                   <div class="mt-1 text-xs text-gray-600"></div>
                 </div>
 
-                <div class="cell">Стандарт</div>
-
-                <div class="cell border-r border-gray-300">
+                <div class="cell">
                   {{ task.tape_number }}
                 </div>
+
+                <div class="cell border-r border-gray-300"></div>
+
                 <div class="cell border-r border-gray-300">
                   <span
                     :class="[
