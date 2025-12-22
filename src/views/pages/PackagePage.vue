@@ -358,6 +358,7 @@ const openPrintWindow = async (task) => {
       machine_id: labelDataFromApi[0].machine_id,
       author: labelDataFromApi[0].author,
       mass: netWeightValue ?? 0,
+      components: labelDataFromApi[0].components, 
     };
 
     const encoded = encodeURIComponent(JSON.stringify(labelData));
@@ -599,6 +600,7 @@ const toggleStart = async (task) => {
       netto: task.netto,
       brutto: task.brutto,
       level: task.level,
+      lot: task.lot,
       grossWeight: grossWeight,
       netWeight: netWeight,
       startDate: task.startDate,
@@ -678,6 +680,7 @@ const toogleRefund = async (task) => {
       tape_number: task.tape_number,
       tape: task.tape,
       equipment: task.equipment,
+      lot: task.lot,
       accessories: task.accessories || "",
       sort: task.sort || "",
       comment: "Возврат",
