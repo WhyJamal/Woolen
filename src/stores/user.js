@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { useModelStore } from './model'
 import { useDefectStore } from "@/stores/defects";
 import { useScalesStore } from "@/stores/scales";
+import { useEmployeesStore } from "@/stores/employees";
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -24,6 +25,9 @@ export const useUserStore = defineStore('user', {
      
       const sclaesStore = useScalesStore();
       sclaesStore.clearRows()      
+     
+      const employeesStore = useEmployeesStore();
+      employeesStore.clearRows()      
     },
   },
   getters: {

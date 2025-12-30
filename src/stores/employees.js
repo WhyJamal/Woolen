@@ -1,0 +1,28 @@
+import { defineStore } from "pinia";
+
+export const useEmployeesStore = defineStore("employees", {
+  state: () => ({
+    rows: JSON.parse(localStorage.getItem("employees_rows") || "[]"),
+  }),
+
+  actions: {
+    addRow(newRow) {
+      this.rows.push({ ...newRow, date: new Date().toISOString() });
+      this.saveToLocalStorage();
+    },
+
+    removeRow(index) {
+      this.rows.splice(index, 1);
+      this.saveToLocalStorage();
+    },
+
+    clearRows() {
+      this.rows = [];
+      this.saveToLocalStorage();
+    },
+
+    saveToLocalStorage() {
+      localStorage.setItem("employees_rows", JSON.stringify(this.rows));
+    },
+  },
+});

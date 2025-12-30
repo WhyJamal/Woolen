@@ -565,8 +565,8 @@
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"
       @cancel="handleCancel"
-    /> </Layout
-  >
+    />
+  </Layout>
 </template>
 
 <script setup>
@@ -591,9 +591,11 @@ import {
   ListboxOption,
 } from "@headlessui/vue";
 import { useDefectStore } from "@/stores/defects";
+import { useEmployeesStore } from "@/stores/employees";
 import Button from "@/components/ui/Button.vue";
 
 const defectStore = useDefectStore();
+const employeesStore = useEmployeesStore();
 const modelStore = useModelStore();
 const tasks = ref(null);
 const model = ref([]);
@@ -869,6 +871,37 @@ const toggle = async () => {
     return;
   }
 
+  const i = employeesStore.findIndex(
+    (row) =>
+      row.article === model.value[0].nomenclature.article &&
+      row.tape_number === model.value[0].tape_number &&
+      row.productionplan === model.value[0].productionplan &&
+      row.color === model.value[0].color.code
+  );
+
+  if (userStore.user.stage_code === "005" && i === -1) {
+    try {
+      if (userStore.user.piecework) {
+        const selected = await openModal();
+
+        const rowToAdd = {
+          ...selected,
+          article: model.value[0].nomenclature.article,
+          tape_number: model.value[0].tape_number,
+          productionplan: model.value[0].productionplan,
+          color: model.value[0].color.code,
+        };
+
+        defectStore.addRow(rowToAdd);
+        employeesData.value = rowToAdd;
+      }
+    } catch (error) {
+      // Modal cancelled
+      isSubmitting.value = false;
+      return;
+    }
+  }
+
   if (isSubmitting.value) return;
   isSubmitting.value = true;
 
@@ -910,12 +943,28 @@ const toggle = async () => {
     }
 
     try {
-      if (userStore.user.stage_code === "004") {
-        employeesData.value = [];
+      if (userStore.user.stage_code === "005") {
+        if (userStore.user.stage_code === "004") {
+          employeesData.value = [];
+        } else {
+          if (userStore.user.piecework) {
+            const selected = await openModal();
+            employeesData.value = selected;
+          }
+        }
       } else {
-        if (userStore.user.piecework) {
-          const selected = await openModal();
-          employeesData.value = selected;
+        const i = employeesStore.findIndex(
+          (row) =>
+            row.article === model.value[0].nomenclature.article &&
+            row.tape_number === model.value[0].tape_number &&
+            row.productionplan === model.value[0].productionplan &&
+            row.color === model.value[0].color.code
+        );
+
+        if (i !== -1) {
+          employeesData.value = employeesStore[i];
+        } else {
+          employeesData.value = []; 
         }
       }
     } catch (error) {
