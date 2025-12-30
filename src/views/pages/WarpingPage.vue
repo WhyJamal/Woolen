@@ -3,10 +3,8 @@
     <NotificationModal v-if="showWarning" @close="closeNotification" />
 
     <template #exit-button>
-      <button
-        @click="exit"
-        class="rounded-full text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
-      >
+      <button @click="exit"
+        class="rounded-full text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
         Выход
       </button>
     </template>
@@ -18,91 +16,57 @@
           <div class="flex items-center gap-2 w-1/2">
             <Listbox v-model="searchType" as="div" class="relative">
               <ListboxButton
-                class="w-36 px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center justify-between"
-              >
+                class="w-36 px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center justify-between">
                 <span class="truncate">
                   {{ searchType ? searchType.name : "Поиск по..." }}
                 </span>
-                <svg
-                  class="w-4 h-4 text-gray-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 9l-7 7-7-7"
-                  />
+                <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </ListboxButton>
 
               <ListboxOptions
-                class="absolute mt-1 w-36 bg-white border rounded-md shadow-md max-h-60 overflow-y-auto z-50"
-              >
-                <ListboxOption
-                  v-for="typ in searchTypes"
-                  :key="typ.id"
-                  :value="typ"
-                  class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm"
-                >
+                class="absolute mt-1 w-36 bg-white border rounded-md shadow-md max-h-60 overflow-y-auto z-50">
+                <ListboxOption v-for="typ in searchTypes" :key="typ.id" :value="typ"
+                  class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm">
                   {{ typ.name }}
                 </ListboxOption>
               </ListboxOptions>
             </Listbox>
             <label for="simple-search" class="sr-only">Поиск</label>
             <div class="relative flex-1">
-              <div
-                class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none"
-              >
-                <svg
-                  class="absolute left-3 top-3 w-4 h-4 text-gray-400"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                  />
+              <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <svg class="absolute left-3 top-3 w-4 h-4 text-gray-400" viewBox="0 0 20 20" fill="none">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                 </svg>
               </div>
-              <input
-                v-model="searchQuery"
-                type="text"
-                id="simple-search"
+              <input v-model="searchQuery" type="text" id="simple-search"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-gray-500 focus:border-gray-400 block w-full ps-10 p-2.5"
-                placeholder="Поиск..."
-              />
+                placeholder="Поиск..." />
             </div>
           </div>
         </div>
 
         <div class="flex flex-col lg:flex-row gap-6 scale-container">
-          <aside
-            class="w-full sm:w-80 lg:w-96 max-w-full lg:max-w-[26rem] space-y-4"
-          >
+          <aside class="w-full sm:w-80 lg:w-96 max-w-full lg:max-w-[26rem] space-y-4">
             <div
-              class="flex h-[600px] flex-col gap-3 max-h-[80vh] bg-gray-200 rounded-lg p-3 overflow-y-auto scroll-soft"
-            >
-              <div
-                v-if="tasks === null"
-                class="flex items-center justify-center h-full pt-4"
-              >
+              class="flex h-[600px] flex-col gap-3 max-h-[80vh] bg-gray-200 rounded-lg p-3 overflow-y-auto scroll-soft">
+              <div v-if="tasks === null" class="flex items-center justify-center h-full pt-4">
                 <div class="loader-text"></div>
               </div>
 
               <EmptyState v-else-if="!tasks.length" />
-              <article
-                v-for="(task, index) in getFilteredTasks()"
-                :key="index"
-                role="button"
-                tabindex="0"
-                @click="
+              <article v-for="(task, index) in getFilteredTasks()" :key="index" role="button" tabindex="0" @click="
+                toggleModel(
+                  task.nomenclature?.article,
+                  task.productionplan,
+                  task.date_productionplan,
+                  task.tape_number,
+                  index
+                )
+                " @keydown.enter.prevent="
                   toggleModel(
                     task.nomenclature?.article,
                     task.productionplan,
@@ -110,48 +74,31 @@
                     task.tape_number,
                     index
                   )
-                "
-                @keydown.enter.prevent="
-                  toggleModel(
-                    task.nomenclature?.article,
-                    task.productionplan,
-                    task.date_productionplan,
-                    task.tape_number,
-                    index
-                  )
-                "
-                @keydown.space.prevent="
-                  toggleModel(
-                    task.nomenclature?.article,
-                    task.productionplan,
-                    task.date_productionplan,
-                    task.tape_number,
-                    index
-                  )
-                "
-                class="group flex items-center gap-3 bg-white rounded-md p-2.5 shadow-sm border border-gray-100 hover:bg-blue-50 hover:shadow-md hover:-translate-y-0.5 transform transition-all duration-150 w-full overflow-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400 flex-shrink-0"
-              >
-                <div
-                  class="flex-shrink-0 w-1.5 rounded bg-gradient-to-b from-blue-500 to-purple-700 h-8"
-                ></div>
+                  " @keydown.space.prevent="
+                    toggleModel(
+                      task.nomenclature?.article,
+                      task.productionplan,
+                      task.date_productionplan,
+                      task.tape_number,
+                      index
+                    )
+                    "
+                class="group flex items-center gap-3 bg-white rounded-md p-2.5 shadow-sm border border-gray-100 hover:bg-blue-50 hover:shadow-md hover:-translate-y-0.5 transform transition-all duration-150 w-full overflow-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-400 flex-shrink-0">
+                <div class="flex-shrink-0 w-1.5 rounded bg-gradient-to-b from-blue-500 to-purple-700 h-8"></div>
 
                 <div class="flex-1 min-w-0 overflow-hidden">
                   <div class="flex items-center justify-between gap-2">
                     <div class="min-w-0">
-                      <span
-                        v-if="task.tape_number !== ''"
-                        class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-normal text-center"
-                      >
+                      <span v-if="task.tape_number !== ''"
+                        class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-normal text-center">
                         Уровень задачи: {{ task.nomenclature.level }}<br />
                         Лента -#{{ task.tape_number }}
                         <span class="text-red-500">{{
                           task.stage ? "-" + task.stage : ""
                         }}</span>
                       </span>
-                      <span
-                        v-else
-                        class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-nowrap"
-                      >
+                      <span v-else
+                        class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-nowrap">
                         Уровень задачи: {{ task.nomenclature.level }}
                       </span>
                     </div>
@@ -166,45 +113,32 @@
                             task.status === 'Активный',
                           'bg-gray-200 text-gray-600':
                             task.status === 'Завершен',
-                        }"
-                      >
+                        }">
                         {{ task.status }}
                       </span>
                     </div>
                   </div>
 
                   <div class="mt-1 flex items-center gap-2 min-w-0">
-                    <span
-                      v-if="task.order !== ''"
-                      class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
-                    >
+                    <span v-if="task.order !== ''" class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap">
                       № {{ task.order }}
                     </span>
-                    <span
-                      v-else
-                      class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
-                    >
+                    <span v-else class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap">
                       Для склада
                     </span>
 
-                    <span
-                      class="flex-1 truncate whitespace-nowrap text-sm font-semibold text-gray-900"
-                      :title="`${task.productionplan} — ${task.nomenclature?.article} — ${task.nomenclature?.name}`"
-                    >
+                    <span class="flex-1 truncate whitespace-nowrap text-sm font-semibold text-gray-900"
+                      :title="`${task.productionplan} — ${task.nomenclature?.article} — ${task.nomenclature?.name}`">
                       {{ task.nomenclature?.article }} —
                       {{ task.nomenclature?.name }}
                     </span>
                   </div>
                   <div class="mt-1 flex items-center gap-2 min-w-0">
-                    <span
-                      class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap"
-                    >
+                    <span class="flex-shrink-0 text-xs text-gray-500 whitespace-nowrap">
                       № {{ task.party }}
                     </span>
 
-                    <span
-                      class="flex-1 truncate whitespace-nowrap text-sm font-semibold text-gray-900"
-                    >
+                    <span class="flex-1 truncate whitespace-nowrap text-sm font-semibold text-gray-900">
                       {{ task.color }} —
                       {{ task.quantity }}
                     </span>
@@ -246,25 +180,18 @@
             </div>
 
             <article
-              class="relative bg-white rounded-2xl p-6 border shadow-lg min-h-[240px] transition hover:shadow-xl overflow-hidden"
-            >
+              class="relative bg-white rounded-2xl p-6 border shadow-lg min-h-[240px] transition hover:shadow-xl overflow-hidden">
               <div class="grid grid-cols-[auto,1fr,auto] items-center gap-8">
                 <div class="flex flex-col items-center gap-4 flex-shrink-0">
-                  <Listbox
-                    v-model="model[0].next_stage"
-                    as="div"
-                    class="relative w-48"
-                  >
-                    <ListboxButton
-                      @click="
-                        onOpen(
-                          model[0].productionplan,
-                          model[0].date_productionplan,
-                          model[0].stage.code
-                        )
+                  <Listbox v-model="model[0].next_stage" as="div" class="relative w-48">
+                    <ListboxButton @click="
+                      onOpen(
+                        model[0].productionplan,
+                        model[0].date_productionplan,
+                        model[0].stage.code
+                      )
                       "
-                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center justify-between bg-white"
-                    >
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm flex items-center justify-between bg-white">
                       <span class="truncate">
                         {{
                           model[0].next_stage
@@ -272,39 +199,19 @@
                             : "Этапы"
                         }}
                       </span>
-                      <svg
-                        class="w-4 h-4 text-gray-500"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M19 9l-7 7-7-7"
-                        />
+                      <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                       </svg>
                     </ListboxButton>
 
                     <ListboxOptions
-                      class="absolute mt-1 w-48 bg-white border rounded-md shadow-md max-h-60 overflow-y-auto z-50"
-                    >
-                      <ListboxOption
-                        v-if="loadingStages"
-                        class="flex items-center justify-center py-3"
-                      >
+                      class="absolute mt-1 w-48 bg-white border rounded-md shadow-md max-h-60 overflow-y-auto z-50">
+                      <ListboxOption v-if="loadingStages" class="flex items-center justify-center py-3">
                         <div class="loader h-8 w-8"></div>
                       </ListboxOption>
-                      <ListboxOption
-                        v-else
-                        v-for="stage in stages"
-                        :key="stage.id"
-                        :value="stage"
-                        :disabled="visibleStages"
-                        class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm"
-                      >
+                      <ListboxOption v-else v-for="stage in stages" :key="stage.id" :value="stage"
+                        :disabled="visibleStages" class="cursor-pointer px-3 py-2 hover:bg-blue-50 text-sm">
                         {{ stage.name }}
                       </ListboxOption>
                     </ListboxOptions>
@@ -315,29 +222,13 @@
                     style="
                       width: clamp(120px, 18vw, 288px);
                       height: clamp(120px, 18vw, 288px);
-                    "
-                  >
-                    <img
-                      v-if="model[0].nomenclature.photo"
-                      :src="photo"
-                      alt="Модель"
-                      class="object-cover w-full h-full rounded-xl effect"
-                    />
-                    <svg
-                      v-else
-                      width="100%"
-                      height="100%"
-                      viewBox="0 0 260 260"
-                      preserveAspectRatio="xMidYMid meet"
-                    >
+                    ">
+                    <img v-if="model[0].nomenclature.photo" :src="photo" alt="Модель"
+                      class="object-cover w-full h-full rounded-xl effect" />
+                    <svg v-else width="100%" height="100%" viewBox="0 0 260 260" preserveAspectRatio="xMidYMid meet">
                       <defs>
-                        <pattern
-                          id="p"
-                          width="20"
-                          height="20"
-                          patternUnits="userSpaceOnUse"
-                          patternTransform="rotate(45)"
-                        >
+                        <pattern id="p" width="20" height="20" patternUnits="userSpaceOnUse"
+                          patternTransform="rotate(45)">
                           <rect width="12" height="1.6" fill="#dfe3e8" />
                         </pattern>
                       </defs>
@@ -350,16 +241,10 @@
                   <div class="border-b pb-4 mb-4">
                     <div class="flex items-center gap-3 mb-3">
                       <template v-if="!quantityChange">
-                        <h3
-                          v-if="model[0].netto !== 0"
-                          class="text-lg font-extrabold tracking-tight"
-                        >
+                        <h3 v-if="model[0].netto !== 0" class="text-lg font-extrabold tracking-tight">
                           {{ userStore.user.stage }} | {{ model[0].netto }} M
                         </h3>
-                        <h3
-                          v-else
-                          class="text-lg font-extrabold tracking-tight"
-                        >
+                        <h3 v-else class="text-lg font-extrabold tracking-tight">
                           {{ userStore.user.stage }} | {{ model[0].quantity }} M
                         </h3>
                       </template>
@@ -368,14 +253,9 @@
                         <span class="text-lg font-extrabold tracking-tight">{{
                           userStore.user.stage
                         }}</span>
-                        <input
-                          type="number"
-                          v-model="model[0].quantity"
-                          class="border rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                        />
-                        <span class="text-lg font-extrabold tracking-tight"
-                          >M</span
-                        >
+                        <input type="number" v-model="model[0].quantity"
+                          class="border rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-blue-300" />
+                        <span class="text-lg font-extrabold tracking-tight">M</span>
                       </div>
 
                       <!-- <button
@@ -399,34 +279,21 @@
                     </div>
 
                     <div class="flex justify-end gap-3">
-                      <Button
-                        variant="secondary"
-                        v-if="userStore.user.stage_code === '005'"
-                        :disabled="!(userStore.user.stage_code === '005')"
-                        @click="toggleHistory"
-                        class="px-4 py-1.5 font-semibold"
-                        :class="
-                          userStore.user.stage_code === '005'
-                            ? ''
-                            : 'bg-gray-100 opacity-60 cursor-not-allowed'
-                        "
-                      >
+                      <Button variant="secondary" v-if="userStore.user.stage_code === '005'"
+                        :disabled="!(userStore.user.stage_code === '005')" @click="toggleHistory"
+                        class="px-4 py-1.5 font-semibold" :class="userStore.user.stage_code === '005'
+                          ? ''
+                          : 'bg-gray-100 opacity-60 cursor-not-allowed'
+                          ">
                         История
                       </Button>
                       <!-- 005: Колнтрол 1 -->
 
-                      <Button
-                        variant="secondary"
-                        v-if="isControlStage"
-                        :disabled="!isControlStage"
-                        @click="toggleDefects"
-                        class="px-4 py-1.5 font-semibold"
-                        :class="
-                          isControlStage
-                            ? ''
-                            : 'bg-gray-100 opacity-60 cursor-not-allowed'
-                        "
-                      >
+                      <Button variant="secondary" v-if="isControlStage" :disabled="!isControlStage"
+                        @click="toggleDefects" class="px-4 py-1.5 font-semibold" :class="isControlStage
+                          ? ''
+                          : 'bg-gray-100 opacity-60 cursor-not-allowed'
+                          ">
                         Дефекты
                       </Button>
                     </div>
@@ -437,10 +304,8 @@
                       Палитра — {{ model[0].color.name }}
                     </p>
                     <div class="flex items-center gap-3 mt-2">
-                      <div
-                        class="w-11 h-11 rounded-md border shadow-sm"
-                        :style="{ background: model[0].color.Hex || '#ffffff' }"
-                      ></div>
+                      <div class="w-11 h-11 rounded-md border shadow-sm"
+                        :style="{ background: model[0].color.Hex || '#ffffff' }"></div>
                     </div>
                   </div>
 
@@ -450,9 +315,7 @@
                     </p>
                     <input
                       class="mt-2 p-2 rounded-md bg-gray-50 border focus:outline-none focus:ring-2 focus:ring-blue-300 transition w-[clamp(80px,12vw,120px)]"
-                      :value="model[0]?.size"
-                      readonly
-                    />
+                      :value="model[0]?.size" readonly />
                   </div>
 
                   <!-- <div>
@@ -467,61 +330,37 @@
                   </div> -->
                 </div>
 
-                <div
-                  class="flex items-center justify-center"
-                  style="
+                <div class="flex items-center justify-center" style="
                     width: clamp(120px, 18vw, 288px);
                     height: clamp(120px, 18vw, 288px);
-                  "
-                >
-                  <div
-                    class="rounded-full bg-white w-full h-full flex items-center justify-center shadow-2xl"
-                  >
-                    <button
-                      ref="bigBtn"
-                      :aria-pressed="pressed"
-                      @pointerdown="down"
-                      @pointerup="reset"
-                      @pointercancel="reset"
-                      @pointerleave="reset"
-                      @click="toggle"
-                      @keydown.space.prevent="toggle"
+                  ">
+                  <div class="rounded-full bg-white w-full h-full flex items-center justify-center shadow-2xl">
+                    <button ref="bigBtn" :aria-pressed="pressed" @pointerdown="down" @pointerup="reset"
+                      @pointercancel="reset" @pointerleave="reset" @click="toggle" @keydown.space.prevent="toggle"
                       @keydown.enter.prevent="toggle"
                       class="rounded-full shadow-lg transition-transform w-[clamp(96px,14vw,192px)] h-[clamp(96px,14vw,192px)] bg-center bg-cover"
                       :style="{
-                        backgroundImage: `url(${
-                          pressed
-                            ? '/buttons/green-button.png'
-                            : '/buttons/orange-button.png'
-                        })`,
-                      }"
-                    ></button>
+                        backgroundImage: `url(${pressed
+                          ? '/buttons/green-button.png'
+                          : '/buttons/orange-button.png'
+                          })`,
+                      }"></button>
                   </div>
                 </div>
               </div>
             </article>
           </section>
 
-          <section
-            v-if="!showModel && !isLoading"
-            class="flex-1 flex flex-col items-center justify-center relative"
-          >
+          <section v-if="!showModel && !isLoading" class="flex-1 flex flex-col items-center justify-center relative">
             <div class="relative w-32 h-32 flex items-center justify-center">
-              <span
-                v-for="i in 3"
-                :key="i"
-                class="absolute rounded-full border-2 border-black opacity-50 animate-signal z-0"
-                :style="{
+              <span v-for="i in 3" :key="i"
+                class="absolute rounded-full border-2 border-black opacity-50 animate-signal z-0" :style="{
                   width: `${30 + i * 30}px`,
                   height: `${30 + i * 30}px`,
                   animationDelay: `${i * 0.2}s`,
-                }"
-              ></span>
-              <img
-                src="/others/return-box.png"
-                alt="Return Box"
-                class="w-16 h-16 object-cover bg-[#f8fafc] rounded-full z-10"
-              />
+                }"></span>
+              <img src="/others/return-box.png" alt="Return Box"
+                class="w-16 h-16 object-cover bg-[#f8fafc] rounded-full z-10" />
             </div>
             <div class="mt-4 text-2xl font-bold text-gray-600">
               Выберите задачу
@@ -530,42 +369,28 @@
         </div>
       </div>
     </main>
-    <ModalHistory
-      v-if="openHistory"
-      :data="{
-        article: model[0].nomenclature.article,
-        productionplan: model[0].productionplan,
-        color: model[0].color.code,
-        date_productionplan: model[0].date_productionplan,
-        tape_number: model[0].tape_number,
-        quantity: model[0].quantity,
-        netto: model[0].netto || 0,
-        brutto: model[0].brutto || 0,
-        machine: model[0].machine,
-        arrayStory: storyDetails,
-      }"
-      @save="handleSave"
-      @close="openHistory = false"
-    />
-    <ModalDefects
-      v-if="openDefects"
-      :data="{
-        article: model[0].nomenclature.article,
-        productionplan: model[0].productionplan,
-        color: model[0].color.code,
-        date_productionplan: model[0].date_productionplan,
-        tape_number: model[0].tape_number,
-      }"
-      @close="openDefects = false"
-    />
-    <EmployeePercentModal
-      :isOpen="isModalOpen"
-      :quantity="storyNetto || model?.[0]?.netto || model?.[0]?.quantity || 0"
-      :level="model?.[0]?.level || {}"
-      @update:isOpen="isModalOpen = $event"
-      @save="handleSaveOperators"
-      @cancel="handleCancel"
-    />
+    <ModalHistory v-if="openHistory" :data="{
+      article: model[0].nomenclature.article,
+      productionplan: model[0].productionplan,
+      color: model[0].color.code,
+      date_productionplan: model[0].date_productionplan,
+      tape_number: model[0].tape_number,
+      quantity: model[0].quantity,
+      netto: model[0].netto || 0,
+      brutto: model[0].brutto || 0,
+      machine: model[0].machine,
+      arrayStory: storyDetails,
+    }" @save="handleSave" @close="openHistory = false" />
+    <ModalDefects v-if="openDefects" :data="{
+      article: model[0].nomenclature.article,
+      productionplan: model[0].productionplan,
+      color: model[0].color.code,
+      date_productionplan: model[0].date_productionplan,
+      tape_number: model[0].tape_number,
+    }" @close="openDefects = false" />
+    <EmployeePercentModal :isOpen="isModalOpen" :quantity="storyNetto || model?.[0]?.netto || model?.[0]?.quantity || 0"
+      :level="model?.[0]?.level || {}" @update:isOpen="isModalOpen = $event" @save="handleSaveOperators"
+      @cancel="handleCancel" />
   </Layout>
 </template>
 
@@ -871,7 +696,7 @@ const toggle = async () => {
     return;
   }
 
-  const i = employeesStore.findIndex(
+  const i = employeesStore.rows.findIndex(
     (row) =>
       row.article === model.value[0].nomenclature.article &&
       row.tape_number === model.value[0].tape_number &&
@@ -892,8 +717,8 @@ const toggle = async () => {
           color: model.value[0].color.code,
         };
 
-        defectStore.addRow(rowToAdd);
-        employeesData.value = rowToAdd;
+        employeesStore.addRow(rowToAdd);
+        // employeesData.value = rowToAdd;
       }
     } catch (error) {
       // Modal cancelled
@@ -943,7 +768,7 @@ const toggle = async () => {
     }
 
     try {
-      if (userStore.user.stage_code === "005") {
+      if (userStore.user.stage_code !== "005") {
         if (userStore.user.stage_code === "004") {
           employeesData.value = [];
         } else {
@@ -953,19 +778,21 @@ const toggle = async () => {
           }
         }
       } else {
-        const i = employeesStore.findIndex(
+        const foundEmployees = employeesStore.rows.filter(
           (row) =>
-            row.article === model.value[0].nomenclature.article &&
-            row.tape_number === model.value[0].tape_number &&
-            row.productionplan === model.value[0].productionplan &&
-            row.color === model.value[0].color.code
+            row.article === target.article &&
+            row.tape_number === target.tape_number &&
+            row.productionplan === target.productionplan &&
+            row.color === target.color
         );
-
-        if (i !== -1) {
-          employeesData.value = employeesStore[i];
-        } else {
-          employeesData.value = []; 
-        }
+        employeesData.value = foundEmployees.flatMap(emp => {
+          if (typeof emp === 'object' && !Array.isArray(emp)) {
+            return Object.keys(emp)
+              .filter(key => !isNaN(key))
+              .map(key => emp[key]);
+          }
+          return emp;
+        });
       }
     } catch (error) {
       2;
@@ -1031,9 +858,26 @@ const toggle = async () => {
       }
     });
 
+    if (userStore.user.stage_code === "005") {
+      for (let i = employeesStore.rows.length - 1; i >= 0; i--) {
+        const r = employeesStore.rows[i];
+        if (
+          r.article === target.article &&
+          r.tape_number === target.tape_number &&
+          r.productionplan === target.productionplan &&
+          r.color === target.color
+        ) {
+          employeesStore.removeRow(i);
+        }
+      }
+
+      employeesData.value = [];
+    }
+
     pressed.value = false;
     modelStore.clearModel();
   } catch (error) {
+    // alert(error);
   } finally {
     isSubmitting.value = false;
   }
@@ -1092,7 +936,7 @@ async function runToggle(first) {
       first.tape_number,
       0
     );
-  } catch (err) {}
+  } catch (err) { }
 }
 
 const stages = ref([]);
@@ -1166,10 +1010,12 @@ function getFilteredTasks() {
     transform: scale(0.3);
     opacity: 0.4;
   }
+
   50% {
     transform: scale(1);
     opacity: 1;
   }
+
   100% {
     transform: scale(1.2);
     opacity: 0;
@@ -1179,9 +1025,11 @@ function getFilteredTasks() {
 .animate-signal {
   animation: signal 1.2s infinite ease-in-out;
 }
+
 .effect {
   transition: transform 0.3s ease;
 }
+
 .effect:hover {
   transform: scale(1.2);
 }
