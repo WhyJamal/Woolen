@@ -91,7 +91,7 @@
                     <div class="min-w-0">
                       <span v-if="task.tape_number !== ''"
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-normal text-center">
-                        Уровень задачи: {{ task.nomenclature.level }}<br />
+                        ID: {{ task.productionplan }}<br />
                         Лента -#{{ task.tape_number }}
                         <span class="text-red-500">{{
                           task.stage ? "-" + task.stage : ""
@@ -99,7 +99,7 @@
                       </span>
                       <span v-else
                         class="inline-block text-xs px-2 py-0.5 rounded bg-gray-200 font-semibold whitespace-nowrap">
-                        Уровень задачи: {{ task.nomenclature.level }}
+                        ID: {{ task.productionplan }}
                       </span>
                     </div>
 
