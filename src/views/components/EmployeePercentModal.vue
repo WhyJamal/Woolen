@@ -366,7 +366,6 @@ const rowData = ref({ name: "", GUID: "" });
 const rowName = ref("");
 const localQuantity = ref(props.quantity);
 
-// 👉 MUHIM: har bir qator uchun ref array
 const datepickerInput = ref([]);
 
 const availableEmployees = ref([]);
@@ -502,7 +501,7 @@ const closeModal = () => {
   emit("update:isOpen", false);
 };
 
-const saveChanges = () => {
+const saveChanges = () => { 
   let listToCalculate = employees.value;
 
   if (userStore.user.stage_code === "005") {
@@ -511,6 +510,14 @@ const saveChanges = () => {
     );
   }
 
+  for (const emp of listToCalculate) {
+    if (!emp.level || !emp.level.name) {
+      warningMessage.value = `Введите сложность! Сотрудник: ${emp.name}`;
+      showWarning.value = true;
+      return; 
+    }
+  }
+  
   let filteredEmployees = listToCalculate.filter((emp) => emp.percent > 0);
 
   if (filteredEmployees.length === 0) {
