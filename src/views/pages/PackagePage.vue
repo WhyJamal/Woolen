@@ -686,6 +686,7 @@ const toogleRefund = async (task) => {
       comment: "Возврат",
       level: task.level,
       owner: userStore.user.GUID,
+      status_number: task.status_number, 
 
       defects: foundDefects.length ? foundDefects : [],
       storyDetails: task.storyDetails || {},

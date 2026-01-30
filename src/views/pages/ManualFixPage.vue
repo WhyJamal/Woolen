@@ -1153,6 +1153,7 @@ const toogleRefund = async () => {
       owner: userStore.user.GUID,
       netto: model.value[0].netto || 0,
       brutto: model.value[0].brutto || 0,
+      status_number: task.status_number, 
 
       defects: foundDefects.length ? foundDefects : [],
     };
