@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      port: 5173,
+      port: 3000,
       allowedHosts: [
         "www.apsofterp.uz",        
         "apsofterp.uz",        
