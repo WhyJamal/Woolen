@@ -13,8 +13,13 @@ export default defineConfig(({ mode }) => {
       }
     },
     server: {
-      host: '0.0.0.0',
+      host: true,
       port: 5173,
+      allowedHosts: [
+        "www.apsofterp.uz",        
+        "apsofterp.uz",        
+        "localhost",
+      ],   
       proxy: {
         '/api': {
           target: env.VITE_API_BASE, 
