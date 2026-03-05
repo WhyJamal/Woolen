@@ -1,20 +1,9 @@
 <template>
-  <WarningModal
-    v-if="showWarning"
-    :message="warningMessage"
-    @close="showWarning = false"
-  />
+  <WarningModal v-if="showWarning" :message="warningMessage" @close="showWarning = false" />
 
-  <div
-    v-if="isOpen"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  >
-    <div
-      class="bg-white rounded-lg shadow-xl w-full h-full max-w-7xl mx-4 max-h-[90vh] flex flex-col"
-    >
-      <div
-        class="flex justify-between items-center px-6 rounded-md py-4 border-b bg-white"
-      >
+  <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl w-full h-full max-w-7xl mx-4 max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center px-6 rounded-md py-4 border-b bg-white">
         <h3 class="text-xl font-semibold text-gray-800">Employees percent</h3>
 
         <div class="flex gap-6">
@@ -25,22 +14,9 @@
             }}</span>
           </div>
 
-          <button
-            @click="closeModal"
-            class="text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
+          <button @click="closeModal" class="text-gray-400 hover:text-gray-600 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
         </div>
@@ -51,147 +27,85 @@
           <thead>
             <tr class="bg-gray-100 border-b border-gray-300">
               <th
-                class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider min-w-0 sm:w-36 md:w-80 lg:w-72 xl:w-80"
-              >
+                class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider min-w-0 sm:w-36 md:w-80 lg:w-72 xl:w-80">
                 Сотрудник
               </th>
-              <th
-                class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Действия
               </th>
-              <th
-                class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-3 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Метраж
               </th>
-              <th
-                class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Этап
               </th>
-              <th
-                class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Сложность
               </th>
               <th
-                class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider min-w-0 sm:w-20 md:w-40 lg:w-32 xl:w-40"
-              >
+                class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider min-w-0 sm:w-20 md:w-40 lg:w-32 xl:w-40">
                 Дата работы
               </th>
-              <th
-                class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-3 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Смена
               </th>
             </tr>
           </thead>
 
           <tbody class="bg-white">
-            <tr
-              v-for="(employee, index) in employees"
-              :key="index"
-              class="border-b border-gray-200 hover:bg-gray-50"
-            >
+            <tr v-for="(employee, index) in employees" :key="index" class="border-b border-gray-200 hover:bg-gray-50">
               <td class="px-3 py-2.5 align-middle min-w-0">
                 <div class="flex items-center gap-1 min-w-0 w-full">
-                  <Listbox
-                    :modelValue="employee"
-                    @update:modelValue="(v) => updateEmployee(index, v)"
-                    as="div"
-                    class="flex-1 min-w-0"
-                  >
+                  <Combobox :modelValue="employee" @update:modelValue="(v) => updateEmployee(index, v)" as="div"
+                    class="flex-1 min-w-0" nullable>
                     <div class="relative min-w-0 w-full">
-                      <ListboxButton
-                        class="relative w-full min-w-0 bg-gray-50 text-gray-700 text-sm rounded px-2 py-1.5 h-9 text-left focus:outline-none focus:ring-1 focus:ring-blue-400 pr-8 truncate overflow-hidden"
-                      >
-                        <span class="block truncate">
-                          {{ employee.name || "Выберите сотрудника" }}
-                        </span>
+                      <div class="relative w-full">
+                        <ComboboxInput
+                          class="relative w-full min-w-0 bg-gray-50 text-gray-700 text-sm rounded px-2 py-1.5 h-9 text-left focus:outline-none focus:ring-1 focus:ring-blue-400 pr-8 truncate overflow-hidden border border-gray-200"
+                          :displayValue="(emp) => emp?.name || ''"
+                          @change="employeeQueries[index] = $event.target.value" placeholder="Выберите сотрудника" />
+                        <ComboboxButton class="absolute inset-y-0 right-0 flex items-center pr-2">
+                          <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4" />
+                          </svg>
+                        </ComboboxButton>
+                      </div>
 
-                        <span
-                          class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
-                        >
-                          <span
-                            class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
-                          >
-                            <svg
-                              class="h-5 w-5 text-gray-400"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              stroke="currentColor"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="1.5"
-                                d="M6 8l4 4 4-4"
-                              />
-                            </svg>
-                          </span>
-                        </span>
-                      </ListboxButton>
-
-                      <transition
-                        leave-active-class="transition duration-100 ease-in"
-                        leave-from-class="opacity-100"
-                        leave-to-class="opacity-0"
-                      >
-                        <ListboxOptions
-                          class="absolute z-20 mt-1 max-h-60 max-w-full w-max overflow-auto rounded-md bg-white py-1 text-sm shadow-lg focus:outline-none"
-                        >
-                          <ListboxOption
-                            v-for="emp in availableEmployees"
-                            :key="emp.GUID"
-                            :value="emp"
-                            v-slot="{ active, selected }"
-                          >
-                            <div
-                              :class="[
-                                active
-                                  ? 'bg-blue-100 text-blue-900'
-                                  : 'text-gray-900',
-                                'cursor-pointer select-none py-2 pl-3 pr-9',
-                              ]"
-                            >
-                              <span
-                                :class="[
-                                  selected ? 'font-semibold' : 'font-normal',
-                                  'block truncate',
-                                ]"
-                              >
+                      <transition leave-active-class="transition duration-100 ease-in" leave-from-class="opacity-100"
+                        leave-to-class="opacity-0">
+                        <ComboboxOptions
+                          class="absolute z-20 mt-1 max-h-60 max-w-full w-max overflow-auto rounded-md bg-white py-1 text-sm shadow-lg focus:outline-none">
+                          <div v-if="getFilteredEmployees(index).length === 0" class="px-4 py-2 text-sm text-gray-500">
+                            Не найдено
+                          </div>
+                          <ComboboxOption v-for="emp in getFilteredEmployees(index)" :key="emp.GUID" :value="emp"
+                            v-slot="{ active, selected }">
+                            <div :class="[
+                              active ? 'bg-blue-100 text-blue-900' : 'text-gray-900',
+                              'cursor-pointer select-none py-2 pl-3 pr-9',
+                            ]">
+                              <span :class="[
+                                selected ? 'font-semibold' : 'font-normal',
+                                'block truncate',
+                              ]">
                                 {{ emp.name }}
                               </span>
-
-                              <span
-                                v-if="selected"
-                                class="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-600"
-                              >
-                                <svg
-                                  class="h-5 w-5"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fill-rule="evenodd"
+                              <span v-if="selected"
+                                class="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-600">
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fill-rule="evenodd"
                                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                  />
+                                    clip-rule="evenodd" />
                                 </svg>
                               </span>
                             </div>
-                          </ListboxOption>
-                        </ListboxOptions>
+                          </ComboboxOption>
+                        </ComboboxOptions>
                       </transition>
                     </div>
-                  </Listbox>
-
-                  <button
-                    @click="clearEmployee(index)"
-                    class="text-gray-400 hover:text-red-500 text-lg leading-none px-1"
-                    title="Очистить"
-                  >
+                  </Combobox>
+                  <button @click="clearEmployee(index)"
+                    class="text-gray-400 hover:text-red-500 text-lg leading-none px-1" title="Очистить">
                     ×
                   </button>
                 </div>
@@ -204,14 +118,9 @@
               </td>
 
               <td class="px-3 py-2.5 align-middle min-w-0">
-                <input
-                  type="number"
-                  v-model.number="employee.percent"
+                <input type="number" v-model.number="employee.percent"
                   class="w-full px-2 py-1.5 text-sm rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-400 min-w-0"
-                  min="0"
-                  max="100"
-                  placeholder="0"
-                />
+                  min="0" max="100" placeholder="0" />
               </td>
 
               <td class="px-3 py-2.5 align-middle min-w-0 text-center">
@@ -220,51 +129,28 @@
                 </span>
               </td>
               <!-- v-if="['005', '013', '017'].includes(employee.stage.code)" -->
-              <td
-                v-if="employee.levels?.length > 0"
-                class="px-3 py-2.5 align-middle min-w-0 text-center"
-              >
+              <td v-if="employee.levels?.length > 0" class="px-3 py-2.5 align-middle min-w-0 text-center">
                 <Listbox v-model="employee.level">
                   <div class="relative">
                     <ListboxButton
-                      class="relative w-full cursor-pointer bg-gray-50 text-gray-700 text-sm rounded px-2 py-1.5 h-9 text-left"
-                    >
+                      class="relative w-full cursor-pointer bg-gray-50 text-gray-700 text-sm rounded px-2 py-1.5 h-9 text-left">
                       <span class="block truncate">
                         {{ employee.level?.name || "Выберите уровень" }}
                       </span>
 
-                      <span
-                        class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
-                      >
-                        <span
-                          class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"
-                        >
-                          <svg
-                            class="h-5 w-5 text-gray-400"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            stroke="currentColor"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="1.5"
-                              d="M6 8l4 4 4-4"
-                            />
+                      <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                          <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4" />
                           </svg>
                         </span>
                       </span>
                     </ListboxButton>
 
                     <ListboxOptions
-                      class="absolute z-10 mt-1 min-w-[10rem] max-w-[90vw] left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded py-1 max-h-60 overflow-auto"
-                    >
-                      <ListboxOption
-                        v-for="level in employee.levels"
-                        :key="level.id"
-                        :value="level"
-                        class="cursor-pointer select-none px-2 py-1 hover:bg-blue-100"
-                      >
+                      class="absolute z-10 mt-1 min-w-[10rem] max-w-[90vw] left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded py-1 max-h-60 overflow-auto">
+                      <ListboxOption v-for="level in employee.levels" :key="level.id" :value="level"
+                        class="cursor-pointer select-none px-2 py-1 hover:bg-blue-100">
                         {{ level.name }}
                       </ListboxOption>
                     </ListboxOptions>
@@ -280,28 +166,15 @@
 
               <td class="px-3 py-2.5 align-middle min-w-0 text-center">
                 <div class="relative">
-                  <div
-                    class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none"
-                  >
-                    <svg
-                      class="w-4 h-4 text-gray-500"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
+                  <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor" viewBox="0 0 20 20">
                       <path
-                        d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z"
-                      />
+                        d="M20 4a2 2 0 0 0-2-2h-2V1a1 1 0 0 0-2 0v1h-3V1a1 1 0 0 0-2 0v1H6V1a1 1 0 0 0-2 0v1H2a2 2 0 0 0-2 2v2h20V4ZM0 18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8H0v10Zm5-8h10a1 1 0 0 1 0 2H5a1 1 0 0 1 0-2Z" />
                     </svg>
                   </div>
-                  <input
-                    ref="datepickerInput"
-                    v-model="employee.date"
-                    type="text"
-                    placeholder="Выберите дату"
-                    class="bg-gray-50 border border-gray-300 text-gray-600 text-sm placeholder:text-[11px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5"
-                  />
+                  <input ref="datepickerInput" v-model="employee.date" type="text" placeholder="Выберите дату"
+                    class="bg-gray-50 border border-gray-300 text-gray-600 text-sm placeholder:text-[11px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5" />
                 </div>
               </td>
 
@@ -323,11 +196,7 @@
         <Button @click="saveChanges"> Сохранить </Button>
       </div>
     </div>
-    <WarningModal
-      v-if="showWarning"
-      :message="warningMessage"
-      @close="showWarning = false"
-    />
+    <WarningModal v-if="showWarning" :message="warningMessage" @close="showWarning = false" />
   </div>
 </template>
 
@@ -348,6 +217,11 @@ import {
   ListboxButton,
   ListboxOptions,
   ListboxOption,
+  Combobox,
+  ComboboxInput,
+  ComboboxButton,
+  ComboboxOptions,
+  ComboboxOption,
 } from "@headlessui/vue";
 import WarningModal from "@/components/ui/WarningModal.vue";
 import Button from "@/components/ui/Button.vue";
@@ -369,6 +243,15 @@ const localQuantity = ref(props.quantity);
 const datepickerInput = ref([]);
 
 const availableEmployees = ref([]);
+const employeeQueries = ref({});
+
+const getFilteredEmployees = (index) => {
+  const q = (employeeQueries.value[index] || "").toLowerCase().trim();
+  if (!q) return availableEmployees.value;
+  return availableEmployees.value.filter((e) =>
+    e.name.toLowerCase().includes(q)
+  );
+};
 const employees = ref([]);
 
 const showWarning = ref(false);
@@ -394,7 +277,7 @@ const addRow = () => {
     date: null,
     level: props.level || {},
   });
-
+  employeeQueries.value[employees.value.length - 1] = "";
   nextTick(initDatepickers);
 };
 
@@ -435,6 +318,7 @@ const clearEmployee = (index) => {
     date: null,
     level: props.level || {},
   };
+  employeeQueries.value[index] = "";
 };
 
 const fetchRowData = async () => {
@@ -501,7 +385,7 @@ const closeModal = () => {
   emit("update:isOpen", false);
 };
 
-const saveChanges = () => { 
+const saveChanges = () => {
   let listToCalculate = employees.value;
 
   if (userStore.user.stage_code === "005") {
@@ -514,10 +398,10 @@ const saveChanges = () => {
     if (!emp.level || !emp.level.name) {
       warningMessage.value = `Введите сложность! Сотрудник: ${emp.name}`;
       showWarning.value = true;
-      return; 
+      return;
     }
   }
-  
+
   let filteredEmployees = listToCalculate.filter((emp) => emp.percent > 0);
 
   if (filteredEmployees.length === 0) {
