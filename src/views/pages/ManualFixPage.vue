@@ -8,6 +8,7 @@
       @onConfirm="notifModalEvents.onConfirm"
       @onCancel="notifModalEvents.onCancel"
     />
+    <WarningModal v-if="showWarningTable" :message="warningMessage" @close="showWarningTable = false" />
 
     <template #exit-button>
       <button
@@ -638,6 +639,7 @@ import {
   ListboxOption,
 } from "@headlessui/vue";
 import Button from "@/components/ui/Button.vue";
+import WarningModal from "@/components/ui/WarningModal.vue";
 
 const defectStore = useDefectStore();
 const modelStore = useModelStore();
@@ -659,6 +661,8 @@ const photo = ref(null);
 const clickSound = new Audio("/sounds/click.wav");
 const endclickSound = new Audio("/sounds/end-click.wav");
 const showWarning = ref(false);
+const showWarningTable = ref(false);
+const warningMessage = ref("");
 const showNotife = ref(false);
 const form = ref({
   stage: "",
@@ -1000,7 +1004,7 @@ const toggle = async () => {
 
     if (
       userStore.user.stage_code === "006" ||
-      userStore.user.stage_code === "014"
+      userStore.user.stage_code === "014"      
     ) {
       hasEmptyFields =
         foundDefects.length > 0 &&
@@ -1015,6 +1019,16 @@ const toggle = async () => {
             defect.defectBalance === 0 ||
             defect.fixed === false
         );
+    }
+
+    if (
+      (userStore.user.stage_code === "006" ||
+      userStore.user.stage_code === "014") &&
+      foundDefects.length === 0     
+    ){
+      warningMessage.value = "Таблица дефектов пусто!";
+      showWarningTable.value = true;
+      return;
     }
 
     try {
