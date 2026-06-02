@@ -1095,7 +1095,8 @@ const toggle = async () => {
       // Story details
       netto: detail.netto || model.value[0].netto || 0,
       brutto: detail.brutto || model.value[0].brutto || 0,
-
+      machine: detail.machine || model.value[0].machine || null,
+      
       storyDetails: detail || {},
       defects: foundDefects.length ? foundDefects : [],
       employees: employeesData.value || [],
@@ -1147,7 +1148,7 @@ const toogleRefund = async () => {
         row.productionplan === (target.productionplan || "") &&
         row.color === (target.color || "")
     );
-
+    
     const payloadRefund = {
       stage: userStore.user.stage_code, //model.value[0].stage.code,
       productionplan: model.value[0].productionplan,
@@ -1167,11 +1168,13 @@ const toogleRefund = async () => {
       owner: userStore.user.GUID,
       netto: model.value[0].netto || 0,
       brutto: model.value[0].brutto || 0,
-      status_number: task.status_number, 
+      status_number: model.value[0].status_number, 
+      machine: model.value[0].machine || null,
 
       defects: foundDefects.length ? foundDefects : [],
     };
 
+    console.dir(payloadRefund);
     const response = await api.post("/v1/refund", payloadRefund);
 
     const idx = tasks.value.findIndex(

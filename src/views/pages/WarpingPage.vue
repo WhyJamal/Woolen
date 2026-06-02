@@ -462,7 +462,7 @@ const isControlStage = computed(() =>
   ["005", "013", "017"].includes(userStore.user.stage_code)
 );
 const visibleStages = computed(() =>
-  ["001", "002", "004"].includes(userStore.user.stage_code)
+  ["002", "004"].includes(userStore.user.stage_code)
 );
 
 function loadDate() {
@@ -828,6 +828,7 @@ const toggle = async () => {
       level: model.value[0].level,
       startDate: currentTask.startDate,
       endDate: await loadDate(),
+      machine: model.value[0].machine,
       // Story details
       netto: detail.netto || model.value[0].netto || 0,
       brutto: detail.brutto || model.value[0].brutto || 0,

@@ -988,7 +988,7 @@ const sendForm = async () => {
         equipment: model.value[0].equipment,
         owner: userStore.user.GUID,
         level: model.value[0].level,
-        machine: machine.value?.code || null,
+        machine: machine.value || null,
       };
 
       await api.post("/v1/weaving", payload);

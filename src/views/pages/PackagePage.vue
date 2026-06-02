@@ -540,7 +540,8 @@
         netWeight: netWeight,
         startDate: task.startDate,
         endDate: await loadDate(),
-
+        machine: task.machine || null,
+        
         defects: foundDefects.length ? foundDefects : [],
         storyDetails: task.storyDetails || {},
         employees: employeesData.value || [],
@@ -622,6 +623,7 @@
         level: task.level,
         owner: userStore.user.GUID,
         status_number: task.status_number,
+        machine: task.machine || null,
 
         defects: foundDefects.length ? foundDefects : [],
         storyDetails: task.storyDetails || {},
