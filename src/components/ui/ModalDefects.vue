@@ -262,308 +262,305 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, defineAsyncComponent } from "vue";
-import { useUserStore } from "@/stores/user";
-import api from "@/utils/axios";
-import {
-  Listbox,
-  ListboxButton,
-  ListboxOptions,
-  ListboxOption,
-  Combobox,
-  ComboboxInput,
-  ComboboxButton,
-  ComboboxOptions,
-  ComboboxOption,
-} from "@headlessui/vue";
-import WarningModal from "@/components/ui/WarningModal.vue";
-import { useDefectStore } from "@/stores/defects";
-import Button from "@/components/ui/Button.vue";
+  import { ref, computed, onMounted, defineAsyncComponent } from "vue";
+  import { useUserStore } from "@/stores/user";
+  import api from "@/utils/axios";
+  import {
+    Listbox,
+    ListboxButton,
+    ListboxOptions,
+    ListboxOption,
+    Combobox,
+    ComboboxInput,
+    ComboboxButton,
+    ComboboxOptions,
+    ComboboxOption,
+  } from "@headlessui/vue";
+  import WarningModal from "@/components/ui/WarningModal.vue";
+  import { useDefectStore } from "@/stores/defects";
+  import Button from "@/components/ui/Button.vue";
 
-const DeleteConfirmationModal = defineAsyncComponent(() =>
-  import("@/views/components/DeleteConfirmationModal.vue")
-);
+  const DeleteConfirmationModal = defineAsyncComponent(() =>
+    import("@/views/components/DeleteConfirmationModal.vue")
+  );
 
-async function getUuid() {
-  const { uuid } = await import("@/utils/uuid");
-  return uuid();
-}
+  async function getUuid() {
+    const { uuid } = await import("@/utils/uuid");
+    return uuid();
+  }
 
-const defectStore = useDefectStore();
-const emit = defineEmits(["close"]);
+  const defectStore = useDefectStore();
+  const emit = defineEmits(["close"]);
 
-const props = defineProps({
-  data: {
-    type: Object,
-    required: true,
-  },
-});
+  const props = defineProps({
+    data: {
+      type: Object,
+      required: true,
+    },
+  });
 
-const show = ref(true);
-const showForm = ref(false);
-const showDeleteConfirm = ref(false);
-const editingIndex = ref(null);
-const userStore = useUserStore();
-const isLoading = ref(false);
-const rows = ref([]);
+  const show = ref(true);
+  const showForm = ref(false);
+  const showDeleteConfirm = ref(false);
+  const editingIndex = ref(null);
+  const userStore = useUserStore();
+  const isLoading = ref(false);
+  const rows = ref([]);
 
-const isControlStage = computed(() =>
-  ["025", "013", "017"].includes(userStore.user.stage_code)
-);
+  const isControlStage = computed(() =>
+    ["025", "013", "017"].includes(userStore.user.stage_code)
+  );
 
-const isRejectionStage = computed(() =>
-  ["006", "014"].includes(userStore.user.stage_code)
-);
+  const isRejectionStage = computed(() =>
+    ["006", "014"].includes(userStore.user.stage_code)
+  );
 
-const canEdit = computed(() => isControlStage.value || isRejectionStage.value);
+  const canEdit = computed(() => isControlStage.value || isRejectionStage.value);
 
-const newRow = ref(createNewRow());
+  const newRow = ref(createNewRow());
 
-function createNewRow() {
-  return {
-    defect: { name: "", code: "" },
-    category: { name: "", code: "" },
-    note: "",
-    locations: "",
-    length: "",
-    operator: { name: "", GUID: "" },
-    correctedMeter: "",
-    defectBalance: "",
-    fixed: false,
-    uuid: "",
-    article: props.data.article,
-    productionplan: props.data.productionplan,
-    date_productionplan: props.data.date_productionplan,
-    tape_number: props.data.tape_number,
-    color: props.data.color,
+  function createNewRow() {
+    return {
+      defect: { name: "", code: "" },
+      category: { name: "", code: "" },
+      note: "",
+      locations: "",
+      length: "",
+      operator: { name: "", GUID: "" },
+      correctedMeter: "",
+      defectBalance: "",
+      fixed: false,
+      uuid: "",
+      article: props.data.article,
+      productionplan: props.data.productionplan,
+      date_productionplan: props.data.date_productionplan,
+      tape_number: props.data.tape_number,
+      color: props.data.color,
+    };
+  }
+
+  const defects = ref([]);
+  const defectCategoryes = ref([]);
+  const operators = ref([]);
+  const operatorQuery = ref("");
+  const filteredOperators = computed(() => {
+    const q = operatorQuery.value.toLowerCase().trim();
+    if (!q) return operators.value;
+    return operators.value.filter((o) =>
+      o.name.toLowerCase().includes(q)
+    );
+  });
+  const isLoadingDefects = ref(false);
+  const isLoadingCategoryes = ref(false);
+  const isLoadingOperators = ref(false);
+  const showWarning = ref(false);
+  const warningMessage = ref("");
+  const deleteUuid = ref(null);
+
+  const close = () => {
+    emit("close");
   };
-}
 
-const defects = ref([]);
-const defectCategoryes = ref([]);
-const operators = ref([]);
-const operatorQuery = ref("");
-const filteredOperators = computed(() => {
-  const q = operatorQuery.value.toLowerCase().trim();
-  if (!q) return operators.value;
-  return operators.value.filter((o) =>
-    o.name.toLowerCase().includes(q)
-  );
-});
-const isLoadingDefects = ref(false);
-const isLoadingCategoryes = ref(false);
-const isLoadingOperators = ref(false);
-const showWarning = ref(false);
-const warningMessage = ref("");
-const deleteUuid = ref(null);
+  const openForm = async () => {
+    editingIndex.value = null;
+    newRow.value = createNewRow();
+    newRow.value.uuid = await getUuid();
+    showForm.value = true;
+  };
 
-const close = () => {
-  emit("close");
-};
+  const closeForm = () => {
+    editingIndex.value = null;
+    showForm.value = false;
+  };
 
-const openForm = async () => {
-  editingIndex.value = null;
-  newRow.value = createNewRow();
-  newRow.value.uuid = await getUuid();
-  showForm.value = true;
-};
+  const handleRowClick = (row) => {
+    if (canEdit.value) {
+      editRow(row);
+    }
+  };
 
-const closeForm = () => {
-  editingIndex.value = null;
-  showForm.value = false;
-};
+  const editRow = (row) => {
+    editingIndex.value = rows.value.findIndex((r) => r.uuid === row.uuid);
+    newRow.value = JSON.parse(JSON.stringify(row));
+    showForm.value = true;
+  };
 
-const handleRowClick = (row) => {
-  if (canEdit.value) {
-    editRow(row);
+  const updateRow = () => {
+    if (editingIndex.value === null) return;
+
+    rows.value[editingIndex.value] = { ...newRow.value };
+
+    const defectIndex = defectStore.rows.findIndex(
+      (r) => r.uuid === newRow.value.uuid
+    );
+
+    if (defectIndex !== -1) {
+      defectStore.rows[defectIndex] = { ...newRow.value };
+    }
+
+    closeForm();
+  };
+
+  const validateFields = () => {
+    if (!newRow.value.defect || !newRow.value.defect.name) {
+      warningMessage.value = "Введите дефект!";
+      showWarning.value = true;
+      return false;
+    }
+
+    if (!newRow.value.category || !newRow.value.category.name) {
+      warningMessage.value = "Введите категорию дефекта!";
+      showWarning.value = true;
+      return false;
+    }
+
+    if (!newRow.value.locations) {
+      warningMessage.value = "Введите Местоположения!";
+      showWarning.value = true;
+      return false;
+    }
+
+    if (!newRow.value.length) {
+      warningMessage.value = "Введите Протояженность!";
+      showWarning.value = true;
+      return false;
+    }
+
+    if (!isControlStage && !newRow.value.note) {
+      warningMessage.value = "Введите Примечание!";
+      showWarning.value = true;
+      return false;
+    }
+
+    return true;
+  };
+
+  const addRow = () => {
+    if (!validateFields()) return;
+
+    defectStore.addRow(newRow.value);
+    rows.value.push({ ...newRow.value });
+    closeForm();
+  };
+
+  const canDelete = (row) => {
+    return canEdit.value;
+  };
+
+  const confirmDelete = (uuid) => {
+    deleteUuid.value = uuid;
+    showDeleteConfirm.value = true;
+  };
+
+  const deleteRow = () => {
+    if (!deleteUuid.value) return;
+
+    const rowIndex = rows.value.findIndex((r) => r.uuid === deleteUuid.value);
+    if (rowIndex !== -1) {
+      rows.value.splice(rowIndex, 1);
+    }
+
+    const defectIndex = defectStore.rows.findIndex(
+      (r) => r.uuid === deleteUuid.value
+    );
+
+    if (defectIndex !== -1) {
+      defectStore.rows.splice(defectIndex, 1);
+    }
+
+    showDeleteConfirm.value = false;
+    deleteUuid.value = null;
+  };
+
+  onMounted(async () => {
+    isLoading.value = true;
+
+    const foundDefects = defectStore.rows.filter(
+      (row) =>
+        row.article === props.data.article &&
+        row.productionplan === props.data.productionplan &&
+        row.tape_number === props.data.tape_number &&
+        row.color === props.data.color
+    );
+
+    rows.value = foundDefects.map((r) => ({
+      ...r,
+      saved: !!r.operator?.GUID,
+    }));
+
+    isLoading.value = false;
+  });
+
+  async function fetchDefects() {
+    if (isLoadingDefects.value) return;
+    isLoadingDefects.value = true;
+    try {
+      const response = await api.get("/v1/defects");
+      defects.value = response.data;
+    } catch (error) {
+      console.error("Error fetching defects:", error);
+    } finally {
+      isLoadingDefects.value = false;
+    }
   }
-};
 
-const editRow = (row) => {
-  editingIndex.value = rows.value.findIndex((r) => r.uuid === row.uuid);
-  newRow.value = JSON.parse(JSON.stringify(row));
-  showForm.value = true;
-};
-
-const updateRow = () => {
-  if (editingIndex.value === null) return;
-
-  rows.value[editingIndex.value] = { ...newRow.value };
-
-  const defectIndex = defectStore.rows.findIndex(
-    (r) => r.uuid === newRow.value.uuid
-  );
-
-  if (defectIndex !== -1) {
-    defectStore.rows[defectIndex] = { ...newRow.value };
+  async function fetchDefectCategoryes() {
+    if (isLoadingCategoryes.value) return;
+    isLoadingCategoryes.value = true;
+    try {
+      const response = await api.get("/v1/defects/category");
+      defectCategoryes.value = response.data;
+    } catch (error) {
+      console.error("Error fetching defect categories:", error);
+    } finally {
+      isLoadingCategoryes.value = false;
+    }
   }
 
-  closeForm();
-};
-
-const validateFields = () => {
-  if (!newRow.value.defect || !newRow.value.defect.name) {
-    warningMessage.value = "Введите дефект!";
-    showWarning.value = true;
-    return false;
+  async function fetchOperators() {
+    if (isLoadingOperators.value) return;
+    isLoadingOperators.value = true;
+    try {
+      const response = await api.get("/v1/operators/list", {
+        params: { stage: userStore.user.stage_code },
+      });
+      operators.value = response.data;
+    } catch (error) {
+      console.error("Error fetching operators:", error);
+    } finally {
+      isLoadingOperators.value = false;
+    }
   }
 
-  if (
-    !isControlStage &&
-    (!newRow.value.category || !newRow.value.category.name)
-  ) {
-    warningMessage.value = "Введите категорию дефекта!";
-    showWarning.value = true;
-    return false;
+  function onFixedChange(row) {
+    const foundIndex = defectStore.rows.findIndex((r) => r.uuid === row.uuid);
+
+    if (foundIndex !== -1) {
+      defectStore.rows[foundIndex].fixed = row.fixed;
+    }
   }
 
-  if (!newRow.value.locations) {
-    warningMessage.value = "Введите Местоположения!";
-    showWarning.value = true;
-    return false;
+  function onLengthChange(row) {
+    row.defectBalance = row.length;
+    if (row.correctedMeter) {
+      onCorrectedMeterChange(row);
+    }
   }
 
-  if (!newRow.value.length) {
-    warningMessage.value = "Введите Протояженность!";
-    showWarning.value = true;
-    return false;
+  function onCorrectedMeterChange(row) {
+    if (row.correctedMeter > row.length) {
+      row.correctedMeter = row.length;
+    }
+    row.defectBalance = Math.max(0, row.length - (row.correctedMeter || 0));
   }
-
-  if (!isControlStage && !newRow.value.note) {
-    warningMessage.value = "Введите Примечание!";
-    showWarning.value = true;
-    return false;
-  }
-
-  return true;
-};
-
-const addRow = () => {
-  if (!validateFields()) return;
-
-  defectStore.addRow(newRow.value);
-  rows.value.push({ ...newRow.value });
-  closeForm();
-};
-
-const canDelete = (row) => {
-  return canEdit.value;
-};
-
-const confirmDelete = (uuid) => {
-  deleteUuid.value = uuid;
-  showDeleteConfirm.value = true;
-};
-
-const deleteRow = () => {
-  if (!deleteUuid.value) return;
-
-  const rowIndex = rows.value.findIndex((r) => r.uuid === deleteUuid.value);
-  if (rowIndex !== -1) {
-    rows.value.splice(rowIndex, 1);
-  }
-
-  const defectIndex = defectStore.rows.findIndex(
-    (r) => r.uuid === deleteUuid.value
-  );
-
-  if (defectIndex !== -1) {
-    defectStore.rows.splice(defectIndex, 1);
-  }
-
-  showDeleteConfirm.value = false;
-  deleteUuid.value = null;
-};
-
-onMounted(async () => {
-  isLoading.value = true;
-
-  const foundDefects = defectStore.rows.filter(
-    (row) =>
-      row.article === props.data.article &&
-      row.productionplan === props.data.productionplan &&
-      row.tape_number === props.data.tape_number &&
-      row.color === props.data.color
-  );
-
-  rows.value = foundDefects.map((r) => ({
-    ...r,
-    saved: !!r.operator?.GUID,
-  }));
-
-  isLoading.value = false;
-});
-
-async function fetchDefects() {
-  if (isLoadingDefects.value) return;
-  isLoadingDefects.value = true;
-  try {
-    const response = await api.get("/v1/defects");
-    defects.value = response.data;
-  } catch (error) {
-    console.error("Error fetching defects:", error);
-  } finally {
-    isLoadingDefects.value = false;
-  }
-}
-
-async function fetchDefectCategoryes() {
-  if (isLoadingCategoryes.value) return;
-  isLoadingCategoryes.value = true;
-  try {
-    const response = await api.get("/v1/defects/category");
-    defectCategoryes.value = response.data;
-  } catch (error) {
-    console.error("Error fetching defect categories:", error);
-  } finally {
-    isLoadingCategoryes.value = false;
-  }
-}
-
-async function fetchOperators() {
-  if (isLoadingOperators.value) return;
-  isLoadingOperators.value = true;
-  try {
-    const response = await api.get("/v1/operators/list", {
-      params: { stage: userStore.user.stage_code },
-    });
-    operators.value = response.data;
-  } catch (error) {
-    console.error("Error fetching operators:", error);
-  } finally {
-    isLoadingOperators.value = false;
-  }
-}
-
-function onFixedChange(row) {
-  const foundIndex = defectStore.rows.findIndex((r) => r.uuid === row.uuid);
-
-  if (foundIndex !== -1) {
-    defectStore.rows[foundIndex].fixed = row.fixed;
-  }
-}
-
-function onLengthChange(row) {
-  row.defectBalance = row.length;
-  if (row.correctedMeter) {
-    onCorrectedMeterChange(row);
-  }
-}
-
-function onCorrectedMeterChange(row) {
-  if (row.correctedMeter > row.length) {
-    row.correctedMeter = row.length;
-  }
-  row.defectBalance = Math.max(0, row.length - (row.correctedMeter || 0));
-}
 </script>
 
 <style scoped>
-.input {
-  @apply border border-gray-300 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400;
-}
+  .input {
+    @apply border border-gray-300 rounded-lg px-3 py-2 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400;
+  }
 
-.loader {
-  @apply animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600;
-}
+  .loader {
+    @apply animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600;
+  }
 </style>

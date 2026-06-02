@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: true,
-      port: 3000,
+      port: Number(env.VITE_PORT),
       allowedHosts: [
         "www.apsofterp.uz",        
         "apsofterp.uz",        

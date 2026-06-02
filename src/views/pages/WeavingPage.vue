@@ -336,6 +336,66 @@
                     />
                   </div>
 
+                  <div class="col-span-2 relative z-20 flex flex-col">
+            <label class="p-2 font-semibold pt-item__row"
+              >Машина</label
+            >
+            <Listbox v-model="machine">
+              <div class="relative">
+                <ListboxButton
+                  @click="fetchMachines"
+                  class="w-full p-2 rounded-lg border border-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white/40 backdrop-blur-sm text-left flex justify-between items-center"
+                >
+                  <span class="text-gray-600">
+                    {{
+                      machine
+                        ? machine.name
+                        : "Выберите машину..."
+                    }}
+                  </span>
+                  <svg
+                    class="w-5 h-5 ml-2 text-gray-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </ListboxButton>
+
+                <ListboxOptions
+                  class="absolute mt-1 w-full bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto z-50"
+                >
+                  <ListboxOption
+                    v-if="isLoadingMachines"
+                    class="flex-1 flex items-center justify-center"
+                  >
+                    <div class="loader w-10 h-10"></div>
+                  </ListboxOption>
+
+                  <ListboxOption
+                    v-else
+                    v-for="m in machines"
+                    :key="m.code"
+                    :value="m"
+                    class="cursor-pointer p-2 hover:bg-blue-50"
+                  >
+                    <div class="flex justify-between items-center">
+                      <span>{{ m.name }}</span>
+                      <span class="text-gray-400 text-sm">{{ m.code }}</span>
+                    </div>
+                  </ListboxOption>
+                </ListboxOptions>
+              </div>
+            </Listbox>
+          </div>
+
                   <div class="col-span-2 p-2">
                     <div
                       class="flex flex-col sm:flex-row items-start sm:items-center gap-2"
@@ -356,7 +416,7 @@
                         <Check class="w-4 h-4" />
                         Отправить
                       </button>
-                    </div>
+                    </div>                              
                   </div>
                 </div>
               </div>
@@ -674,6 +734,7 @@ import {
   ListboxOption,
 } from "@headlessui/vue";
 import { Power, Check } from "lucide-vue-next";
+import { getMachines } from "@/services/getMachinesService";
 
 const WarningModal = defineAsyncComponent(() =>
   import("@/components/ui/WarningModal.vue")
@@ -861,6 +922,10 @@ const validateFields = () => {
       showWarningModal("Введите номер лента!");
       return false;
 
+    case machine.value && !machine.value.code:
+      showWarningModal("Выберите машину!");
+      return false;
+
     case !count.value:
       showWarningModal("Введите кол-во!");
       return false;
@@ -877,6 +942,24 @@ const validateFields = () => {
       return true;
   }
 };
+
+const machines = ref([]);
+const machine = ref({name: "", code: ""});
+const isLoadingMachines = ref(false);
+
+async function fetchMachines() {
+  if (isLoadingMachines.value) return;
+
+  isLoadingMachines.value = true;
+
+  try {
+    machines.value = await getMachines(userStore.user.stage_code);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    isLoadingMachines.value = false;
+  }
+}
 
 const sendForm = async () => {
   if (!validateFields()) return;
@@ -904,7 +987,8 @@ const sendForm = async () => {
         party: model.value[0].party,
         equipment: model.value[0].equipment,
         owner: userStore.user.GUID,
-        level: model.value[0].level
+        level: model.value[0].level,
+        machine: machine.value?.code || null,
       };
 
       await api.post("/v1/weaving", payload);

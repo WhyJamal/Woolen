@@ -1,5 +1,5 @@
 <template>
-  <div class="font-[CeraPro] text-[14px] p-1">
+  <div class="font-[CeraPro] text-[16px] p-1">
     <table class="w-full border-separate border-spacing-1 table-fixed text-[11px]">
       <tbody>
         <tr>
@@ -9,15 +9,15 @@
               alt="logo"
               class="mx-auto w-[40px]"
             />
-            <div class="text-[10px] font-semibold mt-0.5 text-gray-800">
+            <div class="text-[16px] font-semibold mt-0.5 text-gray-800">
               WOOLENTEX
             </div>
           </td>
         </tr>
 
-        <tr v-for="(item, index) in infoList" :key="index" class="text-[10px]">
+        <tr v-for="(item, index) in infoList" :key="index" class="text-[16px]">
           <td class="w-1/2 font-semibold border border-black px-1">{{ item.label }}</td>
-          <td class="w-1/2 border border-black px-1">{{ item.value }}</td>
+          <td class="w-1/2 font-semibold border border-black px-1">{{ item.value }}</td>
         </tr>
       </tbody>
     </table>
@@ -30,7 +30,7 @@
       />
     </div>
 
-    <div class="text-center text-[10px] font-bold">
+    <div class="text-center text-[16px] font-bold">
       {{ barcodeNumber }}
     </div>
   </div>
@@ -78,7 +78,7 @@ onMounted(async () => {
         JsBarcode(canvas, barcodeNumber.value, {
           format: "CODE128",
           lineColor: "#000",
-          width: 2,
+          width: 3,
           height: 50,
           displayValue: false,
           background: "transparent",

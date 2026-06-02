@@ -1,49 +1,52 @@
 <template>
   <Layout>
     <template #exit-button>
-      <button
-        @click="exit"
-        class="px-3 py-2 rounded-full text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium text-sm"
-      >
+      <button @click="exit"
+        class="px-3 py-2 rounded-full text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium text-sm">
         Выход
       </button>
     </template>
 
     <div class="max-w-full mx-auto p-4">
-      <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center justify-between mb-3 gap-3 flex-wrap">
         <h2 class="text-lg font-semibold">Упаковка</h2>
+        <div class="relative">
+          <input v-model="searchTape" type="text" placeholder="Поиск по ленте..."
+            class="pl-3 pr-9 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white w-52" />
+          <svg v-if="!searchTape" xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+          </svg>
+          <button v-if="searchTape" @click="searchTape = ''"
+            class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-base leading-none">×</button>
+        </div>
         <!-- <div class="flex gap-2">
-          <button
-            class="px-4 py-2 rounded-lg bg-gradient-to-r from-sky-500 to-blue-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-          >
-            Создать баркод
-          </button>
-          <button
-            class="px-4 py-2 rounded-lg bg-gradient-to-r from-sky-500 to-blue-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
-          >
-            Распечатать баркод
-          </button>
-        </div>-->
+      <button
+        class="px-4 py-2 rounded-lg bg-gradient-to-r from-sky-500 to-blue-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+      >
+        Создать баркод
+      </button>
+      <button
+        class="px-4 py-2 rounded-lg bg-gradient-to-r from-sky-500 to-blue-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+      >
+        Распечатать баркод
+      </button>
+    </div>-->
       </div>
 
       <div v-if="isLoading" class="flex-1 flex items-center justify-center">
         <div class="loader"></div>
       </div>
-      <div
-        v-if="tasks === null"
-        class="flex items-center justify-center h-full pt-4"
-      >
+      <div v-if="tasks === null" class="flex items-center justify-center h-full pt-4">
         <div class="loader-text"></div>
       </div>
 
       <EmptyState v-else-if="!tasks.length" />
 
       <div v-else="!isLoading">
-        <div
-          v-for="(orderTasks, order) in groupedTasks"
-          :key="order"
-          class="bg-gray-200 p-3 rounded-lg mt-4"
-        >
+        <div v-for="(orderTasks, order) in groupedTasks" :key="order" class="bg-gray-200 p-3 rounded-lg mt-4">
           <div class="table-wrapper w-full overflow-x-auto pb-1 custom-scroll">
             <div class="table-grid table-header bg-white">
               <div class="cell">Заказ №</div>
@@ -60,11 +63,7 @@
               <div class="cell">Печать</div>
               <div class="cell">История</div>
             </div>
-            <div
-              v-for="(task, index) in orderTasks"
-              :key="index"
-              class="table-wrapper w-full"
-            >
+            <div v-for="(task, index) in orderTasks" :key="index" class="table-wrapper w-full">
               <div class="table-grid table-header mt-3">
                 <div class="cell border-r border-gray-300">
                   {{ task.order }}
@@ -87,103 +86,60 @@
                 <div class="cell border-r border-gray-300"></div>
 
                 <div class="cell border-r border-gray-300">
-                  <span
-                    :class="[
-                      'text-xs font-medium me-2 px-1.5 py-0.5 rounded-sm',
-                      task.status === 'Активний'
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-yellow-100 text-yellow-800',
-                    ]"
-                    >{{ task.status }}</span
-                  >
+                  <span :class="[
+                    'text-xs font-medium me-2 px-1.5 py-0.5 rounded-sm',
+                    task.status === 'Активний'
+                      ? 'bg-blue-100 text-blue-800'
+                      : 'bg-yellow-100 text-yellow-800',
+                  ]">{{ task.status }}</span>
                 </div>
                 <div class="cell center border-r border-gray-300">
-                  <button
-                    title="Возврат"
-                    @click="toogleRefund(task)"
-                    class="px-3 py-1 rounded-sm bg-gradient-to-r from-red-500 to-pink-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:bg-red-800"
-                  >
+                  <button title="Возврат" @click="toogleRefund(task)"
+                    class="px-3 py-1 rounded-sm bg-gradient-to-r from-red-500 to-pink-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:bg-red-800">
                     Возврат
                   </button>
                 </div>
 
                 <div class="cell border-r border-gray-300">{{ task.size }}</div>
 
-                <div
-                  class="cell border-r border-gray-300 flex items-center gap-2"
-                >
-                  <span
-                    class="w-10 h-10 rounded-full border border-gray-400"
-                    :style="{ backgroundColor: task.color.Hex }"
-                  ></span>
+                <div class="cell border-r border-gray-300 flex items-center gap-2">
+                  <span class="w-10 h-10 rounded-full border border-gray-400"
+                    :style="{ backgroundColor: task.color.Hex }"></span>
                   <span class="font-medium text-xs">{{ task.color.name }}</span>
                 </div>
 
                 <div class="cell border-r border-gray-300">
                   <span
-                    class="bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded-sm border border-blue-400 inline-flex items-center justify-center"
-                    >Обычный</span
-                  >
+                    class="bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs font-semibold me-2 px-2.5 py-0.5 rounded-sm border border-blue-400 inline-flex items-center justify-center">Обычный</span>
                 </div>
 
                 <div class="cell center border-r border-gray-300">
-                  <button
-                    @click="toggleStart(task)"
-                    :class="[
-                      'px-3 py-1 rounded-sm text-white text-sm font-bold shadow-md transition-all duration-200',
-                      task.status === 'Активний'
-                        ? 'bg-indigo-600 hover:shadow-lg'
-                        : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg',
-                    ]"
-                  >
+                  <button @click="toggleStart(task)" :class="[
+                    'px-3 py-1 rounded-sm text-white text-sm font-bold shadow-md transition-all duration-200',
+                    task.status === 'Активний'
+                      ? 'bg-indigo-600 hover:shadow-lg'
+                      : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg',
+                  ]">
                     {{ task.status === "Активний" ? "Сдать" : "Начать" }}
                   </button>
                 </div>
 
                 <div class="cell center border-r border-gray-300">
-                  <button
-                    @click="openPrintWindow(task)"
-                    class="icon-btn"
-                    title="Печать"
-                    aria-label="Печать"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2M6 18v4h12v-4"
-                      />
+                  <button @click="openPrintWindow(task)" class="icon-btn" title="Печать" aria-label="Печать">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2V9a2 2 0 012-2h16a2 2 0 012 2v7a2 2 0 01-2 2h-2M6 18v4h12v-4" />
                     </svg>
                   </button>
                 </div>
 
                 <div class="cell center">
-                  <button
-                    @click="toggleHistory(task)"
-                    class="icon-btn"
-                    title="История"
-                    aria-label="История"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
+                  <button @click="toggleHistory(task)" class="icon-btn" title="История" aria-label="История">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </button>
                 </div>
@@ -194,363 +150,449 @@
       </div>
     </div>
 
-    <WeightModal
-      :show="showModal"
-      @update:show="showModal = $event"
-      @submit="handleWeights"
-    />
+    <WeightModal :show="showModal" @update:show="showModal = $event" @submit="handleWeights" />
 
-    <EmployeePercentModal
-      :isOpen="isModalOpen"
-      :quantity="
-        tasks?.[selectedTask]?.netto || tasks?.[selectedTask]?.quantity || 0
-      "
-      :level="tasks?.[selectedTask]?.level || {}"
-      @update:isOpen="isModalOpen = $event"
-      @save="handleSaveOperators"
-      @cancel="handleCancel"
-    />
+    <EmployeePercentModal :isOpen="isModalOpen"
+      :quantity="tasks?.[selectedTask]?.netto || tasks?.[selectedTask]?.quantity || 0"
+      :level="tasks?.[selectedTask]?.level || {}" @update:isOpen="isModalOpen = $event" @save="handleSaveOperators"
+      @cancel="handleCancel" />
 
-    <ModalHistory
-      v-if="openHistory"
-      :data="{
-        article: tasks?.[selectedTask]?.nomenclature.article,
-        productionplan: tasks?.[selectedTask]?.productionplan,
-        color: tasks?.[selectedTask]?.color.code,
-        date_productionplan: tasks?.[selectedTask]?.date_productionplan,
-        tape_number: tasks?.[selectedTask]?.tape_number,
-        quantity: 0,
-        netto: 0,
-        brutto: 0,
-        machine: {},
-        arrayStory: [],
-      }"
-      @save="handleSave"
-      @close="openHistory = false"
-    />
+    <ModalHistory v-if="openHistory" :data="{
+      article: tasks?.[selectedTask]?.nomenclature.article,
+      productionplan: tasks?.[selectedTask]?.productionplan,
+      color: tasks?.[selectedTask]?.color.code,
+      date_productionplan: tasks?.[selectedTask]?.date_productionplan,
+      tape_number: tasks?.[selectedTask]?.tape_number,
+      quantity: 0,
+      netto: 0,
+      brutto: 0,
+      machine: {},
+      arrayStory: [],
+    }" @save="handleSave" @close="openHistory = false" />
 
-    <WarningModal
-      v-if="showWarning"
-      :message="warningMessage"
-      @close="showWarning = false"
-    /> </Layout
-  >
+    <WarningModal v-if="showWarning" :message="warningMessage" @close="showWarning = false" />
+  </Layout>
 </template>
 
 <script setup>
-import Layout from "@/components/Layout.vue";
-import PrintLabel from "@/views/pages/PrintLabel.vue";
-import {
-  onMounted,
-  ref,
-  computed,
-  defineAsyncComponent,
-  createApp,
-  watch,
-} from "vue";
-import { useRouter } from "vue-router";
-import { useUserStore } from "@/stores/user";
-import api from "@/utils/axios";
-import { useDefectStore } from "@/stores/defects";
-import { useScalesStore } from "@/stores/scales";
-import Button from "@/components/ui/Button.vue";
-import WarningModal from "@/components/ui/WarningModal.vue";
+  import Layout from "@/components/Layout.vue";
+  import PrintLabel from "@/views/pages/PrintLabel.vue";
+  import { onMounted, ref, computed, defineAsyncComponent, createApp, watch } from "vue";
+  import { useRouter } from "vue-router";
+  import { useUserStore } from "@/stores/user";
+  import api from "@/utils/axios";
+  import { useDefectStore } from "@/stores/defects";
+  import { useScalesStore } from "@/stores/scales";
+  import Button from "@/components/ui/Button.vue";
+  import WarningModal from "@/components/ui/WarningModal.vue";
 
-const EmptyState = defineAsyncComponent(() =>
-  import("@/components/ui/EmptyState.vue")
-);
+  const EmptyState = defineAsyncComponent(() => import("@/components/ui/EmptyState.vue"));
 
-const defectStore = useDefectStore();
-const scalesStore = useScalesStore();
-const pressed = ref(false);
-const tasks = ref(null);
-const router = useRouter();
-const userStore = useUserStore();
-const openHistory = ref(false);
-const showModel = ref(false);
-const isLoading = ref(false);
-const isSubmitting = ref(false);
-const selectedTask = ref(null);
-const photo = ref(null);
-const clickSound = new Audio("/sounds/click.wav");
-const endclickSound = new Audio("/sounds/end-click.wav");
-const form = ref({
-  stage: "",
-  productionOrder: "",
-  nomenclature: "",
-  size: "",
-  quantity: null,
-  party: "",
-  equipment: "",
-  tape_number: "",
-  comment: "",
-  owner: "",
-});
-const showModal = ref(false);
-const net = ref("");
-const gross = ref("");
-const showWarning = ref(false);
-const warningMessage = ref("");
+  const searchTape = ref("");
+  const defectStore = useDefectStore();
+  const scalesStore = useScalesStore();
+  const pressed = ref(false);
+  const tasks = ref(null);
+  const router = useRouter();
+  const userStore = useUserStore();
+  const openHistory = ref(false);
+  const showModel = ref(false);
+  const isLoading = ref(false);
+  const isSubmitting = ref(false);
+  const selectedTask = ref(null);
+  const photo = ref(null);
+  const clickSound = new Audio("/sounds/click.wav");
+  const endclickSound = new Audio("/sounds/end-click.wav");
+  const form = ref({
+    stage: "",
+    productionOrder: "",
+    nomenclature: "",
+    size: "",
+    quantity: null,
+    party: "",
+    equipment: "",
+    tape_number: "",
+    comment: "",
+    owner: "",
+  });
+  const showModal = ref(false);
+  const net = ref("");
+  const gross = ref("");
+  const showWarning = ref(false);
+  const warningMessage = ref("");
 
-function loadDate() {
-  return (async () => {
-    const module = await import("@/utils/getISODate");
-    return module.getISODate();
-  })();
-}
+  function loadDate() {
+    return (async () => {
+      const module = await import("@/utils/getISODate");
+      return module.getISODate();
+    })();
+  }
 
-//-Print-label---------------------------//
-const openPrintWindow = async (task) => {
-  try {
-    let netWeightValue = null;
+  //-Print-label---------------------------//
+  const openPrintWindow = async (task) => {
+    try {
+      let netWeightValue = null;
 
-    const existingRow = scalesStore.rows.find(
-      (row) =>
-        row.article === task.nomenclature.article &&
-        row.tape_number === task.tape_number &&
-        row.color === task.color.code &&
-        row.productionplan === task.productionplan
+      const existingRow = scalesStore.rows.find(
+        (row) =>
+          row.article === task.nomenclature.article &&
+          row.tape_number === task.tape_number &&
+          row.color === task.color.code &&
+          row.productionplan === task.productionplan
+      );
+
+      if (existingRow) {
+        netWeightValue = existingRow.netWeight;
+      } else {
+        const weightData = await openWeightModalAsync();
+        if (!weightData) return;
+
+        netWeightValue = weightData.netWeight;
+        const grossWeight = weightData.grossWeight;
+
+        scalesStore.addRow({
+          netWeight: netWeightValue,
+          grossWeight,
+          article: task.nomenclature.article,
+          tape_number: task.tape_number,
+          color: task.color.code,
+          productionplan: task.productionplan,
+        });
+      }
+
+      const params = {
+        article: task.nomenclature.article,
+        productionplan: task.productionplan,
+        date_productionplan: task.date_productionplan,
+        tape_number: task.tape_number,
+      };
+
+      const { data: labelDataFromApi } = await api.get("/v1/print/data", {
+        params,
+      });
+
+      const labelData = {
+        order: labelDataFromApi[0].order,
+        nomenclature: labelDataFromApi[0].nomenclature,
+        article: labelDataFromApi[0].article,
+        color: labelDataFromApi[0].color,
+        batch: labelDataFromApi[0].batch,
+        tape_number: labelDataFromApi[0].tape_number,
+        width: labelDataFromApi[0].width,
+        brutto: labelDataFromApi[0].brutto,
+        netto: labelDataFromApi[0].netto,
+        finish: labelDataFromApi[0].finish,
+        sort: labelDataFromApi[0].sort,
+        composition: labelDataFromApi[0].composition,
+        machine_id: labelDataFromApi[0].machine_id,
+        author: labelDataFromApi[0].author,
+        mass: netWeightValue ?? 0,
+        components: labelDataFromApi[0].components,
+      };
+
+      const encoded = encodeURIComponent(JSON.stringify(labelData));
+      window.open(`/print-label?data=${encoded}`, "_blank");
+    } catch (error) {
+      console.error("Ошибка при получении данных для печати:", error);
+      alert("Не удалось получить данные для печати");
+    }
+  };
+  //---------------------------------------//
+
+  onMounted(async () => {
+    isLoading.value = true;
+    try {
+      const response = await api.get("/v1/list_package", {
+        params: { stage: userStore.user.stage },
+      });
+      tasks.value = response.data.map((task) => ({
+        ...task,
+        status: task.status || "Ожидает",
+        startDate: "0001.01.01",
+      }));
+
+      tasks.value.forEach((task) => {
+        const defectsArray = task.arrayDefects || [];
+
+        defectsArray.forEach((row) => {
+          const exists = defectStore.rows.some(
+            (r) =>
+              r.defect?.code === row.defect?.code &&
+              r.category?.code === row.category?.code &&
+              r.note === row.note &&
+              r.locations === row.locations &&
+              r.length === row.length &&
+              r.operator?.GUID === row.operator?.GUID &&
+              r.article === (task.nomenclature?.article || "") &&
+              r.productionplan === (task.productionplan || "") &&
+              r.color === (task.color?.code || "") &&
+              r.tape_number === (task.tape_number || "")
+          );
+
+          if (!exists) {
+            defectStore.addRow({
+              ...row,
+              article: task.nomenclature?.article || "",
+              productionplan: task.productionplan || "",
+              color: task.color?.code || "",
+              tape_number: task.tape_number || "",
+            });
+          }
+        });
+      });
+
+      //tasks.value = response.data;
+    } catch (error) {
+      tasks.value = [];
+    } finally {
+      isLoading.value = false;
+    }
+  });
+
+  const groupedTasks = computed(() => {
+    const groups = {};
+    const filtered = searchTape.value.trim()
+      ? tasks.value.filter((t) =>
+        String(t.tape_number)
+          .toLowerCase()
+          .includes(searchTape.value.trim().toLowerCase())
+      )
+      : tasks.value;
+
+    for (const t of filtered) {
+      if (!groups[t.order]) groups[t.order] = [];
+      groups[t.order].push(t);
+    }
+    return groups;
+  });
+
+  function exit() {
+    userStore.clearUser();
+    router.push("/");
+  }
+
+  const ModalHistory = defineAsyncComponent(() =>
+    import("@/components/ui/ModalHistory.vue")
+  );
+
+  function toggleHistory(target) {
+    const idx = tasks.value.findIndex(
+      (t) =>
+        t.productionplan === target.productionplan &&
+        t.tape_number === target.tape_number &&
+        t.nomenclature.article === target.nomenclature.article &&
+        t.color.code === target.color.code
     );
+    selectedTask.value = idx;
 
-    if (existingRow) {
-      netWeightValue = existingRow.netWeight;
+    openHistory.value = !openHistory.value;
+  }
+
+  const openWeightModalAsync = async () => {
+    const modalModule = await import("@/views/components/WeightModal.vue");
+    const modal = modalModule.default;
+
+    return new Promise((resolve) => {
+      const container = document.createElement("div");
+      container.id = "weight-modal-container";
+      document.body.appendChild(container);
+
+      const app = createApp(modal);
+      app.config.globalProperties.$resolve = resolve;
+      container.__vue_app__ = app;
+
+      app.mount(container);
+    });
+  };
+
+  // EmployeePercentModal
+  const EmployeePercentModal = defineAsyncComponent(() =>
+    import("@/views/components/EmployeePercentModal.vue")
+  );
+
+  const isModalOpen = ref(false);
+  const employeesData = ref([]);
+  const modalCancelled = ref(false);
+  const storyNetto = ref(0);
+
+  function openModal() {
+    isModalOpen.value = true;
+    modalCancelled.value = false;
+
+    return new Promise((resolve, reject) => {
+      const unwatch = watch(isModalOpen, (val) => {
+        if (!val) {
+          unwatch();
+          if (modalCancelled.value) {
+            reject(new Error("Modal cancelled"));
+          } else {
+            resolve(employeesData.value);
+          }
+        }
+      });
+    });
+  }
+
+  function handleSaveOperators(data) {
+    employeesData.value = data;
+    isModalOpen.value = false;
+  }
+
+  function handleCancel() {
+    modalCancelled.value = true;
+    isModalOpen.value = false;
+  }
+
+  const toggleStart = async (task) => {
+    if (task.status === "Ожидает") {
+      task.status = "Активний";
+      task.startDate = await loadDate();
+      clickSound.play();
+      return;
     } else {
-      const weightData = await openWeightModalAsync();
-      if (!weightData) return;
+      pressed.value = true;
+    }
+    if (!pressed.value) {
+      pressed.value = true;
+      return;
+    }
 
-      netWeightValue = weightData.netWeight;
-      const grossWeight = weightData.grossWeight;
+    if (isSubmitting.value) return;
+    isSubmitting.value = true;
 
-      scalesStore.addRow({
-        netWeight: netWeightValue,
-        grossWeight,
+    try {
+      const target = {
         article: task.nomenclature.article,
         tape_number: task.tape_number,
-        color: task.color.code,
         productionplan: task.productionplan,
-      });
-    }
+        color: task.color.code,
+      };
 
-    const params = {
-      article: task.nomenclature.article,
-      productionplan: task.productionplan,
-      date_productionplan: task.date_productionplan,
-      tape_number: task.tape_number,
-    };
+      const existingRow = scalesStore.rows.find(
+        (row) =>
+          row.article === target.article &&
+          row.tape_number === target.tape_number &&
+          row.color === target.color &&
+          row.productionplan === target.productionplan
+      );
 
-    const { data: labelDataFromApi } = await api.get("/v1/print/data", {
-      params,
-    });
+      let netWeight, grossWeight;
 
-    const labelData = {
-      order: labelDataFromApi[0].order,
-      nomenclature: labelDataFromApi[0].nomenclature,
-      article: labelDataFromApi[0].article,
-      color: labelDataFromApi[0].color,
-      batch: labelDataFromApi[0].batch,
-      tape_number: labelDataFromApi[0].tape_number,
-      width: labelDataFromApi[0].width,
-      brutto: labelDataFromApi[0].brutto,
-      netto: labelDataFromApi[0].netto,
-      finish: labelDataFromApi[0].finish,
-      sort: labelDataFromApi[0].sort,
-      composition: labelDataFromApi[0].composition,
-      machine_id: labelDataFromApi[0].machine_id,
-      author: labelDataFromApi[0].author,
-      mass: netWeightValue ?? 0,
-      components: labelDataFromApi[0].components, 
-    };
+      if (existingRow) {
+        netWeight = existingRow.netWeight;
+        grossWeight = existingRow.grossWeight;
+      } else {
+        warningMessage.value = "Вы не указали 'Вес нетто' и 'Вес брутто'!";
+        showWarning.value = true;
+        return;
+      }
 
-    const encoded = encodeURIComponent(JSON.stringify(labelData));
-    window.open(`/print-label?data=${encoded}`, "_blank");
-  } catch (error) {
-    console.error("Ошибка при получении данных для печати:", error);
-    alert("Не удалось получить данные для печати");
-  }
-};
-//---------------------------------------//
+      const foundDefects = defectStore.rows.filter(
+        (row) =>
+          row.article === target.article &&
+          row.tape_number === target.tape_number &&
+          row.productionplan === target.productionplan &&
+          row.color === target.color
+      );
 
-onMounted(async () => {
-  isLoading.value = true;
-  try {
-    const response = await api.get("/v1/list_package", {
-      params: { stage: userStore.user.stage },
-    });
-    tasks.value = response.data.map((task) => ({
-      ...task,
-      status: task.status || "Ожидает",
-      startDate: "0001.01.01",
-    }));
+      const idx = tasks.value.findIndex(
+        (t) =>
+          t.productionplan === target.productionplan &&
+          t.tape_number === target.tape_number &&
+          t.nomenclature.article === target.article &&
+          t.color.code === target.color
+      );
 
-    tasks.value.forEach((task) => {
-      const defectsArray = task.arrayDefects || [];
-
-      defectsArray.forEach((row) => {
-        const exists = defectStore.rows.some(
-          (r) =>
-            r.defect?.code === row.defect?.code &&
-            r.category?.code === row.category?.code &&
-            r.note === row.note &&
-            r.locations === row.locations &&
-            r.length === row.length &&
-            r.operator?.GUID === row.operator?.GUID &&
-            r.article === (task.nomenclature?.article || "") &&
-            r.productionplan === (task.productionplan || "") &&
-            r.color === (task.color?.code || "") &&
-            r.tape_number === (task.tape_number || "")
-        );
-
-        if (!exists) {
-          defectStore.addRow({
-            ...row,
-            article: task.nomenclature?.article || "",
-            productionplan: task.productionplan || "",
-            color: task.color?.code || "",
-            tape_number: task.tape_number || "",
-          });
-        }
-      });
-    });
-
-    //tasks.value = response.data;
-  } catch (error) {
-    tasks.value = [];
-  } finally {
-    isLoading.value = false;
-  }
-});
-
-const groupedTasks = computed(() => {
-  const groups = {};
-  for (const t of tasks.value) {
-    if (!groups[t.order]) {
-      groups[t.order] = [];
-    }
-    groups[t.order].push(t);
-  }
-  return groups;
-});
-
-function exit() {
-  userStore.clearUser();
-  router.push("/");
-}
-
-const ModalHistory = defineAsyncComponent(() =>
-  import("@/components/ui/ModalHistory.vue")
-);
-
-function toggleHistory(target) {
-  const idx = tasks.value.findIndex(
-    (t) =>
-      t.productionplan === target.productionplan &&
-      t.tape_number === target.tape_number &&
-      t.nomenclature.article === target.nomenclature.article &&
-      t.color.code === target.color.code
-  );
-  selectedTask.value = idx;
-
-  openHistory.value = !openHistory.value;
-}
-
-const openWeightModalAsync = async () => {
-  const modalModule = await import("@/views/components/WeightModal.vue");
-  const modal = modalModule.default;
-
-  return new Promise((resolve) => {
-    const container = document.createElement("div");
-    container.id = "weight-modal-container";
-    document.body.appendChild(container);
-
-    const app = createApp(modal);
-    app.config.globalProperties.$resolve = resolve;
-    container.__vue_app__ = app;
-
-    app.mount(container);
-  });
-};
-
-// EmployeePercentModal
-const EmployeePercentModal = defineAsyncComponent(() =>
-  import("@/views/components/EmployeePercentModal.vue")
-);
-
-const isModalOpen = ref(false);
-const employeesData = ref([]);
-const modalCancelled = ref(false);
-const storyNetto = ref(0);
-
-function openModal() {
-  isModalOpen.value = true;
-  modalCancelled.value = false;
-
-  return new Promise((resolve, reject) => {
-    const unwatch = watch(isModalOpen, (val) => {
-      if (!val) {
-        unwatch();
-        if (modalCancelled.value) {
-          reject(new Error("Modal cancelled"));
-        } else {
-          resolve(employeesData.value);
+      if (userStore.user.piecework) {
+        try {
+          selectedTask.value = idx;
+          const selected = await openModal();
+          employeesData.value = selected;
+        } catch (error) {
+          2;
+          // Modal cancelled
+          isSubmitting.value = false;
+          return;
         }
       }
-    });
-  });
-}
 
-function handleSaveOperators(data) {
-  employeesData.value = data;
-  isModalOpen.value = false;
-}
+      const payload = {
+        stage: task.next_stage.code, //task.stage.code,userStore.user.stage_code
+        productionplan: task.productionplan,
+        date_productionplan: task.date_productionplan,
+        nomenclature: task.nomenclature.article,
+        size: task.size,
+        color: task.color.code,
+        quantity: task.quantity,
+        party: task.party,
+        equipment: task.equipment,
+        tape_number: task.tape_number,
+        tape: task.tape,
+        accessories: task.accessories || "",
+        sort: task.sort || "",
+        comment: "Упаковка",
+        owner: userStore.user.GUID,
+        netto: task.netto,
+        brutto: task.brutto,
+        level: task.level,
+        lot: task.lot,
+        grossWeight: grossWeight,
+        netWeight: netWeight,
+        startDate: task.startDate,
+        endDate: await loadDate(),
 
-function handleCancel() {
-  modalCancelled.value = true;
-  isModalOpen.value = false;
-}
+        defects: foundDefects.length ? foundDefects : [],
+        storyDetails: task.storyDetails || {},
+        employees: employeesData.value || [],
+      };
 
-const toggleStart = async (task) => {
-  if (task.status === "Ожидает") {
-    task.status = "Активний";
-    task.startDate = await loadDate();
-    clickSound.play();
-    return;
-  } else {
-    pressed.value = true;
-  }
-  if (!pressed.value) {
-    pressed.value = true;
-    return;
-  }
+      const response = await api.post("/v1/create_document", payload);
 
-  if (isSubmitting.value) return;
-  isSubmitting.value = true;
+      if (idx !== -1) {
+        tasks.value.splice(idx, 1);
+        showModel.value = false;
+        selectedTask.value = null;
+      }
 
-  try {
+      const existingRowIndex = scalesStore.rows.findIndex(
+        (row) =>
+          row.article === target.article &&
+          row.tape_number === target.tape_number &&
+          row.color === target.color &&
+          row.productionplan === target.productionplan
+      );
+      if (existingRowIndex !== -1) {
+        scalesStore.removeRow(existingRowIndex);
+      }
+
+      foundDefects.forEach((def) => {
+        const index = defectStore.rows.findIndex(
+          (r) =>
+            r.article === def.article &&
+            r.tape_number === def.tape_number &&
+            r.productionplan === def.productionplan &&
+            r.color === def.color
+        );
+        if (index !== -1) {
+          defectStore.removeRow(index);
+        }
+      });
+
+      pressed.value = false;
+    } catch (error) {
+    } finally {
+      isSubmitting.value = false;
+    }
+    endclickSound.play();
+  };
+
+  const toogleRefund = async (task) => {
     const target = {
       article: task.nomenclature.article,
       tape_number: task.tape_number,
       productionplan: task.productionplan,
       color: task.color.code,
     };
-
-    const existingRow = scalesStore.rows.find(
-      (row) =>
-        row.article === target.article &&
-        row.tape_number === target.tape_number &&
-        row.color === target.color &&
-        row.productionplan === target.productionplan
-    );
-
-    let netWeight, grossWeight;
-
-    if (existingRow) {
-      netWeight = existingRow.netWeight;
-      grossWeight = existingRow.grossWeight;
-    } else {
-      warningMessage.value = "Вы не указали 'Вес нетто' и 'Вес брутто'!";
-      showWarning.value = true;
-      return;
-    }
 
     const foundDefects = defectStore.rows.filter(
       (row) =>
@@ -560,296 +602,179 @@ const toggleStart = async (task) => {
         row.color === target.color
     );
 
-    const idx = tasks.value.findIndex(
-      (t) =>
-        t.productionplan === target.productionplan &&
-        t.tape_number === target.tape_number &&
-        t.nomenclature.article === target.article &&
-        t.color.code === target.color
-    );
+    try {
+      const payloadRefund = {
+        stage: userStore.user.stage_code, //task.stage.code,
+        productionplan: task.productionplan,
+        date_productionplan: task.date_productionplan,
+        nomenclature: task.nomenclature.article,
+        size: task.size,
+        color: task.color.code,
+        quantity: task.quantity,
+        party: task.party,
+        tape_number: task.tape_number,
+        tape: task.tape,
+        equipment: task.equipment,
+        lot: task.lot,
+        accessories: task.accessories || "",
+        sort: task.sort || "",
+        comment: "Возврат",
+        level: task.level,
+        owner: userStore.user.GUID,
+        status_number: task.status_number,
 
-    if (userStore.user.piecework) {
-      try {
-        selectedTask.value = idx;
-        const selected = await openModal();
-        employeesData.value = selected;
-      } catch (error) {
-        2;
-        // Modal cancelled
-        isSubmitting.value = false;
-        return;
-      }
-    }
+        defects: foundDefects.length ? foundDefects : [],
+        storyDetails: task.storyDetails || {},
+      };
 
-    const payload = {
-      stage: task.next_stage.code, //task.stage.code,userStore.user.stage_code
-      productionplan: task.productionplan,
-      date_productionplan: task.date_productionplan,
-      nomenclature: task.nomenclature.article,
-      size: task.size,
-      color: task.color.code,
-      quantity: task.quantity,
-      party: task.party,
-      equipment: task.equipment,
-      tape_number: task.tape_number,
-      tape: task.tape,
-      accessories: task.accessories || "",
-      sort: task.sort || "",
-      comment: "Упаковка",
-      owner: userStore.user.GUID,
-      netto: task.netto,
-      brutto: task.brutto,
-      level: task.level,
-      lot: task.lot,
-      grossWeight: grossWeight,
-      netWeight: netWeight,
-      startDate: task.startDate,
-      endDate: await loadDate(),
+      const response = await api.post("/v1/refund", payloadRefund);
 
-      defects: foundDefects.length ? foundDefects : [],
-      storyDetails: task.storyDetails || {},
-      employees: employeesData.value || [],
-    };
-
-    const response = await api.post("/v1/create_document", payload);
-
-    if (idx !== -1) {
-      tasks.value.splice(idx, 1);
-      showModel.value = false;
-      selectedTask.value = null;
-    }
-
-    const existingRowIndex = scalesStore.rows.findIndex(
-      (row) =>
-        row.article === target.article &&
-        row.tape_number === target.tape_number &&
-        row.color === target.color &&
-        row.productionplan === target.productionplan
-    );
-    if (existingRowIndex !== -1) {
-      scalesStore.removeRow(existingRowIndex);
-    }
-
-    foundDefects.forEach((def) => {
-      const index = defectStore.rows.findIndex(
-        (r) =>
-          r.article === def.article &&
-          r.tape_number === def.tape_number &&
-          r.productionplan === def.productionplan &&
-          r.color === def.color
+      const idx = tasks.value.findIndex(
+        (t) =>
+          t.productionplan === task.productionplan &&
+          t.tape_number === task.tape_number &&
+          t.nomenclature.article === task.nomenclature.article &&
+          t.color.code === task.color.code
       );
-      if (index !== -1) {
-        defectStore.removeRow(index);
+      if (idx !== -1) {
+        tasks.value.splice(idx, 1);
       }
-    });
 
-    pressed.value = false;
-  } catch (error) {
-  } finally {
-    isSubmitting.value = false;
-  }
-  endclickSound.play();
-};
+      foundDefects.forEach((def) => {
+        const index = defectStore.rows.findIndex(
+          (r) =>
+            r.article === def.article &&
+            r.tape_number === def.tape_number &&
+            r.productionplan === def.productionplan &&
+            r.color === def.color
+        );
+        if (index !== -1) {
+          defectStore.removeRow(index);
+        }
+      });
 
-const toogleRefund = async (task) => {
-  const target = {
-    article: task.nomenclature.article,
-    tape_number: task.tape_number,
-    productionplan: task.productionplan,
-    color: task.color.code,
+      pressed.value = false;
+    } catch (error) {
+    } finally {
+      isSubmitting.value = false;
+    }
+    endclickSound.play();
   };
-
-  const foundDefects = defectStore.rows.filter(
-    (row) =>
-      row.article === target.article &&
-      row.tape_number === target.tape_number &&
-      row.productionplan === target.productionplan &&
-      row.color === target.color
-  );
-
-  try {
-    const payloadRefund = {
-      stage: userStore.user.stage_code, //task.stage.code,
-      productionplan: task.productionplan,
-      date_productionplan: task.date_productionplan,
-      nomenclature: task.nomenclature.article,
-      size: task.size,
-      color: task.color.code,
-      quantity: task.quantity,
-      party: task.party,
-      tape_number: task.tape_number,
-      tape: task.tape,
-      equipment: task.equipment,
-      lot: task.lot,
-      accessories: task.accessories || "",
-      sort: task.sort || "",
-      comment: "Возврат",
-      level: task.level,
-      owner: userStore.user.GUID,
-      status_number: task.status_number, 
-
-      defects: foundDefects.length ? foundDefects : [],
-      storyDetails: task.storyDetails || {},
-    };
-
-    const response = await api.post("/v1/refund", payloadRefund);
-
-    const idx = tasks.value.findIndex(
-      (t) =>
-        t.productionplan === task.productionplan &&
-        t.tape_number === task.tape_number &&
-        t.nomenclature.article === task.nomenclature.article &&
-        t.color.code === task.color.code
-    );
-    if (idx !== -1) {
-      tasks.value.splice(idx, 1);
-    }
-
-    foundDefects.forEach((def) => {
-      const index = defectStore.rows.findIndex(
-        (r) =>
-          r.article === def.article &&
-          r.tape_number === def.tape_number &&
-          r.productionplan === def.productionplan &&
-          r.color === def.color
-      );
-      if (index !== -1) {
-        defectStore.removeRow(index);
-      }
-    });
-
-    pressed.value = false;
-  } catch (error) {
-  } finally {
-    isSubmitting.value = false;
-  }
-  endclickSound.play();
-};
 </script>
 
 <style>
-.custom-scroll::-webkit-scrollbar {
-  height: 6px;
-}
-.custom-scroll::-webkit-scrollbar-track {
-  background: #f3f4f6;
-}
-.custom-scroll::-webkit-scrollbar-thumb {
-  background: #9ca3af;
-  border-radius: 9999px;
-}
-.custom-scroll::-webkit-scrollbar-thumb:hover {
-  background: #2563eb;
-}
-.table-wrapper {
-  width: 100%;
-  -webkit-overflow-scrolling: touch;
-  /* overflow-x: auto; 
+  .custom-scroll::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-track {
+    background: #f3f4f6;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb {
+    background: #9ca3af;
+    border-radius: 9999px;
+  }
+
+  .custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: #2563eb;
+  }
+
+  .table-wrapper {
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    /* overflow-x: auto; 
   padding-bottom: 1px; */
-}
-.table-grid:hover {
-  background-color: #f0f7ff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-.table-grid {
-  display: grid;
-  align-items: center;
-  gap: 6px;
-  grid-auto-rows: auto;
-  grid-template-columns:
-    clamp(48px, 20vw, 108px)
-    clamp(100px, 20vw, 220px)
-    clamp(90px, 18vw, 150px)
-    clamp(70px, 18vw, 140px)
-    clamp(20px, 3vw, 20px)
-    clamp(34px, 9vw, 80px)
-    clamp(50px, 9vw, 90px)
-    clamp(48px, 6vw, 80px)
-    clamp(60px, 8vw, 150px)
-    clamp(60px, 8vw, 100px)
-    clamp(60px, 9vw, 110px)
-    clamp(48px, 6vw, 80px)
-    clamp(48px, 6vw, 80px);
-  min-width: max-content;
-}
+  }
 
-.table-header {
-  display: inline-grid;
-  width: max-content;
-  background: white;
-  border-radius: 8px;
-  padding: 6px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  font-weight: 600;
-  font-size: 0.85rem;
-}
-.cell {
-  padding: 4px 6px;
-  font-size: 0.85rem;
+  .table-grid:hover {
+    background-color: #f0f7ff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
 
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.cell .small {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-.center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-btn {
-  width: 34px;
-  height: 34px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  background: white;
-}
-
-.badge {
-  background: #fee2e2;
-  color: #991b1b;
-  font-size: 0.75rem;
-  padding: 4px 6px;
-  border-radius: 9999px;
-  font-weight: 600;
-  display: inline-block;
-}
-
-button.bg-sky-500 {
-  background-color: #0ea5e9;
-}
-button.bg-green-500 {
-  background-color: #10b981;
-}
-
-@media (max-width: 520px) {
   .table-grid {
+    display: grid;
+    align-items: center;
+    gap: 6px;
+    grid-auto-rows: auto;
     grid-template-columns:
-      50px
-      minmax(80px, 1fr)
-      90px
-      50px
-      40px 40px 60px
-      60px 60px 60px 60px
-      48px 48px;
+      clamp(48px, 20vw, 108px) clamp(100px, 20vw, 220px) clamp(90px, 18vw, 150px) clamp(70px, 18vw, 140px) clamp(20px, 3vw, 20px) clamp(34px, 9vw, 80px) clamp(50px, 9vw, 90px) clamp(48px, 6vw, 80px) clamp(60px, 8vw, 150px) clamp(60px, 8vw, 100px) clamp(60px, 9vw, 110px) clamp(48px, 6vw, 80px) clamp(48px, 6vw, 80px);
+    min-width: max-content;
+  }
+
+  .table-header {
+    display: inline-grid;
+    width: max-content;
+    background: white;
+    border-radius: 8px;
+    padding: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    font-weight: 600;
+    font-size: 0.85rem;
   }
 
   .cell {
-    font-size: 0.8rem;
-    gap: 6px;
+    padding: 4px 6px;
+    font-size: 0.85rem;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-}
+
+  .cell .small {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    background: white;
+  }
+
+  .badge {
+    background: #fee2e2;
+    color: #991b1b;
+    font-size: 0.75rem;
+    padding: 4px 6px;
+    border-radius: 9999px;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  button.bg-sky-500 {
+    background-color: #0ea5e9;
+  }
+
+  button.bg-green-500 {
+    background-color: #10b981;
+  }
+
+  @media (max-width: 520px) {
+    .table-grid {
+      grid-template-columns:
+        50px minmax(80px, 1fr) 90px 50px 40px 40px 60px 60px 60px 60px 60px 48px 48px;
+    }
+
+    .cell {
+      font-size: 0.8rem;
+      gap: 6px;
+    }
+  }
 </style>

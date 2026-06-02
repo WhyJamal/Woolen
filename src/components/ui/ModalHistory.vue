@@ -404,7 +404,6 @@
 import { ref, nextTick, onMounted, computed } from "vue";
 import { Datepicker } from "flowbite-datepicker";
 import { useUserStore } from "@/stores/user";
-import api from "@/utils/axios";
 import {
   Listbox,
   ListboxButton,
@@ -413,6 +412,7 @@ import {
 } from "@headlessui/vue";
 import WarningModal from "@/components/ui/WarningModal.vue";
 import Button from "@/components/ui/Button.vue";
+import { getMachines } from "@/services/getMachinesService";
 
 const props = defineProps({
   data: {
@@ -635,13 +635,13 @@ const isLoadingMachines = ref(false);
 
 async function fetchMachines() {
   if (isLoadingMachines.value) return;
+
   isLoadingMachines.value = true;
+
   try {
-    const response = await api.get("/v1/number_machines", {
-      params: { stage: userStore.user.stage_code },
-    });
-    machines.value = response.data;
+    machines.value = await getMachines(userStore.user.stage_code);
   } catch (error) {
+    console.error(error);
   } finally {
     isLoadingMachines.value = false;
   }
