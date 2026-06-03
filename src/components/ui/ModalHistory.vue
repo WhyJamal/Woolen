@@ -413,6 +413,7 @@ import {
 import WarningModal from "@/components/ui/WarningModal.vue";
 import Button from "@/components/ui/Button.vue";
 import { getMachines } from "@/services/getMachinesService";
+import api from "@/utils/axios";
 
 const props = defineProps({
   data: {
