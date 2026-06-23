@@ -388,11 +388,13 @@ const closeModal = () => {
 const saveChanges = () => {
   let listToCalculate = employees.value;
 
-  for (const emp of employees.value) {
-    if (emp.percent >= 999.99) {
-      warningMessage.value = `Метраж не может быть больше ${props.quantity}! Сотрудник: ${emp.name}`;
-      showWarning.value = true;
-      return;
+  if (!["001", "002"].includes(userStore.user.stage_code)) {
+    for (const emp of employees.value) {
+      if (emp.percent >= 999.99) {
+        warningMessage.value = `Метраж не может быть больше ${props.quantity}! Сотрудник: ${emp.name}`;
+        showWarning.value = true;
+        return;
+      }
     }
   }
 
