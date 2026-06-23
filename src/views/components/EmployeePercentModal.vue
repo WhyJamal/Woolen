@@ -4,11 +4,11 @@
   <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-xl w-full h-full max-w-7xl mx-4 max-h-[90vh] flex flex-col">
       <div class="flex justify-between items-center px-6 rounded-md py-4 border-b bg-white">
-        <h3 class="text-xl font-semibold text-gray-800">Employees percent</h3>
+        <h3 class="text-xl font-semibold text-gray-800">Данные сотрудников</h3>
 
         <div class="flex gap-6">
           <div class="flex gap-2">
-            <h3 class="text-sm font-semibold text-gray-800">Total:</h3>
+            <h3 class="text-sm font-semibold text-gray-800">Итого:</h3>
             <span class="text-sm font-semibold text-blue-800">{{
               props.quantity
             }}</span>
@@ -120,7 +120,7 @@
               <td class="px-3 py-2.5 align-middle min-w-0">
                 <input type="number" v-model.number="employee.percent"
                   class="w-full px-2 py-1.5 text-sm rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-400 min-w-0"
-                  min="0" max="100" placeholder="0" />
+                  min="0" placeholder="0" />
               </td>
 
               <td class="px-3 py-2.5 align-middle min-w-0 text-center">
@@ -387,6 +387,14 @@ const closeModal = () => {
 
 const saveChanges = () => {
   let listToCalculate = employees.value;
+
+  for (const emp of employees.value) {
+    if (emp.percent >= 999.99) {
+      warningMessage.value = `Метраж не может быть больше ${props.quantity}! Сотрудник: ${emp.name}`;
+      showWarning.value = true;
+      return;
+    }
+  }
 
   if (userStore.user.stage_code === "005") {
     listToCalculate = employees.value.filter(

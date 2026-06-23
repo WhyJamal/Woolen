@@ -432,6 +432,12 @@
       return false;
     }
 
+    if (isRejectionStage.value && !newRow.value.operator.GUID) {
+      warningMessage.value = "Введите Оператора!";
+      showWarning.value = true;
+      return false;
+    }
+
     return true;
   };
 
