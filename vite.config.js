@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => {
     server: {
       host: true,
       port: Number(env.VITE_PORT),
+      fs: {
+        deny: ['.git', '.env', '.env.*', 'node_modules/.bin', '.ssh', '.aws', 'docker-compose.yml', '.htpasswd']
+      },
       allowedHosts: [
         "www.apsofterp.uz",        
         "apsofterp.uz",        

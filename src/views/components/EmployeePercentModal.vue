@@ -421,7 +421,7 @@ const saveChanges = () => {
     );
   }
 
-  for (const emp of listToCalculate) {
+  for (const emp of employees.value) {
     if (!emp.level || !emp.level.name) {
       warningMessage.value = `Введите сложность! Сотрудник: ${emp.name}`;
       showWarning.value = true;
