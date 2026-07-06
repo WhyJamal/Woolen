@@ -154,9 +154,10 @@
 
     <EmployeePercentModal :isOpen="isModalOpen"
       :quantity="tasks?.[selectedTask]?.netto || tasks?.[selectedTask]?.quantity || 0"
-      :level="tasks?.[selectedTask]?.level || {}" @update:isOpen="isModalOpen = $event" @save="handleSaveOperators"
+      :level="{}" @update:isOpen="isModalOpen = $event" @save="handleSaveOperators"
       @cancel="handleCancel" />
-
+    <!-- tasks?.[selectedTask]?.level ||  -->
+     
     <ModalHistory v-if="openHistory" :data="{
       article: tasks?.[selectedTask]?.nomenclature.article,
       productionplan: tasks?.[selectedTask]?.productionplan,

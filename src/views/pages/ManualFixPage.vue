@@ -609,11 +609,12 @@
     <EmployeePercentModal
       :isOpen="isModalOpen"
       :quantity="storyNetto || model?.[0]?.netto || model?.[0]?.quantity || 0"
-      :level="model?.[0]?.level || {}"
+      :level="{}"
       @update:isOpen="isModalOpen = $event"
       @save="handleSaveOperators"
       @cancel="handleCancel"
     />
+    <!-- model?.[0]?.level ||  -->
   </Layout>
 </template>
 

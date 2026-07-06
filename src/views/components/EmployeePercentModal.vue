@@ -11,7 +11,7 @@
             <h3 class="text-sm font-semibold text-gray-800">Итого:</h3>
             <span class="text-sm font-semibold text-blue-800">{{
               props.quantity
-            }}</span>
+              }}</span>
           </div>
 
           <button @click="closeModal" class="text-gray-400 hover:text-gray-600 transition-colors">
@@ -82,13 +82,22 @@
                             v-slot="{ active, selected }">
                             <div :class="[
                               active ? 'bg-blue-100 text-blue-900' : 'text-gray-900',
-                              'cursor-pointer select-none py-2 pl-3 pr-9',
+                              userStore.user.employee?.code === emp.GUID
+                                ? 'soft-blink border-l-4 border-red-400'
+                                : '',
+                              'cursor-pointer select-none py-2 pl-3 pr-9 rounded transition-all duration-300',
                             ]">
                               <span :class="[
                                 selected ? 'font-semibold' : 'font-normal',
                                 'block truncate',
                               ]">
                                 {{ emp.name }}
+                              </span>
+                              <span :class="[
+                                selected ? 'font-semibold' : 'font-normal',
+                                'block truncate',
+                              ]">
+                                {{ emp.stage.name ? `(${emp.stage.name})` : '' }}
                               </span>
                               <span v-if="selected"
                                 class="absolute inset-y-0 right-0 flex items-center pr-4 text-blue-600">
@@ -247,10 +256,18 @@ const employeeQueries = ref({});
 
 const getFilteredEmployees = (index) => {
   const q = (employeeQueries.value[index] || "").toLowerCase().trim();
-  if (!q) return availableEmployees.value;
-  return availableEmployees.value.filter((e) =>
-    e.name.toLowerCase().includes(q)
-  );
+
+  return availableEmployees.value.filter((emp) => {
+    const alreadySelected = employees.value.some(
+      (e, i) => i !== index && e.GUID === emp.GUID
+    );
+
+    if (alreadySelected) return false;
+
+    if (!q) return true;
+
+    return emp.name.toLowerCase().includes(q);
+  });
 };
 const employees = ref([]);
 
@@ -446,3 +463,18 @@ const saveChanges = () => {
   emit("update:isOpen", false);
 };
 </script>
+
+<style lang="css" scoped>
+@keyframes softBlink {
+  0%, 100% {
+    background-color: #fef2f2;
+  }
+  50% {
+    background-color: #fecaca;
+  }
+}
+
+.soft-blink {
+  animation: softBlink 2s ease-in-out infinite;
+}
+</style>
