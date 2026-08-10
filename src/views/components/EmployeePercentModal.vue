@@ -11,7 +11,7 @@
             <h3 class="text-sm font-semibold text-gray-800">Итого:</h3>
             <span class="text-sm font-semibold text-blue-800">{{
               props.quantity
-            }}</span>
+              }}</span>
           </div>
 
           <button @click="closeModal" class="text-gray-400 hover:text-gray-600 transition-colors">
@@ -161,8 +161,9 @@
 
                     <ListboxOptions
                       class="absolute z-10 mt-1 min-w-[10rem] max-w-[90vw] left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded py-1 max-h-60 overflow-auto">
-                      <ListboxOption v-for="level in employee.levels" :key="level.id" :value="level"
-                        class="cursor-pointer select-none px-2 py-1 hover:bg-blue-100">
+                      <ListboxOption v-for="level in employee.levels?.filter(
+                        level => level.stage?.code === employee.stage?.code
+                      )" :key="level.id" :value="level" class="cursor-pointer select-none px-2 py-1 hover:bg-blue-100">
                         {{ level.name }}
                       </ListboxOption>
                     </ListboxOptions>
@@ -315,7 +316,6 @@ const updateEmployee = (index, selectedEmployee) => {
   if (!selectedEmployee) return;
 
   const existingPercent = employees.value[index]?.percent || 0;
-
   employees.value[index] = {
     name: selectedEmployee.name || "",
     GUID: selectedEmployee.GUID || "",
@@ -331,7 +331,7 @@ const updateEmployee = (index, selectedEmployee) => {
     shift: selectedEmployee.shift || "",
     date: selectedEmployee.date ? formatFromApi(selectedEmployee.date) : null,
     levels: selectedEmployee.levels || [],
-    level: employees.value[index]?.level || props.level || null,
+    level: null, //employees.value[index]?.level || props.level || null
   };
 
   nextTick(initDatepickers);
@@ -417,7 +417,7 @@ const closeModal = () => {
 
 const removeRow = (index) => {
   employees.value.splice(index, 1);
-  
+
   const newQueries = {};
   employees.value.forEach((_, i) => {
     newQueries[i] = employeeQueries.value[i < index ? i : i + 1] || "";
